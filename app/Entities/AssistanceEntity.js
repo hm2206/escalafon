@@ -31,18 +31,26 @@ class AssistanceEntity {
             work_id: "required",
             record_time: "required|date" 
         });
-        let newStatus = 'ENTRY';
+        // preparar datos
+        let payload = {
+            entity_id: datos.entity_id,
+            work_id: datos.work_id,
+            record_time: datos.record_time,
+            status: datos.status,
+        };
         // obtener ultimo registro
         let assistance_old = await Assistance.query()
             .where('entity_id', datos.entity_id)
             .where('work_id', datos.work_id)
             .orderBy('id', 'DESC')
             .first();
-        if (assistance_old) newStatus = this.status[assistance_old.status];
-        if (newStatus) datos.status = newStatus;
+        if (assistance_old) {
+            let is_status = this.status[assistance_old.status];
+            if (is_status) payload.status = is_status;
+        }
         // guardar datos
         try {
-            return await Assistance.create(datos);
+            return await Assistance.create(payload);
         } catch (error) {
             throw new DBException(error, "registro");
         }
