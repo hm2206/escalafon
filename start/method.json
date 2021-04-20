@@ -1,3 +1,14 @@
 {
-    
+    "ClockController.index": {
+        "name": "ClockController.index",
+        "url": "api/clock",
+        "description": "Listar reloj",
+        "action_type": "VIEW"
+    },
+    "ClockController.store": {
+        "name": "ClockController.store",
+        "url": "api/clock",
+        "description": "Crear reloj",
+        "action_type": "CREATE"
+    }
 }
