@@ -12,6 +12,7 @@ class AssistanceSchema extends Schema {
       table.integer('clock_id');
       table.dateTime('record_time').notNullable();
       table.enum('status', ['ENTRY', 'EXIT']);
+      table.unique(['work_id', 'record_time']);
       table.timestamps()
     })
   }

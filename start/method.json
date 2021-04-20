@@ -10,5 +10,11 @@
         "url": "api/clock",
         "description": "Crear reloj",
         "action_type": "CREATE"
+    },
+    "AssistanceController.store": {
+        "name": "AssistanceController.store",
+        "url": "api/assistance",
+        "description": "Crear Asistencia",
+        "action_type": "CREATE"
     }
 }
