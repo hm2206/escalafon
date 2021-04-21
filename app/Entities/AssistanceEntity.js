@@ -4,6 +4,7 @@ const Assistance = use('App/Models/Assistance');
 const DBException = require('../Exceptions/DBException');
 const { validation } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
+const collect = require('collect.js');
 
 class AssistanceEntity {
 
@@ -19,11 +20,35 @@ class AssistanceEntity {
         EXIT: "ENTRY",
     }
 
-    // async getClocks (page = 1) {
-    //     let clocks = Clock.query();
-    //     // paginar
-    //     return await clocks.paginate(page, 20);
-    // }
+    async getAssistances (authentication, page = 1, filtros = {}, query_search = "") {
+        let assistances = Assistance.query()
+            .join('works as w', 'w.id', 'assistances.work_id')
+            .select('assistances.*', 'w.person_id', 'w.orden');
+        // filtros
+        for (let attr in filtros) {
+           let value = filtros[attr];
+           if (value) assistances.where(attr, value);
+        }
+        // query
+        if (query_search) assistances.where('w.orden', 'like', `%${query_search}%`);
+        // paginar
+        assistances = await assistances.paginate(page, 20);
+        assistances = await assistances.toJSON();
+        // obtener person
+        let pluckId = collect(assistances.data).pluck('person_id').toArray();
+        let ids = `ids=${pluckId.join('&ids=')}`;
+        let { people } = await authentication.get(`person?page=1&${ids}`)
+        .then(res => res.data)
+        .catch(err => ({ success: false, people: [] }));
+        people = collect(people.data || []);
+        // setting
+        await assistances.data.map(a => {
+            a.person = people.where('id', a.person_id).first() || {};
+            return a;
+        });
+        // response
+        return assistances;
+    }
 
     async store (datos = this.datosDefault) {
         await validation(validateAll, datos, {

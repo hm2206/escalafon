@@ -11,6 +11,12 @@
         "description": "Crear reloj",
         "action_type": "CREATE"
     },
+    "AssistanceController.index": {
+        "name": "AssistanceController.index",
+        "url": "api/assistance",
+        "description": "Listar Asistencia",
+        "action_type": "VIEW"
+    },
     "AssistanceController.store": {
         "name": "AssistanceController.store",
         "url": "api/assistance",
