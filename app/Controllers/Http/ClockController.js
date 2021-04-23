@@ -32,6 +32,18 @@ class ClockController {
         }
     }
 
+    async syncClock ({ request }) {
+        let entity = request.$entity;
+        let clockEntity = new ClockEntity();
+        clockEntity.syncClock(entity.id);
+        // render
+        return {
+            success: true,
+            status: 201,
+            message: "La sincronización pueder tardar varios minutos, se le notificará cuando esté listo"
+        }
+    }
+
 }
 
 module.exports = ClockController

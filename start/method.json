@@ -11,6 +11,18 @@
         "description": "Crear reloj",
         "action_type": "CREATE"
     },
+    "ConfigAssistanceController.index": {
+        "name": "ConfigAssistanceController.index",
+        "url": "api/config_assistance",
+        "description": "Listar Configuración de Asistencia",
+        "action_type": "VIEW"
+    },
+    "ConfigAssistanceController.store": {
+        "name": "ConfigAssistanceController.store",
+        "url": "api/config_assistance",
+        "description": "Crear Configuración de Asistencia",
+        "action_type": "CREATE"
+    },
     "AssistanceController.index": {
         "name": "AssistanceController.index",
         "url": "api/assistance",

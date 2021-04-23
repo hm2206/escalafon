@@ -27,6 +27,8 @@
     "@adonisjs/ignitor": "^2.0.8",
     "@adonisjs/lucid": "^6.1.3",
     "@adonisjs/validator": "^5.0.6",
+    "adonis-kue": "^5.0.1",
+    "adonis-scheduler": "^3.0.2",
     "axios": "^0.19.2",
     "collect.js": "^4.28.2",
     "moment": "^2.27.0",

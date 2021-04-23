@@ -24,12 +24,13 @@ class AssistanceController {
         let payload = request.all();
         payload.entity_id = entity.id;
         let assistanceEntity = new AssistanceEntity();
-        await assistanceEntity.store(payload);
+        let assistance = await assistanceEntity.store(payload);
         // response
         return {
             success: true,
             status: 201,
-            message: "La asistencia se regístro correctamente!"
+            message: "La asistencia se regístro correctamente!",
+            assistance
         }
     }
 

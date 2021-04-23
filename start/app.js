@@ -19,6 +19,8 @@ const providers = [
   '@adonisjs/validator/providers/ValidatorProvider',
   '@adonisjs/drive/providers/DriveProvider',
   '@adonisjs/framework/providers/ViewProvider',
+  'adonis-kue/providers/KueProvider',
+  'adonis-scheduler/providers/SchedulerProvider',
   // '@adonisjs/antl/providers/AntlProvider'
 ]
 
@@ -32,7 +34,9 @@ const providers = [
 |
 */
 const aceProviders = [
-  '@adonisjs/lucid/providers/MigrationsProvider'
+  '@adonisjs/lucid/providers/MigrationsProvider',
+  'adonis-kue/providers/CommandsProvider',
+  'adonis-scheduler/providers/CommandsProvider'
 ]
 
 /*
@@ -47,7 +51,9 @@ const aceProviders = [
 |   { Route: 'Adonis/Src/Route' }
 |
 */
-const aliases = {}
+const aliases = {
+  Scheduler: 'Adonis/Addons/Scheduler',
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -59,4 +65,14 @@ const aliases = {}
 */
 const commands = []
 
-module.exports = { providers, aceProviders, aliases, commands }
+/*
+|--------------------------------------------------------------------------
+| Jobs
+|--------------------------------------------------------------------------
+|
+| Here you store ace jobs for your package
+|
+*/
+const jobs = []
+
+module.exports = { providers, aceProviders, aliases, commands, jobs }

@@ -2,9 +2,10 @@
 
 const Assistance = use('App/Models/Assistance');
 const DBException = require('../Exceptions/DBException');
-const { validation } = require('validator-error-adonis');
+const { validation, ValidatorError } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
 const collect = require('collect.js');
+const moment = require('moment');
 
 class AssistanceEntity {
 
@@ -52,26 +53,29 @@ class AssistanceEntity {
 
     async store (datos = this.datosDefault) {
         await validation(validateAll, datos, {
-            entity_id: "required",
+            config_assistance_id: "required",
             work_id: "required",
-            record_time: "required|date" 
+            record_time: "required" 
         });
         // preparar datos
+        let record_time = moment(datos.record_time, 'H:mm:ss').format('HH:mm:ss');
         let payload = {
-            entity_id: datos.entity_id,
+            config_assistance_id: datos.config_assistance_id,
             work_id: datos.work_id,
-            record_time: datos.record_time,
-            status: datos.status,
+            record_time,
+            status: this.datosDefault.status,
         };
         // obtener ultimo registro
         let assistance_old = await Assistance.query()
-            .where('entity_id', datos.entity_id)
+            .where('config_assistance_id', datos.config_assistance_id)
             .where('work_id', datos.work_id)
-            .orderBy('id', 'DESC')
+            .orderBy('record_time', 'DESC')
             .first();
         if (assistance_old) {
             let is_status = this.status[assistance_old.status];
             if (is_status) payload.status = is_status;
+            // validar hora
+            if (record_time <= assistance_old.record_time) throw new ValidatorError([{ field: 'record_time', message: `El tiempo debe ser mayor de ${assistance_old.record_time}` }])
         }
         // guardar datos
         try {
