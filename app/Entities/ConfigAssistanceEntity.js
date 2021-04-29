@@ -7,6 +7,7 @@ const NotFoundException = require('../Exceptions/NotFoundModelException');
 const { validation } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
 const moment = require('moment');
+const AssistanceEntity = require('../Entities/AssistanceEntity');
 
 class ConfigAssistanceEntity {
 
@@ -21,6 +22,7 @@ class ConfigAssistanceEntity {
             .where('entity_id', filtros.entity_id)
             .where(DB.raw('YEAR(date)'), filtros.year)
             .where(DB.raw('MONTH(date)'), filtros.month)
+            .orderBy('date', 'ASC')
             .fetch();
         config_assistance = await config_assistance.toJSON();
         // preparar datos
@@ -32,6 +34,18 @@ class ConfigAssistanceEntity {
         }
         // response
         return datos;
+    }
+
+    async assistances (authentication, id, entity_id, page = 1, query_search = "") {
+        let config_assistance = await ConfigAssistance.query()
+            .where('entity_id', entity_id)
+            .where('id', id)
+            .first();
+        if (!config_assistance) throw new NotFoundException("La configuración de asistencia");
+        let assistanceEntity = new AssistanceEntity();
+        let filters = { config_assistance_id: config_assistance.id };
+        let assistances = await assistanceEntity.getAssistances(authentication, page, filters, query_search);
+        return { config_assistance, assistances };
     }
 
     async store (datos = {}) {

@@ -1,12 +1,16 @@
 'use strict'
 
 const AssistanceEntity = require('../../Entities/AssistanceEntity');
+const ConfigAssistance = use('App/Models/ConfigAssistance');
 
 class AssistanceController {
 
     async index ({ request }) {
         let entity = request.$entity;
         let { page, query_search } = request.all();
+        let config_assistance = await ConfigAssistance.query()
+            .where('entity_id', entity.id)
+            .where('id', request.input('config_assistance'))
         let filtros = { entity_id: entity.id };
         let authentication = request.api_authentication;
         let assistanceEntity = new AssistanceEntity();
@@ -20,9 +24,7 @@ class AssistanceController {
     }
 
     async store ({ request }) {
-        let entity = request.$entity;
         let payload = request.all();
-        payload.entity_id = entity.id;
         let assistanceEntity = new AssistanceEntity();
         let assistance = await assistanceEntity.store(payload);
         // response

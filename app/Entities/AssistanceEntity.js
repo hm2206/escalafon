@@ -10,7 +10,7 @@ const moment = require('moment');
 class AssistanceEntity {
 
     datosDefault = {
-        entity_id: "",
+        config_assistance_id: "",
         work_id: "",
         record_time: "",
         status: "ENTRY"
@@ -24,7 +24,9 @@ class AssistanceEntity {
     async getAssistances (authentication, page = 1, filtros = {}, query_search = "") {
         let assistances = Assistance.query()
             .join('works as w', 'w.id', 'assistances.work_id')
-            .select('assistances.*', 'w.person_id', 'w.orden');
+            .select('assistances.*', 'w.person_id', 'w.orden')
+            .orderBy('w.orden', 'ASC')
+            .orderBy('record_time', 'ASC');
         // filtros
         for (let attr in filtros) {
            let value = filtros[attr];

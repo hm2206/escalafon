@@ -2,8 +2,6 @@
 
 const moment = require('moment');
 const ConfigAssistanceEntity = require('../../Entities/ConfigAssistanceEntity');
-const ConfigAssistance = use('App/Models/ConfigAssistance');
-const NotFoundException = require('../../Exceptions/NotFoundModelException');
 
 class ConfigAssistanceController {
 
@@ -23,6 +21,20 @@ class ConfigAssistanceController {
             success: true,
             status: 201,
             config_assistances,
+        }
+    }
+
+    async assistances ({ params, request }) {
+        let { page, query_search } = request.all();
+        let entity = request.$entity;
+        let authentication = request.api_authentication;
+        let configAssistanceEntity = new ConfigAssistanceEntity();
+        let config_assistance = await configAssistanceEntity.assistances(authentication, params.id, entity.id, page || 1, query_search || "");
+        // response
+        return {
+            success: true,
+            status: 201,
+            ...config_assistance
         }
     }
 

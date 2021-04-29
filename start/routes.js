@@ -10,6 +10,7 @@ Route('post', 'ClockController.store').middleware(['jwt', 'entityId']);
 Route('get', 'ConfigAssistanceController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigAssistanceController.store').middleware(['jwt', 'entityId']);
 Route('delete', 'ConfigAssistanceController.delete').middleware(['jwt', 'entityId']);
+Route('get', 'ConfigAssistanceController.assistances').middleware(['jwt', 'entityId']);
 
 // Assistance
 Route('get', 'AssistanceController.index').middleware(['jwt', 'entityId']);
