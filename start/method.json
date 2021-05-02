@@ -1,4 +1,40 @@
 {
+    "AfpController.index": {
+        "name": "AfpController.index",
+        "url": "api/afps",
+        "description": "Listar Afps",
+        "action_type": "VIEW"
+    }, 
+    "BancoController.index": {
+        "name": "BancoController.index",
+        "url": "api/bancos",
+        "description": "Listar Bancos",
+        "action_type": "VIEW"
+    }, 
+    "WorkController.index": {
+        "name": "WorkController.index",
+        "url": "api/works",
+        "description": "Listar trabajador",
+        "action_type": "VIEW"
+    }, 
+    "WorkController.store": {
+        "name": "WorkController.store",
+        "url": "api/works",
+        "description": "Crear trabajador",
+        "action_type": "CREATE"
+    },  
+    "WorkController.show": {
+        "name": "WorkController.show",
+        "url": "api/works/:id",
+        "description": "Obtener trabajador",
+        "action_type": "VIEW"
+    },
+    "WorkController.update": {
+        "name": "WorkController.update",
+        "url": "api/works/:id",
+        "description": "Actualizar trabajador",
+        "action_type": "UPDATE"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",

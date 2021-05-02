@@ -19,6 +19,7 @@ const providers = [
   '@adonisjs/validator/providers/ValidatorProvider',
   '@adonisjs/drive/providers/DriveProvider',
   '@adonisjs/framework/providers/ViewProvider',
+  '@adonisjs/redis/providers/RedisProvider',
   'adonis-kue/providers/KueProvider',
   'adonis-scheduler/providers/SchedulerProvider',
   // '@adonisjs/antl/providers/AntlProvider'

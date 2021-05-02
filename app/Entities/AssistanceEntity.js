@@ -57,10 +57,10 @@ class AssistanceEntity {
         await validation(validateAll, datos, {
             config_assistance_id: "required",
             work_id: "required",
-            record_time: "required" 
+            record_time: "required|date" 
         });
         // preparar datos
-        let record_time = moment(datos.record_time, 'H:mm:ss').format('HH:mm:ss');
+        let record_time = moment(datos.record_time).format('HH:mm:ss');
         let payload = {
             config_assistance_id: datos.config_assistance_id,
             work_id: datos.work_id,
