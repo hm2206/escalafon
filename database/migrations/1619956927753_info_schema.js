@@ -25,8 +25,8 @@ class InfoSchema extends Schema {
       table.date("fecha_de_cese");
       table.text('observacion');
       table.string('file');
-      table.tinyInteger('is_pay').defaultTo(1);
-      table.tinyInteger('estado').defaultTo(1);
+      table.boolean('is_pay').defaultTo(1);
+      table.boolean('estado').defaultTo(1);
       table.timestamps()
     })
   }

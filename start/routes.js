@@ -14,6 +14,11 @@ Route('post', 'WorkController.store').middleware(['jwt']);
 Route('get', 'WorkController.show').middleware(['jwt']);
 Route('put', 'WorkController.update').middleware(['jwt']);
 
+// Infos
+Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
+Route('post', 'InfoController.store').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
+
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ClockController.store').middleware(['jwt', 'entityId']);

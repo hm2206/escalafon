@@ -35,6 +35,24 @@
         "description": "Actualizar trabajador",
         "action_type": "UPDATE"
     },
+    "InfoController.index": {
+        "name": "InfoController.index",
+        "url": "api/infos",
+        "description": "Listar contrato",
+        "action_type": "VIEW"
+    },
+    "InfoController.store": {
+        "name": "InfoController.store",
+        "url": "api/infos",
+        "description": "Crear contrato",
+        "action_type": "CREATE"
+    },
+    "InfoController.show": {
+        "name": "InfoController.show",
+        "url": "api/infos/:id",
+        "description": "Obtener contrato",
+        "action_type": "VIEW"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",
