@@ -2,9 +2,24 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
+const moment = require('moment');
 
 class Info extends Model {
 
+    // gettings
+    getFechaDeResolucion (value) {
+        return value ? moment(value).format('YYYY-MM-DD') : null;
+    } 
+
+    getFechaDeIngreso (value) {
+        return value ? moment(value).format('YYYY-MM-DD') : null;
+    }
+
+    getFechaDeCese (value) {
+        return value ? moment(value).format('YYYY-MM-DD') : null;
+    }
+
+    // relations
     work () {
         return this.belongsTo('App/Models/Work');
     }

@@ -161,38 +161,6 @@ class InfoEntity {
         return info;
     }
 
-    async update (id, datos = this.attributes) {
-        let work = await this.show(id);
-        await validation(null, datos, {
-            banco_id: "required",
-            afp_id: "required",
-            fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
-        });
-        // procesar
-        try {
-            // preparar datos
-            let payload = {
-                banco_id: datos.banco_id,
-                numero_de_cuenta: datos.numero_de_cuenta,
-                afp_id: datos.afp_id,
-                numero_de_cussp: datos.numero_de_cussp,
-                fecha_de_afiliacion: datos.fecha_de_afiliacion,
-                numero_de_essalud: datos.numero_de_essalud,
-                prima_seguro: datos.prima_seguro ? 1 : 0
-            };
-            // guardar datos
-            await Work.query()
-                .where('id', work.id)
-                .update(payload);
-            work = work.toJSON();
-            work = { ...work, ...payload };
-            // response
-            return work
-        } catch (error) {
-            throw new DBException("regístro");
-        }
-    }
-
 }
 
 
