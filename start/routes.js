@@ -13,6 +13,7 @@ Route('get', 'WorkController.index').middleware(['jwt']);
 Route('post', 'WorkController.store').middleware(['jwt']);
 Route('get', 'WorkController.show').middleware(['jwt']);
 Route('put', 'WorkController.update').middleware(['jwt']);
+Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
@@ -32,3 +33,6 @@ Route('get', 'ConfigAssistanceController.assistances').middleware(['jwt', 'entit
 // Assistance
 Route('get', 'AssistanceController.index').middleware(['jwt', 'entityId']);
 Route('post', 'AssistanceController.store').middleware(['jwt', 'entityId']);
+
+// Entity
+Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);

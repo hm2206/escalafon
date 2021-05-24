@@ -54,6 +54,14 @@ class WorkController {
         };
     }
 
+    async ficha ({ params, request, response }) {
+        let authentication = request.api_authentication;
+        const workEntity = new WorkEntity(authentication);
+        const ficha = await workEntity.ficha(params.id);
+        response.header('Content-Type', 'application/pdf');
+        return response.send(ficha);
+    }
+
 }
 
 module.exports = WorkController

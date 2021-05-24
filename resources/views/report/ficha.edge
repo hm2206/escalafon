@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{ style(link + "/css/default.css") }}
+    {{ style(link + "/css/report.css") }}
+    <title>Reporte de Ficha Escalafonaria</title>
+</head>
+
+<body class="a4">
+
+    <div class="float-header">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%"><img class="logo long" src="{{ link + '/images/peru.png' }}"></th>
+                    <th>
+                        <div class="f-9">"Año de la Universalización de la salud"</div>
+                        <div class="uppercase f-14">{{ $entity.name }}</div>
+                    </th>
+                    <th width="10%"><img class="logo small" src="{{ $entity.logo }}"></th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><hr class="hr-dashed"/></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="pt-7">
+
+        <br><br><br>
+
+        <h1 class="text-center">
+            <u>FICHA ESCALAFONARIA</u>
+        </h1>
+
+        <br><br><br>
+
+        <div class="f-12 pl-4 pr-4">
+            <p class="parrafo">El que suscribe; </p>
+            <p class="parrafo text-right pl-4">Jefe de la Unidad de Recursos Humanos de la <span class="capitalize">{{ $entity.name }}</span> - {{ $entity.slug }} Certifica que; </p>
+            <br>
+            <br>
+            <br>
+
+            <h2 class="text-center"><i>El Dr. Ing JUAN LUIS PEREZ MARIN</i></h2>
+
+            <br><br>
+
+            <div class="ml-4 mr-4">
+                <p class="parrafo">
+                    Identificado con DNI. Nº 05936528, labora en esta Casa Superior de Estudios, según
+                    el siguiente detalle en su condición de Profesor Auxiliar a Tiemplo Completo – PAuxTC nombrado, <br>
+                    de acuerdo al siguiente:
+                </p>
+            </div>
+
+            <br>
+            <br>
+            <br>
+
+            <div class="ml-4 mr-4">
+                <table class="table text-left uppercase">
+                    <tbody>
+                        <tr>
+                            <th width="50%">APELLIDOS Y NOMBRES</th>
+                            <th width="5%">:</th>
+                            <th width="45%">{{ work && work.person && work.person.fullname || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>DNI</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && work.person.document_number || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>SEXO</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && work.person.gender || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>ESTADO CIVIL</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && work.person.marital_status || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>NATURAL DE</th>
+                            <th>:</th>
+                            <th>
+                                <span> DEPARTAMENTO DE {{ work && work.person && work.person.badge && work.person.badge.departamento || "" }}</span>
+                                <br> <span> PROVINCIA DE </span>
+                                {{ work && work.person && work.person.badge && work.person.badge.provincia || "" }}
+                                <br> <span> DISTRITO DE </span>
+                                {{ work && work.person && work.person.badge && work.person.badge.distrito || "" }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>FECHA DE NACIMIENTO</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && moment(work.person.date_of_birth).format('LL') || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>DIRECCIÓN</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && work.person.address || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>CODIGO ESCALAFONARIO</th>
+                            <th>:</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>AUTOGENERADO ESSALUD</th>
+                            <th>:</th>
+                            <th>{{ work && work.person && work.numero_de_essalud || "" }}</th>
+                        </tr>
+                        <tr>
+                            <th>SISTEMA DE PENSIONES</th>
+                            <th>:</th>
+                            <th>{{ work && work.afp && work.afp.private ? 'AFP' : '' }} {{ work && work.afp && work.afp.afp || "" }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <br>
+
+                <table class="table text-left mb-5">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">
+                                <u><b>CONTRATOS: </b></u>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="50%">NIVEL REMUNERATIVO</th>
+                            <th witth="5%">:</th>
+                            <th width="45%">Profesor Auxiliar a Tiempo Completo - PAuxTC</th>
+                        </tr>
+                        <tr>
+                            <th width="50%">DESDE</th>
+                            <th witth="5%">:</th>
+                            <th width="45%">01 de Octubre del 2007</th>
+                        </tr>
+                        <tr>
+                            <th width="50%">HASTA</th>
+                            <th witth="5%">:</th>
+                            <th width="45%">31 de diciembre del 2007</th>
+                        </tr>
+                        <tr>
+                            <th width="50%">DOCUMENTO ACREDITA</th>
+                            <th witth="5%">:</th>
+                            <th width="45%">Resolución Comisión Organizadora N° 252-2007-UNIA-CO (Fecha:02-10-2007)</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

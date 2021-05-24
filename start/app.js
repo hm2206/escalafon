@@ -22,6 +22,7 @@ const providers = [
   '@adonisjs/redis/providers/RedisProvider',
   'adonis-kue/providers/KueProvider',
   'adonis-scheduler/providers/SchedulerProvider',
+  '@ruanitto/adonis-report-builder/providers/ReportBuilder',
   // '@adonisjs/antl/providers/AntlProvider'
 ]
 

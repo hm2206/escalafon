@@ -6,6 +6,9 @@
 const { getResponseError } = require('../Services/response');
 const SystemException = require('../Exceptions/SystemException');
 const View = use('View');
+const Env = use('Env');
+const moment = require('moment');
+moment.locale('es');
 
 class SystemProvider {
   /**
@@ -20,7 +23,9 @@ class SystemProvider {
       if (!data.success) throw new SystemException(data.message);
       request.$system = data.system;
       // global views
+      View.global('link', Env.get('APP_URL', ''));
       View.global('$system', request.$system);
+      View.global('moment', moment);
       // next request
       return await next(request)
     } catch (error) {

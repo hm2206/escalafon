@@ -4,6 +4,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const { getResponseError } = require('../Services/response');
+const View = use('View');
 
 class EntityProvider {
   /**
@@ -21,6 +22,8 @@ class EntityProvider {
       if (!data.id) throw new Error("No se encontró la entidad!");
       // inject entity
       request.$entity = data;
+      // global views
+      View.global('$entity', request.$entity);
       // call next to advance the request
       await next()
     } catch (error) {

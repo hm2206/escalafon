@@ -35,6 +35,12 @@
         "description": "Actualizar trabajador",
         "action_type": "UPDATE"
     },
+    "WorkController.ficha": {
+        "name": "WorkController.ficha",
+        "url": "api/works/:id/ficha",
+        "description": "Generar ficha escalafonaria en PDF",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -100,5 +106,11 @@
         "url": "api/assistances",
         "description": "Crear Asistencia",
         "action_type": "CREATE"
+    },
+    "EntityController.works": {
+        "name": "EntityController.works",
+        "url": "api/entities/:id/works",
+        "description": "Listar trabajadores según entidad",
+        "action_type": "VIEW"
     }
 }

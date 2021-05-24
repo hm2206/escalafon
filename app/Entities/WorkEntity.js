@@ -6,6 +6,7 @@ const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
 const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
+const FichaBuilder = require('../Helpers/FichaBuilder');
 
 class WorkEntity {
 
@@ -14,6 +15,7 @@ class WorkEntity {
     attributes = {
         person_id: "",
         banco_id: "",
+        fecha_de_ingreso: "",
         numero_de_cuenta: "",
         afp_id: "",
         numero_de_cussp: "",
@@ -29,9 +31,15 @@ class WorkEntity {
         this.authentication = authentication;
     }
 
-    async index (page = 1, query_search = "", perPage = 20) {
+    async index (page = 1, query_search = "", filtros = {}, perPage = 20) {
         let works = Work.query();
         if (query_search) works.where('orden', 'like', `%${query_search}%`);
+        // filtros
+        for(let attr in filtros) {
+            let value = filtros[value];
+            if (value) works.where(attr, value); 
+        }
+        // obtener trabajadores
         works = await works.paginate(page, perPage);
         works = await works.toJSON();
         let plucked = collect(works.data).pluck('person_id').toArray();
@@ -51,6 +59,7 @@ class WorkEntity {
     async store (datos = this.attributes) {
         await validation(null, datos, {
             person_id: "required",
+            fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
             banco_id: "required",
             afp_id: "required",
             prima_seguro: "number",
@@ -70,6 +79,7 @@ class WorkEntity {
         try {
             const work = await Work.create({
                 person_id: datos.person_id,
+                fecha_de_ingreso: datos.fecha_de_ingreso,
                 banco_id: datos.banco_id,
                 numero_de_cuenta: datos.numero_de_cuenta,
                 afp_id: datos.afp_id,
@@ -90,7 +100,11 @@ class WorkEntity {
     }
 
     async show (id) {
-        let work = await Work.find(id || '__error');
+        let work = await Work.query()
+            .with('afp')
+            .with('banco')
+            .where('id', id || '__error')
+            .first();
         if (!work) throw new NotFoundModelException("El trabajador");
         let { person } = await this.authentication.get(`person/${work.person_id}`)
         .then(res => res.data)
@@ -102,6 +116,7 @@ class WorkEntity {
     async update (id, datos = this.attributes) {
         let work = await this.show(id);
         await validation(null, datos, {
+            fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
             banco_id: "required",
             afp_id: "required",
             fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
@@ -129,6 +144,13 @@ class WorkEntity {
         } catch (error) {
             throw new DBException("regístro");
         }
+    }
+
+    async ficha (id, filtros = {}) {
+        let work = await this.show(id);
+        work = await work.toJSON();
+        const fichaBuilder = new FichaBuilder(work);
+        return await fichaBuilder.render();
     }
 
 }

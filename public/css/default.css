@@ -1,0 +1,144 @@
+* {
+    margin: 0em;
+    padding: 0px;
+    font-family:Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0.1em;
+    width: 100%;
+    height: 100vh;
+}
+
+/* fonts */
+.capitalize {
+    text-transform: capitalize;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.lowercase {
+    text-transform: lowercase;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+u {
+    border-color: #000;
+}
+
+.f-8 {
+    font-size: 8pt;
+}
+
+.f-9 {
+    font-size: 9pt;
+}
+
+.f-10 {
+    font-size: 10pt;
+}
+
+.f-11 {
+    font-size: 11pt;
+}
+
+.f-12 {
+    font-size: 12pt;
+}
+
+.f-13 {
+    font-size: 13pt;
+}
+
+.f-14 {
+    font-size: 14pt;
+}
+
+.f-15 {
+    font-size: 15pt;
+}
+
+.f-16 {
+    font-size: 16pt;
+}
+
+.f-17 {
+    font-size: 14pt;
+}
+
+.f-18 {
+    font-size: 18pt;
+}
+
+/* tables */
+.table {
+    width: 100%;
+}
+
+
+/* lineas */
+.hr-dashed {
+    border-style: dashed solid;
+}
+
+/* page */
+
+.mt-4 {
+    margin-top: 4em;
+}
+
+.mt-5 {
+    margin-top: 5em;
+    background: red;
+}
+
+.pl-1 {
+    padding-left: 1em;
+}
+
+.pl-2 {
+    padding-left: 2em;
+}
+
+.pl-4 {
+    padding-left: 4em;
+}
+
+.pl-3 {
+    padding-left: 3em;
+}
+
+.pr-4 {
+    padding-right: 4em;
+}
+
+.pt-5 {
+    padding-top: 5em;
+}
+
+.pb-5 {
+    padding-bottom: 5em!important;
+    background: red;
+}
+
+.pt-6 {
+    padding-top: 6em;
+}
+
+.pt-7 {
+    padding-top: 7em;
+}
