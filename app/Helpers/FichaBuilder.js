@@ -4,6 +4,7 @@ const ReportBuilder = use('ReportBuilder');
 const Info = use('App/Models/Info');
 const DB = use('Database');
 const collect = require('collect.js');
+const QRCode = require('qrcode');
 
 const marital_status = {
     "S@M": "Soltero",
@@ -41,9 +42,14 @@ class FichaBuilder {
         this.infos_active = infos;
     }
 
+    async generateQr () {
+        this.code_qr = await QRCode.toDataURL(`https://www.youtube.com/watch?v=WN7TeyLHjcQ`);
+    }
+
     async execute () {
         await this.getInfos();
         await this.getInfosActive();
+        await this.generateQr();
         return await this.render();
     }
 
@@ -53,6 +59,7 @@ class FichaBuilder {
             work: this.work,
             infos: this.infos,
             infos_active: this.infos_active,
+            code_qr: this.code_qr,
         }
     }
 
