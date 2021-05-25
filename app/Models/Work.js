@@ -24,6 +24,10 @@ class Work extends Model {
         return this.belongsTo('App/Models/Afp');
     }
 
+    infos () {
+        return this.hasMany('App/Models/Info');
+    }
+
 }
 
 module.exports = Work

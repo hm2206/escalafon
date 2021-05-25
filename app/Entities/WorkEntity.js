@@ -150,7 +150,7 @@ class WorkEntity {
         let work = await this.show(id);
         work = await work.toJSON();
         const fichaBuilder = new FichaBuilder(work);
-        return await fichaBuilder.render();
+        return await fichaBuilder.execute();
     }
 
 }

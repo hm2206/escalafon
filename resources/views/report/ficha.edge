@@ -42,20 +42,30 @@
         <br><br><br>
 
         <div class="f-12 pl-4 pr-4">
-            <p class="parrafo">El que suscribe; </p>
-            <p class="parrafo text-right pl-4">Jefe de la Unidad de Recursos Humanos de la <span class="capitalize">{{ $entity.name }}</span> - {{ $entity.slug }} Certifica que; </p>
+            <p class="-parrafo">El que suscribe; </p>
+            <p class="-parrafo text-right pl-4">Jefe de la Unidad de Recursos Humanos de la <span class="capitalize">{{ $entity.name }}</span> - {{ $entity.slug }} Certifica que; </p>
             <br>
             <br>
             <br>
 
-            <h2 class="text-center"><i>El Dr. Ing JUAN LUIS PEREZ MARIN</i></h2>
+            <h2 class="text-center">
+                <i>
+                    El {{ work.person && work.person.profession || "" }}
+                    <span class="uppercase">{{ work.person && work.person.name }}</span>
+                    <span class="uppercase">{{ work.person && work.person.ape_pat || "" }}</span>
+                    <span class="uppercase">{{ work.person && work.person.ape_mat || "" }}</span>
+                </i>
+            </h2>
 
             <br><br>
 
             <div class="ml-4 mr-4">
-                <p class="parrafo">
-                    Identificado con DNI. Nº 05936528, labora en esta Casa Superior de Estudios, según
-                    el siguiente detalle en su condición de Profesor Auxiliar a Tiemplo Completo – PAuxTC nombrado, <br>
+                <p class="-parrafo">
+                    Identificado con {{ work.person.document_type &&  work.person.document_type.name }}. Nº {{ work.person.document_number  }}, labora en esta Casa Superior de Estudios, según
+                    el siguiente detalle en su condición de 
+                    @each(active in infos_active) 
+                        Profesor Auxiliar a Tiemplo Completo – {{ active.type_categoria }} <span class="lowercase">{{ active.pap }}</span>, <br>
+                    @endeach
                     de acuerdo al siguiente:
                 </p>
             </div>
@@ -68,60 +78,60 @@
                 <table class="table text-left uppercase">
                     <tbody>
                         <tr>
-                            <th width="50%">APELLIDOS Y NOMBRES</th>
-                            <th width="5%">:</th>
-                            <th width="45%">{{ work && work.person && work.person.fullname || "" }}</th>
+                            <td width="50%">APELLIDOS Y NOMBRES</td>
+                            <td width="5%">:</td>
+                            <td width="45%">{{ work && work.person && work.person.fullname || "" }}</td>
                         </tr>
                         <tr>
-                            <th>DNI</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && work.person.document_number || "" }}</th>
+                            <td>DNI</td>
+                            <td>:</td>
+                            <td>{{ work && work.person && work.person.document_number || "" }}</td>
                         </tr>
                         <tr>
-                            <th>SEXO</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && work.person.gender || "" }}</th>
+                            <td>SEXO</td>
+                            <td>:</td>
+                            <td>{{ work.person.gender || "" }}</td>
                         </tr>
                         <tr>
-                            <th>ESTADO CIVIL</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && work.person.marital_status || "" }}</th>
+                            <td>ESTADO CIVIL</td>
+                            <td>:</td>
+                            <td>{{ work && work.person && work.person.marital_status ? marital_status[work.person.marital_status + "@" + work.person.gender] : "" }}</td>
                         </tr>
                         <tr>
-                            <th>NATURAL DE</th>
-                            <th>:</th>
-                            <th>
+                            <td>NATURAL DE</td>
+                            <td>:</td>
+                            <td>
                                 <span> DEPARTAMENTO DE {{ work && work.person && work.person.badge && work.person.badge.departamento || "" }}</span>
                                 <br> <span> PROVINCIA DE </span>
                                 {{ work && work.person && work.person.badge && work.person.badge.provincia || "" }}
                                 <br> <span> DISTRITO DE </span>
                                 {{ work && work.person && work.person.badge && work.person.badge.distrito || "" }}
-                            </th>
+                            </td>
                         </tr>
                         <tr>
-                            <th>FECHA DE NACIMIENTO</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && moment(work.person.date_of_birth).format('LL') || "" }}</th>
+                            <td>FECHA DE NACIMIENTO</td>
+                            <td>:</td>
+                            <td>{{ work && work.person && work.person.date_of_birth ? moment(work.person.date_of_birth).format('LL') : '' }}</td>
                         </tr>
                         <tr>
-                            <th>DIRECCIÓN</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && work.person.address || "" }}</th>
+                            <td>DIRECCIÓN</td>
+                            <td>:</td>
+                            <td>{{ work && work.person && work.person.address || "" }}</td>
                         </tr>
                         <tr>
-                            <th>CODIGO ESCALAFONARIO</th>
-                            <th>:</th>
-                            <th></th>
+                            <td>CODIGO ESCALAFONARIO</td>
+                            <td>:</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <th>AUTOGENERADO ESSALUD</th>
-                            <th>:</th>
-                            <th>{{ work && work.person && work.numero_de_essalud || "" }}</th>
+                            <td>AUTOGENERADO ESSALUD</td>
+                            <td>:</td>
+                            <td>{{ work && work.person && work.numero_de_essalud || "" }}</td>
                         </tr>
                         <tr>
-                            <th>SISTEMA DE PENSIONES</th>
-                            <th>:</th>
-                            <th>{{ work && work.afp && work.afp.private ? 'AFP' : '' }} {{ work && work.afp && work.afp.afp || "" }}</th>
+                            <td>SISTEMA DE PENSIONES</td>
+                            <td>:</td>
+                            <td>{{ work && work.afp && work.afp.private ? 'AFP' : '' }} {{ work && work.afp && work.afp.afp || "" }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -135,26 +145,34 @@
                                 <u><b>CONTRATOS: </b></u>
                             </th>
                         </tr>
-                        <tr>
-                            <th width="50%">NIVEL REMUNERATIVO</th>
-                            <th witth="5%">:</th>
-                            <th width="45%">Profesor Auxiliar a Tiempo Completo - PAuxTC</th>
-                        </tr>
-                        <tr>
-                            <th width="50%">DESDE</th>
-                            <th witth="5%">:</th>
-                            <th width="45%">01 de Octubre del 2007</th>
-                        </tr>
-                        <tr>
-                            <th width="50%">HASTA</th>
-                            <th witth="5%">:</th>
-                            <th width="45%">31 de diciembre del 2007</th>
-                        </tr>
-                        <tr>
-                            <th width="50%">DOCUMENTO ACREDITA</th>
-                            <th witth="5%">:</th>
-                            <th width="45%">Resolución Comisión Organizadora N° 252-2007-UNIA-CO (Fecha:02-10-2007)</th>
-                        </tr>
+                        {{--  contratos  --}}
+                        @each(info in infos)
+                            <tr>
+                                <th width="50%">NIVEL REMUNERATIVO</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">Profesor Auxiliar a Tiempo Completo - {{ info.type_categoria }}</td>
+                            </tr>
+                            <tr>
+                                <th width="50%">DESDE</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.fecha_de_ingreso ? moment(info.fecha_de_ingreso).format('LL') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th width="50%">HASTA</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.fecha_de_cese ? moment(info.fecha_de_cese).format('LL') : "" }}</td>
+                            </tr>
+                            <tr>
+                                <th width="50%">DOCUMENTO ACREDITA</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.resolucion || "" }} {{ info.fecha_de_resolucion ? '(Fecha:' + info.fecha_de_resolucion + ")"  : "No hay documento" }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="pt-2"></div>
+                                </td>
+                            </tr>
+                        @endeach
                     </tbody>
                 </table>
             </div>
