@@ -7,7 +7,7 @@ const DB = use('Database');
 
 class VerifyInfoOver extends Task {
   static get schedule () {
-    return '0 */1 * * * *'
+    return '0 0 23 * * *'
   }
 
   async getIds () {
@@ -32,9 +32,11 @@ class VerifyInfoOver extends Task {
 
   async handle () {
     let ids = await this.getIds();
-    await this.disabledInfos(ids);
     // validar bucle
-    if (ids.length) await this.handle();
+    if (ids.length) {
+      await this.disabledInfos(ids);
+      await this.handle();
+    }
   }
   
 }
