@@ -125,6 +125,7 @@ class WorkEntity {
         try {
             // preparar datos
             let payload = {
+                fecha_de_ingreso:  datos.fecha_de_ingreso,
                 banco_id: datos.banco_id,
                 numero_de_cuenta: datos.numero_de_cuenta,
                 afp_id: datos.afp_id,

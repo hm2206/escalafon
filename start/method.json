@@ -71,6 +71,12 @@
         "description": "Crear reloj",
         "action_type": "CREATE"
     },
+    "ClockController.syncAssistances": {
+        "name": "ClockController.syncAssistances",
+        "url": "api/clock/:id/sync_assistances",
+        "description": "Sincronizar la asistencia del reloj con el sistema",
+        "action_type": "CREATE"
+    },
     "ConfigAssistanceController.index": {
         "name": "ConfigAssistanceController.index",
         "url": "api/config_assistances",

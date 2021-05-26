@@ -32,10 +32,11 @@ class ClockController {
         }
     }
 
-    async syncClock ({ request }) {
+    async syncAssistances ({ params, request }) {
         let entity = request.$entity;
-        let clockEntity = new ClockEntity();
-        clockEntity.syncClock(entity.id);
+        let id = params.id;
+        let clockEntity = new ClockEntity(request);
+        await clockEntity.syncAssistances(id, entity.id);
         // render
         return {
             success: true,

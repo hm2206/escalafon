@@ -6,8 +6,16 @@ const { validation } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
 const kue = use('Kue');
 const SyncClock = use('App/Jobs/SyncClock');
+const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 
 class ClockEntity {
+
+    constructor (request) {
+        this.auth = request.$auth;
+        this.system = request.$system;
+        this.app = request.$app
+        this.method = request.$method;
+    }
 
     async getClocks (page = 1) {
         let clocks = Clock.query();
@@ -30,17 +38,24 @@ class ClockEntity {
         }
     }
 
-    async syncClock (entity_id) {
+    async syncAssistances (id, entity_id) {
         const priority = 'normal';
         const attempts = 2;
         const remove = true;
         const jobFn = job => job.backoff();
-        const clocks = await Clock.query()
+        let clock = await Clock.query()
             .where('entity_id', entity_id)
-            .fetch();
-        clocks = await clocks.toJSON();
+            .where('id', id)
+            .first();
+        if (!clock) throw new NotFoundModelException("El reloj");
         // poner en cola
-        kue.dispatch(SyncClock.key, { clocks }, { priority, attempts, remove, jobFn });
+        kue.dispatch(SyncClock.key, { 
+            clocks: [clock],
+            auth: this.auth,
+            app: this.app,
+            method: this.method,
+        }, 
+        { priority, attempts, remove, jobFn });
     }
 }
 

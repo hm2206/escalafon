@@ -75,6 +75,8 @@ const commands = []
 | Here you store ace jobs for your package
 |
 */
-const jobs = []
+const jobs = [
+  'App/Jobs/SyncClock'
+]
 
 module.exports = { providers, aceProviders, aliases, commands, jobs }

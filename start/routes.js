@@ -23,6 +23,7 @@ Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ClockController.store').middleware(['jwt', 'entityId']);
+Route('post', 'ClockController.syncAssistances').middleware(['jwt', 'entityId']);
 
 // config Assistance
 Route('get', 'ConfigAssistanceController.index').middleware(['jwt', 'entityId']);
