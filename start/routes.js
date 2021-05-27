@@ -34,6 +34,8 @@ Route('get', 'ConfigAssistanceController.assistances').middleware(['jwt', 'entit
 // Assistance
 Route('get', 'AssistanceController.index').middleware(['jwt', 'entityId']);
 Route('post', 'AssistanceController.store').middleware(['jwt', 'entityId']);
+Route('put', 'AssistanceController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'AssistanceController.delete').middleware(['jwt', 'entityId']);
 
 // Entity
 Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);

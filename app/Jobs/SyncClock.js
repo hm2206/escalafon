@@ -9,6 +9,7 @@ const moment = require('moment');
 const ZKLib = require('node-zklib');
 const uid = require('uid');
 const Drive = use('Drive');
+const DB = use('Database');
 const { getSystemKey } = require('../Services/tools');
 const { authentication } = require('../Services/apis');
 
@@ -82,6 +83,7 @@ class SyncClock {
     for (let log of this.logs) {
       let current_date = moment(log.recordTime).format('YYYY-MM-DD');
       let current_time = moment(log.recordTime).format('HH:mm:ss');
+      let diff_time = moment(log.recordTime).subtract(1, 'minutes').format('HH:mm:ss'); 
       let config_assistance = this.config_assistances.where('date', current_date).first() || null;
       if (!config_assistance) {
         config_assistance = await ConfigAssistance.query()
@@ -109,7 +111,7 @@ class SyncClock {
         let exists_record_time = await Assistance.query()
           .where('config_assistance_id', config_assistance.id)
           .where('work_id', work.id)
-          .where('record_time', current_time)
+          .where(DB.raw(`(record_time <= '${current_time}' AND record_time >= '${diff_time}')`))
           .getCount('id');
         if (exists_record_time) continue;
         status = last_assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';

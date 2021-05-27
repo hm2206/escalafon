@@ -2,6 +2,7 @@
 
 const Assistance = use('App/Models/Assistance');
 const DBException = require('../Exceptions/DBException');
+const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const { validation, ValidatorError } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
 const collect = require('collect.js');
@@ -25,6 +26,7 @@ class AssistanceEntity {
         let assistances = Assistance.query()
             .join('works as w', 'w.id', 'assistances.work_id')
             .select('assistances.*', 'w.person_id', 'w.orden')
+            .where('assistances.state', 1)
             .orderBy('w.orden', 'ASC')
             .orderBy('record_time', 'ASC');
         // filtros
@@ -85,6 +87,22 @@ class AssistanceEntity {
         } catch (error) {
             throw new DBException(error, "registro");
         }
+    }
+
+    async update (id, datos = this.datosDefault) {
+        let assistance = await Assistance.find(id);
+        if (!assistance) throw new NotFoundModelException('La asistencia');
+        assistance.merge({ status: datos.status });
+        await assistance.save();
+        return assistance;
+    }
+
+    async delete (id) {
+        let assistance = await Assistance.find(id);
+        if (!assistance) throw new NotFoundModelException('La asistencia');
+        assistance.merge({ state: 0 });
+        await assistance.save();
+        return assistance;
     }
 
 }

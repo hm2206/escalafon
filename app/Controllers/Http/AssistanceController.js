@@ -36,6 +36,29 @@ class AssistanceController {
         }
     }
 
+    async update ({ params, request }) {
+        let datos = request.all();
+        let assistanceEntity = new AssistanceEntity();
+        let assistance = await assistanceEntity.update(params.id, datos);
+        return {
+            success: true,
+            status: 201,
+            message: `La asistencia se actualizó correctamente!`,
+            assistance
+        }
+    }
+
+    async delete ({ params, request }) {
+        let assistanceEntity = new AssistanceEntity();
+        let assistance = await assistanceEntity.delete(params.id);
+        return {
+            success: true,
+            status: 201,
+            message: `La asistencia se oculto correctamente!`,
+            assistance
+        }
+    }
+
 }
 
 module.exports = AssistanceController

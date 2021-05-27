@@ -113,6 +113,18 @@
         "description": "Crear Asistencia",
         "action_type": "CREATE"
     },
+    "AssistanceController.update": {
+        "name": "AssistanceController.update",
+        "url": "api/assistances/:id",
+        "description": "Actualizar Asistencia",
+        "action_type": "UPDATE"
+    },
+    "AssistanceController.delete": {
+        "name": "AssistanceController.delete",
+        "url": "api/assistances/:id",
+        "description": "Ocultar Asistencia",
+        "action_type": "DELETE"
+    },
     "EntityController.works": {
         "name": "EntityController.works",
         "url": "api/entities/:id/works",
