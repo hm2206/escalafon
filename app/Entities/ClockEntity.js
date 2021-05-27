@@ -11,10 +11,12 @@ const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 class ClockEntity {
 
     constructor (request) {
-        this.auth = request.$auth;
-        this.system = request.$system;
-        this.app = request.$app
-        this.method = request.$method;
+        if (request) {
+            this.auth = request.$auth;
+            this.system = request.$system;
+            this.app = request.$app
+            this.method = request.$method;
+        }
     }
 
     async getClocks (page = 1) {
@@ -48,6 +50,10 @@ class ClockEntity {
             .where('id', id)
             .first();
         if (!clock) throw new NotFoundModelException("El reloj");
+        if (clock.sync) throw new Error("El reloj está en medio de un proceso, vuelva más tarde!!!");
+        // disabled sync
+        clock.merge({ sync: 1 });
+        await clock.save();
         // poner en cola
         kue.dispatch(SyncClock.key, { 
             clocks: [clock],

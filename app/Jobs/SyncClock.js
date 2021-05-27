@@ -4,6 +4,7 @@ const { default: collect } = require('collect.js');
 const ConfigAssistance = use('App/Models/ConfigAssistance');
 const Work = use('App/Models/Work'); 
 const Assistance = use('App/Models/Assistance');
+const Clock = use('App/Models/Clock');
 const moment = require('moment');
 const ZKLib = require('node-zklib');
 const uid = require('uid');
@@ -23,6 +24,17 @@ class SyncClock {
     return 'SyncClock-job'
   }
 
+  async changedSyncClock (sync = 1) {
+    await Clock.query()
+      .whereIn('id', this.ids)
+      .update({ sync });
+  }
+
+  async deleteFileTemp () {
+    let exists = await Drive.exists(this.pathRelative);
+    if (exists) await Drive.delete(this.pathRelative);
+  }
+
   async connect () {
     let zkInstance = new ZKLib(this.clock.host, this.clock.port, 10000, 4000);
     // realizar conexión
@@ -34,6 +46,20 @@ class SyncClock {
     }
   }
 
+  async initialClock () {
+    let info = await this.syncConnect.getInfo();
+    let logs = await this.syncConnect.getAttendances();
+    if (info.logCounts != logs.data.length) return await this.initialClock();
+    // desconectar del reloj
+    await this.syncConnect.disconnect();
+    // sincronizar los datos del reloj con el sistema de escalafón
+    await this.syncAssistance(logs.data);
+    // guardar datos
+    await this.saveAssistance();
+    // delete file
+    await this.deleteFileTemp();
+  }
+
   async syncAssistance (datos) {
     if (!datos.length) {
       this.logs = [];
@@ -43,13 +69,14 @@ class SyncClock {
     this.slug = uid(10);
     // guardar logs temporal
     this.pathRelative = `clock/sync/assistance_${this.slug}.json`;
-    await Drive.put(this.pathRelative, Buffer.from(JSON.stringify(datos)));
+    let parseToString = await JSON.stringify(datos);
+    await Drive.put(this.pathRelative, Buffer.from(parseToString));
     // setting logs
     this.logs = datos;
   }
 
   async saveAssistance () {
-    // datos
+    // logs iterar
     for (let log of this.logs) {
       let current_date = moment(log.recordTime).format('YYYY-MM-DD');
       let current_time = moment(log.recordTime).format('HH:mm:ss');
@@ -60,7 +87,7 @@ class SyncClock {
           .where('date', current_date)
           .first();
         // agregar en caché
-        if (config_assistance) this.config_assistances.push(config_assistance);
+        if (config_assistance) await this.config_assistances.push(config_assistance);
       }
       // validar config_assistance
       if (!config_assistance) continue;
@@ -97,9 +124,6 @@ class SyncClock {
       await Assistance.create(payload);
       await this.storage.push(payload);
     }
-    // eliminar json
-    let exists = await Drive.exists(this.pathRelative);
-    if (exists) await Drive.delete(this.pathRelative);
   }
 
   async sendNotification (title, description) {
@@ -125,6 +149,8 @@ class SyncClock {
     let { success, message } = await authentication.post(`auth/notification`, payload, options)
     .then(res => res.data)
     .catch(err => ({ success: false, message: err.message }));
+    // disable sync cloks
+    this.changedSyncClock(0);
   }
 
   async sendNotificationSuccess () {
@@ -152,22 +178,26 @@ class SyncClock {
     this.config_assistances = collect([]);
     this.storage = collect([]);
 
-    // procesae
+    // obtener ids
+    this.ids = await collect(clocks).pluck('id').toArray();
+
+    // sync clocks
+    await this.changedSyncClock(1);
+
+    // procesar
     try {
       for (let clock of clocks) {
         this.clock = clock;
         this.syncConnect = await this.connect();
-        let logs = await this.syncConnect.getAttendances();
-        this.syncConnect.disconnect();
-        // sincronizar los datos del reloj con el sistema de escalafón
-        await this.syncAssistance(logs.data);
-        // guardar datos
-        await this.saveAssistance();
+        // executar clok
+        await this.initialClock();
       }
       // enviar notificación
       await this.sendNotificationSuccess();
     } catch (error) {
       await this.sendNotificationError(error);
+      // eliminar file temporal
+      await this.deleteFileTemp();
     }
   }
   
