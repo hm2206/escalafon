@@ -47,11 +47,13 @@ class SyncClock {
   }
 
   async initialClock () {
+    this.syncConnect = await this.connect();
+    // obtener info del reloj
     let info = await this.syncConnect.getInfo();
     let logs = await this.syncConnect.getAttendances();
-    if (info.logCounts != logs.data.length) return await this.initialClock();
     // desconectar del reloj
     await this.syncConnect.disconnect();
+    if (info.logCounts != logs.data.length) return await this.initialClock();
     // sincronizar los datos del reloj con el sistema de escalafón
     await this.syncAssistance(logs.data);
     // guardar datos
@@ -188,7 +190,6 @@ class SyncClock {
     try {
       for (let clock of clocks) {
         this.clock = clock;
-        this.syncConnect = await this.connect();
         // executar clok
         await this.initialClock();
       }
