@@ -102,6 +102,7 @@ class SyncClock {
       let last_assistance = await Assistance.query()
         .where('config_assistance_id', config_assistance.id)
         .where('work_id', work.id)
+        .where('state', 1)
         .orderBy('record_time', 'DESC')
         .first();
       // obtener tipo de assistencia
