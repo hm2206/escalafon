@@ -41,6 +41,12 @@
         "description": "Generar ficha escalafonaria en PDF",
         "action_type": "VIEW"
     },
+    "WorkController.infos": {
+        "name": "WorkController.infos",
+        "url": "api/works/:id/infos",
+        "description": "Listar contratos del trabajador",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",

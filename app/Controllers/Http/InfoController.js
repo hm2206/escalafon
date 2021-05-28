@@ -5,13 +5,14 @@ const InfoEntity = require('../../Entities/InfoEntity');
 class InfoController {
 
     async index ({ request }) {
-        let { page, query_search } = request.all();
+        let page = request.input('page', 1);
+        let query_search = request.input('query_search', '');
         const entity = request.$entity;
         let filtros = request.only(['planilla_id', 'cargo_id', 'type_categoria_id', 'meta_id']);
         filtros.entity_id = entity.id;
         let authentication = request.api_authentication;
         const infoEntity = new InfoEntity(authentication);
-        const infos = await infoEntity.index(page || 1, filtros, query_search || "");
+        const infos = await infoEntity.index({ page, query_search, custom: filtros });
         return {
             success: true,
             status: 201,

@@ -38,7 +38,15 @@ class InfoEntity {
         this.authentication = authentication;
     }
 
-    async index (page = 1, filtros = {}, query_search = "", perPage = 20) {
+    schemaPaginate = {
+        page: 1,
+        perPage: 20,
+        query_search: "",
+        custom: {}
+    }
+
+    async index (tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
         let infos = Info.query()
             .with('work')
             .with('planilla')
@@ -48,13 +56,13 @@ class InfoEntity {
             .join('works as w', 'w.id', 'infos.work_id')
             .select('infos.*', 'w.person_id');
         // filtros
-        for (let attr in filtros) {
-            let value = filtros[attr];
+        for (let attr in datos.custom) {
+            let value = datos.custom[attr];
             if (value) infos.where(attr, value);
         }
         // búsqueda
-        if (query_search) infos.where('w.orden', 'like', `%${query_search}%`);
-        infos = await infos.paginate(page, perPage);
+        if (datos.query_search) infos.where('w.orden', 'like', `%${datos.query_search}%`);
+        infos = await infos.paginate(datos.page, datos.perPage);
         infos = await infos.toJSON();
         let plucked = collect(infos.data).pluck('person_id').toArray();
         let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)

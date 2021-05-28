@@ -4,6 +4,7 @@ const { validation } = require('validator-error-adonis');
 const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
+const Info = use('App/Models/Info');
 const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
@@ -25,6 +26,13 @@ class WorkEntity {
         code: "",
         orden: "",
         estado: 1 
+    }
+
+    schemaPaginate = {
+        page: 1,
+        perPage: 20,
+        query_search: "",
+        custom: {}
     }
 
     constructor(authentication) {
@@ -152,6 +160,31 @@ class WorkEntity {
         work = await work.toJSON();
         const fichaBuilder = new FichaBuilder(work);
         return await fichaBuilder.execute();
+    }
+
+    async infos (id, tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let work = await this.show(id);
+        let infos = Info.query()
+            .with('planilla')
+            .with('cargo')
+            .with('type_categoria')
+            .with('meta')
+            .where('work_id', work.id);
+        // custom
+        for (let attr in datos.custom) {
+            let value = datos.custom[attr];
+            if (value) infos.where(attr, value);
+        }
+        // obtener
+        infos = await infos.paginate(datos.page, datos.perPage);
+        infos = await infos.toJSON();
+        await infos.data.map(i => {
+            i.work = work;
+            return i;
+        });
+        // response
+        return { work, infos } ;
     }
 
 }

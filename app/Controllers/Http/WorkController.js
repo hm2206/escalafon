@@ -62,6 +62,18 @@ class WorkController {
         return response.send(ficha);
     }
 
+    async infos ({ params, request, response }) {
+        let page = request.input('page', 1);
+        let authentication = request.api_authentication;
+        const workEntity = new WorkEntity(authentication);
+        const { infos } = await workEntity.infos(params.id, { page });
+        return {
+            success: true,
+            status: 201,
+            infos
+        };
+    }
+
 }
 
 module.exports = WorkController
