@@ -18,10 +18,19 @@ class EntityProvider {
       let id = await this.getEntityId(request);
       if (!id) throw new Error("La cabezera EntityID es obligatoria");
       // validar entity
-      let { data } = await request.api_authentication.get(`auth/entity/${id}`);
-      if (!data.id) throw new Error("No se encontró la entidad!");
+      let { entity, success, message } = await request.api_authentication.get(`auth/entity/${id}`)
+      .then(res => ({ entity: res.data, success: true }))
+      .catch(err => {
+        if (typeof err.response == 'object') {
+          let { data } = err.response;
+          if (typeof data != 'object') return { success: false, message: err.message };
+          return { success: false, message: data.message };
+        } 
+        return { success: false, message: err.message };
+      });
+      if (!success) throw new Error(message);
       // inject entity
-      request.$entity = data;
+      request.$entity = entity;
       // global views
       View.global('$entity', request.$entity);
       // call next to advance the request
