@@ -35,15 +35,16 @@ class FichaBuilder {
     async getInfos () {
         let infos = await Info.query()
             .join('type_categorias as cat', 'cat.id', 'infos.type_categoria_id')
+            .join('planillas as pla', 'pla.id', 'infos.planilla_id')
             .where("work_id", this.work.id)
-            .select('infos.*', DB.raw(`cat.descripcion as type_categoria, cat.information`))
+            .select('infos.*', 'pla.principal', DB.raw(`cat.descripcion as type_categoria, cat.information`))
             .fetch();
         this.infos = await infos.toJSON();
     }
 
     async getInfosActive () {
         let infos = collect(this.infos);
-        infos = await infos.where('estado', 1).toArray();
+        infos = await infos.where('estado', 1).where('principal', 1).toArray();
         this.infos_active = infos;
     }
 
