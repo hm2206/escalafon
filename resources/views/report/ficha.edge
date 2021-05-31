@@ -70,7 +70,7 @@
                     Identificado con {{ work.person.document_type &&  work.person.document_type.name }}. Nº {{ work.person.document_number  }}, labora en esta Casa Superior de Estudios, según
                     el siguiente detalle en su condición de 
                     @each(active in infos_active) 
-                        Profesor Auxiliar a Tiemplo Completo – {{ active.type_categoria }} <span class="lowercase">{{ active.pap }}</span>, <br>
+                    {{ active.information }} – {{ active.type_categoria }} <span class="lowercase">{{ active.pap }}</span>, <br>
                     @endeach
                     de acuerdo al siguiente:
                 </p>

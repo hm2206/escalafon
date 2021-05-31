@@ -36,7 +36,7 @@ class FichaBuilder {
         let infos = await Info.query()
             .join('type_categorias as cat', 'cat.id', 'infos.type_categoria_id')
             .where("work_id", this.work.id)
-            .select('infos.*', DB.raw(`cat.descripcion as type_categoria`))
+            .select('infos.*', DB.raw(`cat.descripcion as type_categoria, cat.information`))
             .fetch();
         this.infos = await infos.toJSON();
     }
