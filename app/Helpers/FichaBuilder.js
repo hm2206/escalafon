@@ -1,10 +1,12 @@
 'use strict';
 
 const ReportBuilder = use('ReportBuilder');
+const htmlToPdf = require('html-pdf-node');
 const Info = use('App/Models/Info');
 const DB = use('Database');
 const collect = require('collect.js');
 const QRCode = require('qrcode');
+const View = use('View');
 
 const marital_status = {
     "S@M": "Soltero",
@@ -22,6 +24,9 @@ class FichaBuilder {
     work = {};
     infos = [];
     infos_active = [];
+    options = {
+        format: 'A4',
+    }
 
     constructor(work) {
         this.work = work;
@@ -64,9 +69,9 @@ class FichaBuilder {
     }
 
     async render() {
-        await ReportBuilder.loadView('report/ficha', this.dataRender());
-        const bufferResult = await ReportBuilder.outputBuffer();
-        return bufferResult;
+        let html = await View.render('report/ficha', this.dataRender());
+        let file = { content: html };
+        return await htmlToPdf.generatePdf(file, this.options);
     }
 
 }

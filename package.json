@@ -34,6 +34,7 @@
     "adonis-scheduler": "^3.0.2",
     "axios": "^0.19.2",
     "collect.js": "^4.28.2",
+    "html-pdf-node": "^1.0.7",
     "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
