@@ -9,7 +9,15 @@
     <title>Reporte de Ficha Escalafonaria</title>
 </head>
 
-<body class="a4">
+<body class="a4 pt-7">
+
+    <div class="mark-water">
+        <img src="{{ link + '/images/marca-agua.png' }}" alt="">
+    </div>
+
+    <div class="code-qr">
+        <img src="{{ code_qr }}" class="logo logo-mini">
+    </div>
 
     <div class="float-header">
         <table class="table">
@@ -31,9 +39,7 @@
         </table>
     </div>
 
-    <div class="pt-7">
-
-        <br><br><br>
+    <div class="">
 
         <h1 class="text-center">
             <u>FICHA ESCALAFONARIA</u>
@@ -56,10 +62,6 @@
                     <span class="uppercase">{{ work.person && work.person.ape_mat || "" }}</span>
                 </i>
             </h2>
-
-            <div class="text-center">
-                <img src="{{ code_qr }}" class="logo logo-mini">
-            </div>
 
             <br><br>
 
@@ -142,43 +144,45 @@
 
                 <br>
 
-                <table class="table text-left mb-5">
-                    <tbody>
-                        <tr>
-                            <th colspan="2">
-                                <u><b>CONTRATOS: </b></u>
-                            </th>
-                        </tr>
-                        {{--  contratos  --}}
-                        @each(info in infos)
+                <div class="pagebreak pt-7">
+                    <table class="table text-left mb-5">
+                        <tbody>
                             <tr>
-                                <th width="50%">NIVEL REMUNERATIVO</th>
-                                <th witth="5%">:</th>
-                                <td width="45%">Profesor Auxiliar a Tiempo Completo - {{ info.type_categoria }}</td>
+                                <th colspan="2">
+                                    <u><b>CONTRATOS: </b></u>
+                                </th>
                             </tr>
-                            <tr>
-                                <th width="50%">DESDE</th>
-                                <th witth="5%">:</th>
-                                <td width="45%">{{ info.fecha_de_ingreso ? moment(info.fecha_de_ingreso).format('LL') : '' }}</td>
-                            </tr>
-                            <tr>
-                                <th width="50%">HASTA</th>
-                                <th witth="5%">:</th>
-                                <td width="45%">{{ info.fecha_de_cese ? moment(info.fecha_de_cese).format('LL') : "" }}</td>
-                            </tr>
-                            <tr>
-                                <th width="50%">DOCUMENTO ACREDITA</th>
-                                <th witth="5%">:</th>
-                                <td width="45%">{{ info.resolucion || "" }} {{ info.fecha_de_resolucion ? '(Fecha:' + info.fecha_de_resolucion + ")"  : "No hay documento" }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="pt-1"></div>
-                                </td>
-                            </tr>
-                        @endeach
-                    </tbody>
-                </table>
+                            {{--  contratos  --}}
+                            @each(info in infos)
+                                <tr>
+                                    <th width="50%">NIVEL REMUNERATIVO</th>
+                                    <th witth="5%">:</th>
+                                    <td width="45%">Profesor Auxiliar a Tiempo Completo - {{ info.type_categoria }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="50%">DESDE</th>
+                                    <th witth="5%">:</th>
+                                    <td width="45%">{{ info.fecha_de_ingreso ? moment(info.fecha_de_ingreso).format('LL') : '' }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="50%">HASTA</th>
+                                    <th witth="5%">:</th>
+                                    <td width="45%">{{ info.fecha_de_cese ? moment(info.fecha_de_cese).format('LL') : "" }}</td>
+                                </tr>
+                                <tr>
+                                    <th width="50%">DOCUMENTO ACREDITA</th>
+                                    <th witth="5%">:</th>
+                                    <td width="45%">{{ info.resolucion || "" }} {{ info.fecha_de_resolucion ? '(Fecha:' + info.fecha_de_resolucion + ")"  : "No hay documento" }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="pt-1"></div>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
