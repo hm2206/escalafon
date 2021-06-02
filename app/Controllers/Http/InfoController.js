@@ -48,6 +48,18 @@ class InfoController {
         }
     }
 
+    async schedules ({ params, request }) {
+        const entity = request.$entity;
+        let authentication = request.api_authentication;
+        const infoEntity = new InfoEntity(authentication);
+        const info = await infoEntity.show(params.id, { entity_id: entity.id });
+        return {
+            success: true,
+            status: 200,
+            info
+        }
+    }
+
 }   
 
 module.exports = InfoController

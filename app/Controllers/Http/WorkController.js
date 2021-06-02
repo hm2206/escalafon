@@ -74,6 +74,21 @@ class WorkController {
         };
     }
 
+    async schedules ({ params, request, response }) {
+        let page = request.input('page', 1);
+        let entity = request.$entity;
+        let authentication = request.api_authentication;
+        const workEntity = new WorkEntity(authentication);
+        const { work, infos } = await workEntity.schedules(params.id, { page, custom: { entity_id: entity.id } });
+        // response
+        return {
+            success: true,
+            status: 201,
+            work,
+            infos
+        };
+    }
+
 }
 
 module.exports = WorkController

@@ -8,6 +8,10 @@ const Info = use('App/Models/Info');
 const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
+const ScheduleEntity = require('./ScheduleEntity');
+const ConfigSchedule = use('App/Models/ConfigSchedule');
+const Schedule = use('App/Models/Schedule');
+const DB = use('Database');
 
 class WorkEntity {
 
@@ -174,7 +178,7 @@ class WorkEntity {
         // custom
         for (let attr in datos.custom) {
             let value = datos.custom[attr];
-            if (value) infos.where(attr, value);
+            if (value !== '') infos.where(attr, value);
         }
         // obtener
         infos = await infos.paginate(datos.page, datos.perPage);
@@ -183,6 +187,41 @@ class WorkEntity {
             i.work = work;
             return i;
         });
+        // response
+        return { work, infos } ;
+    }
+
+    async schedules (id, tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let work = await this.show(id);
+        let infos = Info.query()
+            .has('config_schedule')
+            .orWhereExists(query => {
+                query.from('schedules as s')
+                    .select('*')
+                    .where('s.object_type', 'App/Models/Info')
+                    .where('s.object_id', DB.raw('infos.id'))
+                    .where('s.state', 1) 
+            })
+            .with('planilla')
+            .with('type_categoria')
+            .with('schedules', build => build.where('object_type', 'App/Models/Info'))
+            .with('config_schedule', build => {
+                build.with('schedules', (b) => b.where('object_type', 'App/Models/ConfigSchedule'))
+            })
+            .where('infos.estado', 1)
+            .where('infos.work_id', work.id)
+            .select('infos.*')
+        // filtros custom
+        for (let attr in datos.custom) {
+            let value = datos.custom[attr];
+            if (Array.isArray(value)) infos.whereIn(attr, value);
+            else if (value !== '' && value !== null) infos.where(attr, value);
+        }
+        // paginar
+        infos = await infos.paginate(datos.page, datos.perPage);
+        // parse json
+        infos = await infos.toJSON()
         // response
         return { work, infos } ;
     }

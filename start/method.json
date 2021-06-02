@@ -47,6 +47,12 @@
         "description": "Listar contratos del trabajador",
         "action_type": "VIEW"
     },
+    "WorkController.schedules": {
+        "name": "WorkController.schedules",
+        "url": "api/works/:id/schedules",
+        "description": "Listar horario del trabajador de los contratos activos",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -63,6 +69,12 @@
         "name": "InfoController.show",
         "url": "api/infos/:id",
         "description": "Obtener contrato",
+        "action_type": "VIEW"
+    },
+    "InfoController.schedules": {
+        "name": "InfoController.schedules",
+        "url": "api/infos/:id/schedules",
+        "description": "Listar horario del contrato",
         "action_type": "VIEW"
     },
     "ClockController.index": {

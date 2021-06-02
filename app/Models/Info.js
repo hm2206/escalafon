@@ -44,6 +44,14 @@ class Info extends Model {
         return this.belongsTo('App/Models/SituacionLaboral');
     }
 
+    schedules () {
+        return this.hasMany('App/Models/Schedule', 'id', 'object_id');
+    }
+
+    config_schedule () {
+        return this.belongsTo('App/Models/ConfigSchedule');
+    }
+
 }
 
 module.exports = Info
