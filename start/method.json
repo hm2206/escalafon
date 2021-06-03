@@ -148,5 +148,11 @@
         "url": "api/entities/:id/works",
         "description": "Listar trabajadores según entidad",
         "action_type": "VIEW"
+    },
+    "ConfigScheduleController.index": {
+        "name": "ConfigScheduleController.index",
+        "url": "api/config_schedules",
+        "description": "Listar Configurarción de horario",
+        "action_type": "VIEW"
     }
 }

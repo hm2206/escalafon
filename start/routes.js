@@ -42,3 +42,6 @@ Route('delete', 'AssistanceController.delete').middleware(['jwt', 'entityId']);
 
 // Entity
 Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);
+
+// config Schedule
+Route('get', 'ConfigScheduleController.index').middleware(['jwt', 'entityId']);
