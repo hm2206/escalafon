@@ -1,7 +1,9 @@
 'use strict';
 
-const { collect } = require("collect.js");
+const { validateAll } = use('Validator')
 const ConfigSchedule = use('App/Models/ConfigSchedule');
+const DBException = require('../Exceptions/DBException');
+const { validation } = require('validator-error-adonis');
 
 class ConfigScheduleEntity {
 
@@ -25,6 +27,22 @@ class ConfigScheduleEntity {
         config_schedules = await config_schedules.paginate(datos.page, datos.perPage);
         // response
         return await config_schedules.toJSON();
+    }
+
+    async store (datos = {}) {
+        await validation(validateAll, datos, {
+            name: "required|unique:clocks",
+            entity_id: "required"
+        });
+        // guardar datos
+        try {
+            return await ConfigSchedule.create({
+                name: datos.name,
+                entity_id: datos.entity_id,
+            });
+        } catch (error) {
+            throw new DBException(error, 'regístro');
+        }
     }
 
 }

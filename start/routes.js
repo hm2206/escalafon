@@ -45,3 +45,4 @@ Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);
 
 // config Schedule
 Route('get', 'ConfigScheduleController.index').middleware(['jwt', 'entityId']);
+Route('post', 'ConfigScheduleController.store').middleware(['jwt', 'entityId']);

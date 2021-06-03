@@ -154,5 +154,11 @@
         "url": "api/config_schedules",
         "description": "Listar Configurarción de horario",
         "action_type": "VIEW"
+    },
+    "ConfigScheduleController.store": {
+        "name": "ConfigScheduleController.store",
+        "url": "api/config_schedules",
+        "description": "Crear Configurarción de horario",
+        "action_type": "CREATE"
     }
 }
