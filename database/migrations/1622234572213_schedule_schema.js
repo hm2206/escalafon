@@ -7,13 +7,11 @@ class ScheduleSchema extends Schema {
   up () {
     this.create('schedules', (table) => {
       table.increments()
-      table.string('object_type').notNullable();
-      table.integer('object_id').notNullable();
-      table.integer('index').notNullable();
+      table.integer('config_assistance_id').notNullable(); 
       table.time('time_start').notNullable();
       table.time('time_over').notNullable();
       table.boolean('state').defaultTo(true);
-      table.unique(['object_type', 'object_id', 'index', 'time_start', 'time_over'], 'unique_schedule');
+      table.unique(['config_assistance_id', 'time_start', 'time_over']);
       table.timestamps()
     })
   }

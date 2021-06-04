@@ -4,6 +4,9 @@ const { validateAll } = use('Validator')
 const ConfigSchedule = use('App/Models/ConfigSchedule');
 const DBException = require('../Exceptions/DBException');
 const { validation } = require('validator-error-adonis');
+const NotFoundModelException = require('../Exceptions/NotFoundModelException');
+const ConfigAssistance = use('App/Models/ConfigAssistance');
+const DB = use('Database');
 
 class ConfigScheduleEntity {
 
@@ -31,7 +34,7 @@ class ConfigScheduleEntity {
 
     async store (datos = {}) {
         await validation(validateAll, datos, {
-            name: "required|unique:clocks",
+            name: "required|unique:config_schedules|max:50",
             entity_id: "required"
         });
         // guardar datos
@@ -43,6 +46,46 @@ class ConfigScheduleEntity {
         } catch (error) {
             throw new DBException(error, 'regístro');
         }
+    }
+
+    async update (id, datos = {}) {
+        await validation(validateAll, datos, {
+            name: "required|max:50"
+        });
+        // obtener config schedule
+        let config_schedule = await ConfigSchedule.find(id);
+        if (!config_schedule) throw new NotFoundModelException("La configuración de horario");
+        // actualizar datos
+        try {
+            config_schedule.merge({ name: datos.name });
+            await config_schedule.save();
+            return config_schedule;
+        } catch (error) {
+            throw new DBException(error, 'regístro');
+        }
+    }
+
+    async config_assistances (id, tmpDatos = this.schemaPage) {
+        let datos = Object.assign({}, tmpDatos);
+        let config_schedule = await ConfigSchedule.query()
+            .where('id', id)
+            .first();
+        if (!config_schedule) throw new NotFoundException("La configuración de horario");
+        let config_assistances = ConfigAssistance.query()
+            .where("config_schedule_id", config_schedule.id)
+        // filtrar por fecha
+        if (datos.year) config_assistances.where(DB.raw('YEAR(date)'), datos.year);
+        if (datos.month) config_assistances.where(DB.raw('MONTH(date)'), datos.month);
+        // filtrar
+        for (let attr in datos.custom) {
+            let value = datos.custom[attr];
+            if (Array.isArray(value)) config_assistances.whereIn(attr, value);
+            else if (attr =! '' && attr != null) config_assistances.where(attr, value);
+        }
+        // páginar
+        config_assistances = await config_assistances.paginate(datos.page, datos.perPage);
+        // response
+        return { config_schedule, config_assistances };
     }
 
 }

@@ -160,5 +160,17 @@
         "url": "api/config_schedules",
         "description": "Crear Configurarción de horario",
         "action_type": "CREATE"
+    },
+    "ConfigScheduleController.update": {
+        "name": "ConfigScheduleController.update",
+        "url": "api/config_schedules/:id",
+        "description": "Actualizar Configurarción de horario",
+        "action_type": "UPDATE"
+    },
+    "ConfigScheduleController.config_assistances": {
+        "name": "ConfigScheduleController.config_assistances",
+        "url": "api/config_schedules/:id/config_assistances",
+        "description": "Obtener Configurarción de asistencia",
+        "action_type": "VIEW"
     }
 }

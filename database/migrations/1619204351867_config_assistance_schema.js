@@ -7,10 +7,10 @@ class ConfigAssistanceSchema extends Schema {
   up () {
     this.create('config_assistances', (table) => {
       table.increments();
-      table.integer('entity_id').notNullable();
+      table.integer('config_schedule_id').notNullable();
       table.integer('index').notNullable();
       table.date('date').notNullable();
-      table.unique(['entity_id', 'date']);
+      table.unique(['config_schedule_id', 'date']);
       table.timestamps();
     })
   }

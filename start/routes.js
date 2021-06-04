@@ -46,3 +46,5 @@ Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);
 // config Schedule
 Route('get', 'ConfigScheduleController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigScheduleController.store').middleware(['jwt', 'entityId']);
+Route('put', 'ConfigScheduleController.update').middleware(['jwt', 'entityId']);
+Route('get', 'ConfigScheduleController.config_assistances').middleware(['jwt', 'entityId']);

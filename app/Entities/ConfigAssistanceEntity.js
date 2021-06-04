@@ -50,13 +50,13 @@ class ConfigAssistanceEntity {
 
     async store (datos = {}) {
         await validation(validateAll, datos, {
-            entity_id: 'required',
+            config_schedule_id: 'required',
             date: 'required|dateFormat:YYYY-MM-DD'
         });
         // obtener fecha
         let index = moment(datos.date).day();
         let payload = {
-            entity_id: datos.entity_id,
+            config_schedule_id: datos.config_schedule_id,
             index,
             date: datos.date
         }

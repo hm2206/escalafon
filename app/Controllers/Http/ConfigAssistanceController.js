@@ -1,7 +1,9 @@
 'use strict'
 
 const moment = require('moment');
+const { ValidatorError } = require('validator-error-adonis');
 const ConfigAssistanceEntity = require('../../Entities/ConfigAssistanceEntity');
+const ConfigSchedule = use('App/Models/ConfigSchedule');
 
 class ConfigAssistanceController {
 
@@ -40,9 +42,14 @@ class ConfigAssistanceController {
 
     async store ({ request }) {
         let entity = request.$entity;
-        let configAssistanceEntity = new ConfigAssistanceEntity();
         let datos = request.all();
-        datos.entity_id = entity.id;
+        let config_schedule = await ConfigSchedule.query()
+            .where('entity_id', entity.id)
+            .where('id', datos.config_schedule_id)
+            .first();
+        if (!config_schedule) throw new ValidatorError([{ field: 'config_assistance_id', message: "La configuración no existe!" }])
+        // configuración de asistencia
+        let configAssistanceEntity = new ConfigAssistanceEntity();
         let config_assistance = await configAssistanceEntity.store(datos);
         // render
         return { 
