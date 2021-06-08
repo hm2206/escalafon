@@ -8,11 +8,13 @@ class ScheduleSchema extends Schema {
     this.create('schedules', (table) => {
       table.increments()
       table.integer('info_id').notNullable();
+      table.integer('index').notNullable();
       table.date('date').notNullable();
       table.time('time_start').notNullable();
-      table.time('delay_start').notNullable().defaultTo('00:00:00');
+      table.float('delay_start').notNullable().defaultTo('0');
       table.time('time_over').notNullable();
-      table.time('delay_over').notNullable().defaultTo('00:00:00');
+      table.float('delay_over').notNullable().defaultTo('0');
+      table.text('observation');
       table.boolean('state').defaultTo(true);
       table.unique(['info_id', 'date', 'time_start', 'time_over']);
       table.timestamps()

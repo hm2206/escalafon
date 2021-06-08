@@ -89,6 +89,12 @@
         "description": "Sincronizar la asistencia del reloj con el sistema",
         "action_type": "CREATE"
     },
+    "ScheduleController.store": {
+        "name": "ScheduleController.store",
+        "url": "api/schedules",
+        "description": "Crear nuevo horario",
+        "action_type": "CREATE"
+    },
     "AssistanceController.index": {
         "name": "AssistanceController.index",
         "url": "api/assistances",
