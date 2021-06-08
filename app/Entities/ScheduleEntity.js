@@ -65,7 +65,7 @@ class ScheduleEntity {
         let current_fecha = moment(`${moment().format('YYYY-MM')}-01`);
         let select_fecha = moment(`${moment(datos.date).format('YYYY-MM')}-01`);
         let isDeny = current_fecha.diff(select_fecha, 'months').valueOf();
-        if (isDeny) throw new ValidatorError([{ field: 'date', message: `La fecha debe ser mayor/igual a 01/${moment().format('MM/YYYY')}` }]);
+        if (isDeny >= 1) throw new ValidatorError([{ field: 'date', message: `La fecha debe ser mayor/igual a 01/${moment().format('MM/YYYY')}` }]);
         // validar time_start y time_over
         let current_start = moment(`${datos.date} ${datos.time_start}`);
         let current_over = moment(`${datos.date} ${datos.time_over}`);
@@ -101,6 +101,11 @@ class ScheduleEntity {
             .select('schedules.*')
             .first();
         if (!schedule) throw new NotFoundModelException("El horario");
+        // validar 
+        let current_date = moment(new Date(`${moment().format('YYYY-MM')}-01`));
+        let select_date = moment(new Date(`${moment(schedule.date).format('YYYY-MM')}-01`));
+        let isAllow = current_date.diff(select_date, 'months').valueOf() <= 0 ? true : false;
+        if (!isAllow) throw new Error("No se puede replicar el horario!!!");
         let fecha = moment(schedule.date);
         // obtener schedules para obiar
         let except_schedules = await Schedule.query()
