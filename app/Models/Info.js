@@ -45,11 +45,7 @@ class Info extends Model {
     }
 
     schedules () {
-        return this.hasMany('App/Models/Schedule', 'id', 'object_id');
-    }
-
-    config_schedule () {
-        return this.belongsTo('App/Models/ConfigSchedule');
+        return this.hasMany('App/Models/Schedule');
     }
 
 }

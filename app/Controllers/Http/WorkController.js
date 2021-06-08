@@ -1,5 +1,6 @@
 'use strict';
 
+const { default: collect } = require('collect.js');
 const WorkEntity = require('../../Entities/WorkEntity');
 
 class WorkController {
@@ -64,27 +65,13 @@ class WorkController {
 
     async infos ({ params, request, response }) {
         let page = request.input('page', 1);
+        let estados = collect(request.collect(['estado'])).pluck('estado').toArray();
         let authentication = request.api_authentication;
         const workEntity = new WorkEntity(authentication);
-        const { infos } = await workEntity.infos(params.id, { page });
+        const { infos } = await workEntity.infos(params.id, { page, custom: { estado: estados } });
         return {
             success: true,
             status: 201,
-            infos
-        };
-    }
-
-    async schedules ({ params, request, response }) {
-        let page = request.input('page', 1);
-        let entity = request.$entity;
-        let authentication = request.api_authentication;
-        const workEntity = new WorkEntity(authentication);
-        const { work, infos } = await workEntity.schedules(params.id, { page, custom: { entity_id: entity.id } });
-        // response
-        return {
-            success: true,
-            status: 201,
-            work,
             infos
         };
     }

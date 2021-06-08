@@ -47,12 +47,6 @@
         "description": "Listar contratos del trabajador",
         "action_type": "VIEW"
     },
-    "WorkController.schedules": {
-        "name": "WorkController.schedules",
-        "url": "api/works/:id/schedules",
-        "description": "Listar horario del trabajador de los contratos activos",
-        "action_type": "VIEW"
-    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -95,30 +89,6 @@
         "description": "Sincronizar la asistencia del reloj con el sistema",
         "action_type": "CREATE"
     },
-    "ConfigAssistanceController.index": {
-        "name": "ConfigAssistanceController.index",
-        "url": "api/config_assistances",
-        "description": "Listar Configuración de Asistencia",
-        "action_type": "VIEW"
-    },
-    "ConfigAssistanceController.store": {
-        "name": "ConfigAssistanceController.store",
-        "url": "api/config_assistances",
-        "description": "Crear Configuración de Asistencia",
-        "action_type": "CREATE"
-    },
-    "ConfigAssistanceController.assistances": {
-        "name": "ConfigAssistanceController.assistances",
-        "url": "api/config_assistances/:id/assistances",
-        "description": "Listar assistancia según de configuración",
-        "action_type": "VIEW"
-    },
-    "ConfigAssistanceController.delete": {
-        "name": "ConfigAssistanceController.delete",
-        "url": "api/config_assistances/:id",
-        "description": "Eliminar Configuración de Asistencia",
-        "action_type": "DELETE"
-    },
     "AssistanceController.index": {
         "name": "AssistanceController.index",
         "url": "api/assistances",
@@ -147,30 +117,6 @@
         "name": "EntityController.works",
         "url": "api/entities/:id/works",
         "description": "Listar trabajadores según entidad",
-        "action_type": "VIEW"
-    },
-    "ConfigScheduleController.index": {
-        "name": "ConfigScheduleController.index",
-        "url": "api/config_schedules",
-        "description": "Listar Configurarción de horario",
-        "action_type": "VIEW"
-    },
-    "ConfigScheduleController.store": {
-        "name": "ConfigScheduleController.store",
-        "url": "api/config_schedules",
-        "description": "Crear Configurarción de horario",
-        "action_type": "CREATE"
-    },
-    "ConfigScheduleController.update": {
-        "name": "ConfigScheduleController.update",
-        "url": "api/config_schedules/:id",
-        "description": "Actualizar Configurarción de horario",
-        "action_type": "UPDATE"
-    },
-    "ConfigScheduleController.config_assistances": {
-        "name": "ConfigScheduleController.config_assistances",
-        "url": "api/config_schedules/:id/config_assistances",
-        "description": "Obtener Configurarción de asistencia",
         "action_type": "VIEW"
     }
 }

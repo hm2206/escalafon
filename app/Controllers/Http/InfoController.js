@@ -1,6 +1,8 @@
 'use strict';
 
 const InfoEntity = require('../../Entities/InfoEntity');
+const collect = require('collect.js');
+const moment = require('moment');
 
 class InfoController {
 
@@ -9,7 +11,9 @@ class InfoController {
         let query_search = request.input('query_search', '');
         const entity = request.$entity;
         let filtros = request.only(['planilla_id', 'cargo_id', 'type_categoria_id', 'meta_id']);
-        filtros.entity_id = entity.id;
+        let states = collect(request.collect(['estado'])).pluck('estado').toArray();
+        filtros['infos.entity_id'] = entity.id;
+        filtros['infos.estado'] = states;
         let authentication = request.api_authentication;
         const infoEntity = new InfoEntity(authentication);
         const infos = await infoEntity.index({ page, query_search, custom: filtros });
@@ -51,12 +55,15 @@ class InfoController {
     async schedules ({ params, request }) {
         const entity = request.$entity;
         let authentication = request.api_authentication;
+        const year = request.input('year', moment().year());
+        const month = request.input('month', moment().month() + 1);
         const infoEntity = new InfoEntity(authentication);
-        const info = await infoEntity.show(params.id, { entity_id: entity.id });
+        const { info, schedules } = await infoEntity.schedules(params.id, year, month, { entity_id: entity.id });
         return {
             success: true,
             status: 200,
-            info
+            info,
+            schedules
         }
     }
 

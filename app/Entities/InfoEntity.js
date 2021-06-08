@@ -4,6 +4,8 @@ const { validation, Storage } = require('validator-error-adonis');
 const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
+const Schedule = use('App/Models/Schedule');
+const DB = use('Database');
 const { collect } = require('collect.js');
 const Info = use('App/Models/Info');
 
@@ -54,11 +56,14 @@ class InfoEntity {
             .with('type_categoria')
             .with('meta')
             .join('works as w', 'w.id', 'infos.work_id')
+            .orderBy('w.orden', 'ASC')
             .select('infos.*', 'w.person_id');
         // filtros
         for (let attr in datos.custom) {
             let value = datos.custom[attr];
-            if (value) infos.where(attr, value);
+            if (Array.isArray(value)) {
+                if (value.length) infos.whereIn(attr, value);
+            } else if (value !== '' && value !== null) infos.where(attr, value);
         }
         // búsqueda
         if (datos.query_search) infos.where('w.orden', 'like', `%${datos.query_search}%`);
@@ -167,6 +172,32 @@ class InfoEntity {
         info.perfil_laboral = perfil_laboral;
         // response
         return info;
+    }
+
+    async schedules (id, year, month, filtros = {}) {
+        let info = Info.query()
+            .where('id', id);
+        // filtros
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) {
+                if (value.length) info.whereIn(attr, value);
+            } else if (value != '' && value != null) info.where(attr, value); 
+        }
+        // obtener info
+        info = await info.first();
+        if (!info) throw new NotFoundModelException("El contrato");
+        // obtener harario
+        let schedules = await Schedule.query()
+            .where('info_id', info.id)
+            .where(DB.raw('YEAR(date)'), year)
+            .where(DB.raw('MONTH(date)'), month)
+            .orderBy('date', 'ASC')
+            .orderBy('time_start', 'ASC')
+            .fetch()
+        schedules = await schedules.toJSON();
+        // response
+        return { info, schedules } ;
     }
 
 }
