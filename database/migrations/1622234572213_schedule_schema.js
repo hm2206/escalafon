@@ -16,7 +16,7 @@ class ScheduleSchema extends Schema {
       table.float('delay_over').notNullable().defaultTo('0');
       table.text('observation');
       table.boolean('state').defaultTo(true);
-      table.unique(['info_id', 'date', 'time_start', 'time_over']);
+      table.unique(['info_id', 'index', 'date', 'time_start', 'time_over'], 'unique_schedule_info');
       table.timestamps()
     })
   }

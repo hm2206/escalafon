@@ -16,6 +16,18 @@ class ScheduleController {
         };
     }
 
+    async replicar ({ params, request }) {
+        let scheduleEntity = new ScheduleEntity();
+        let { schedule, schedules } = await scheduleEntity.replicar(params.id);
+        return {
+            success: true,
+            status: 201,
+            message: "El horario se replicó correctamente!",
+            schedule,
+            schedules
+        };
+    }
+
 }
 
 module.exports = ScheduleController

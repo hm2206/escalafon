@@ -95,6 +95,12 @@
         "description": "Crear nuevo horario",
         "action_type": "CREATE"
     },
+    "ScheduleController.replicar": {
+        "name": "ScheduleController.replicar",
+        "url": "api/schedules/:id/replicar",
+        "description": "Replicar horario del contrato",
+        "action_type": "CREATE"
+    },
     "AssistanceController.index": {
         "name": "AssistanceController.index",
         "url": "api/assistances",

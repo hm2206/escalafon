@@ -29,6 +29,7 @@ Route('post', 'ClockController.syncAssistances').middleware(['jwt', 'entityId'])
 
 // Schedules
 Route('post', 'ScheduleController.store').middleware(['jwt', 'entityId']);
+Route('post', 'ScheduleController.replicar').middleware(['jwt', 'entityId']);
 
 // Assistance
 Route('get', 'AssistanceController.index').middleware(['jwt', 'entityId']);

@@ -1,11 +1,12 @@
 'use strict';
 
-const { collect } = require("collect.js");
 const { validation, ValidatorError } = require('validator-error-adonis');
+const { collect } = require("collect.js");
 const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const Schedule = use('App/Models/Schedule');
 const Info = use('App/Models/Info');
+const DB = use('Database');
 const moment = require("moment");
 moment.locale('es');
 
@@ -89,6 +90,67 @@ class ScheduleEntity {
             });
         } catch (error) {
             throw new DBException(error, "regístro");
+        }
+    }
+
+    async replicar (id, filtros = {}) {
+        let schedule = await Schedule.query()
+            .join('infos as i', 'i.id', 'schedules.info_id')
+            .where('i.estado', 1)
+            .where('schedules.id', id)
+            .select('schedules.*')
+            .first();
+        if (!schedule) throw new NotFoundModelException("El horario");
+        let fecha = moment(schedule.date);
+        // obtener schedules para obiar
+        let except_schedules = await Schedule.query()
+            .where('info_id', schedule.info_id)
+            .where('index', schedule.index)
+            .where(DB.raw('YEAR(date)'), fecha.year())
+            .where(DB.raw('MONTH(date)'), fecha.month() + 1)
+            .orderBy('date', 'DESC')
+            .orderBy('time_over', 'DESC')
+            .fetch();
+        except_schedules = collect(await except_schedules.toJSON());
+        // obtener fecha de inicio y final
+        let date_start = moment(`${moment(schedule.date).format('YYYY-MM')}-01`).format('YYYY-MM-DD');
+        let date_over = moment(moment(date_start).add(1, 'months').subtract(1, 'days')).format('YYYY-MM-DD');
+        // obtener dia start y over
+        let day_start = parseInt(moment(date_start).format('D'));
+        let day_over = parseInt(moment(date_over).format('D'));
+        // generar arrays
+        let dates = [];
+        for (let day = day_start; day <= day_over; day++) {
+            let current_date = moment(date_start);
+            let current_year = current_date.year();
+            let current_month = current_date.month() + 1;
+            let new_date = moment(new Date(`${current_year}-${current_month}-${day}`));
+            let index = new_date.day();
+            if (index != schedule.index) continue;
+            let isDeny = except_schedules.where('date', new_date.format('YYYY-MM-DD'))
+                .where('index', index)
+                .where('time_start', schedule.time_start)
+                .where('time_over', schedule.time_over)
+                .first();
+            if (isDeny) continue;
+            // add insert massive
+            dates.push({
+                info_id: schedule.info_id,
+                index,
+                date: new_date.format('YYYY-MM-DD'),
+                time_start: schedule.time_start,
+                time_over: schedule.time_over,
+                delay_start: schedule.delay_start,
+                delay_over: schedule.delay_over,
+                observation: schedule.observation
+            });
+        }
+        // agregar schedules
+        try {
+            let schedules = await Schedule.createMany(dates);
+            return { schedule, schedules };
+        } catch (error) {
+            throw new DBException(error, 'regíster');
         }
     }
 
