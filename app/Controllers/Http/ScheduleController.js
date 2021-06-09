@@ -16,9 +16,35 @@ class ScheduleController {
         };
     }
 
-    async replicar ({ params, request }) {
+    async update ({ params, request }) {
+        let entity = request.$entity;
+        let datos = request.all();
         let scheduleEntity = new ScheduleEntity();
-        let { schedule, schedules } = await scheduleEntity.replicar(params.id);
+        let schedule = await scheduleEntity.update(params.id, datos, { 'i.entity_id': entity.id });
+        return {
+            success: true,
+            status: 201,
+            message: "El horario se actualizó correctamente!",
+            schedule,
+        };
+    }
+
+    async delete ({ params, request }) {
+        let entity = request.$entity;
+        let scheduleEntity = new ScheduleEntity();
+        let schedule = await scheduleEntity.delete(params.id, { 'i.entity_id': entity.id });
+        return {
+            success: true,
+            status: 201,
+            message: "El horario se eliminó correctamente!",
+            schedule,
+        };
+    }
+
+    async replicar ({ params, request }) {
+        let entity = request.$entity;
+        let scheduleEntity = new ScheduleEntity();
+        let { schedule, schedules } = await scheduleEntity.replicar(params.id, { 'i.entity_id': entity.id });
         return {
             success: true,
             status: 201,

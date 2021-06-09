@@ -7,14 +7,13 @@ class AssistanceSchema extends Schema {
   up () {
     this.create('assistances', (table) => {
       table.increments()
-      table.integer('config_assistance_id').notNullable();
-      table.integer('work_id').notNullable();
+      table.integer('schedule_id').notNullable();
       table.integer('clock_id');
       table.time('record_time').notNullable();
       table.float('delay', 2).notNullable().defaultTo(0).comment("Tardanza en minutos");
       table.enum('status', ['ENTRY', 'EXIT']);
       table.boolean('state').defaultTo(true);
-      table.unique(['config_assistance_id', 'work_id', 'record_time'], 'config_unique_assistances');
+      table.unique(['schedule_id', 'record_time'], 'unique_assistances');
       table.timestamps();
     })
   }

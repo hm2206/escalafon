@@ -95,6 +95,18 @@
         "description": "Crear nuevo horario",
         "action_type": "CREATE"
     },
+    "ScheduleController.update": {
+        "name": "ScheduleController.update",
+        "url": "api/schedules/:id",
+        "description": "Actualizar horario del contrato",
+        "action_type": "UPDATE"
+    },
+    "ScheduleController.delete": {
+        "name": "ScheduleController.delete",
+        "url": "api/schedules/:id",
+        "description": "Eliminar horario del contrato",
+        "action_type": "DELETE"
+    },
     "ScheduleController.replicar": {
         "name": "ScheduleController.replicar",
         "url": "api/schedules/:id/replicar",

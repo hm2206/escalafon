@@ -6,6 +6,7 @@ const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const Schedule = use('App/Models/Schedule');
 const Info = use('App/Models/Info');
+const Assistance = use('App/Models/Assistance');
 const DB = use('Database');
 const moment = require("moment");
 moment.locale('es');
@@ -93,13 +94,118 @@ class ScheduleEntity {
         }
     }
 
-    async replicar (id, filtros = {}) {
-        let schedule = await Schedule.query()
+    async update (id, datos = this.attributes, filtros = {}) {
+        await validation(null, {
+            date: "required|dateFormat:YYYY-MM-DD",
+            time_start: "required",
+            time_over: "required",
+            delay_start: 'number',
+            delay_over: 'number'
+        });
+        // validar formatos
+        let formatTime = ['time_start', 'time_over'];
+        for (let f of formatTime) {
+            let value = datos[f];
+            if (!value) continue;
+            let is_time = await moment(new Date(`${datos.date} ${value}`)).isValid();
+            if (!is_time) throw new ValidatorError([{ field: f, message: `El formado del campo ${f} no es corresponde a HH:mm:ss` }]);
+        }
+        // horario
+        let schedule = Schedule.query()
             .join('infos as i', 'i.id', 'schedules.info_id')
             .where('i.estado', 1)
             .where('schedules.id', id)
-            .select('schedules.*')
-            .first();
+            .select('schedules.*');
+        // filtrar
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) {
+                if (value.length) schedule.whereIn(attr, value);
+            } else if (value != '' && value != null) schedule.where(attr, value);
+        }
+        // validar fecha  
+        let current_fecha = moment(`${moment().format('YYYY-MM')}-01`);
+        let select_fecha = moment(`${moment(datos.date).format('YYYY-MM')}-01`);
+        let isDeny = current_fecha.diff(select_fecha, 'months').valueOf();
+        if (isDeny >= 1) throw new ValidatorError([{ field: 'date', message: `La fecha debe ser mayor/igual a 01/${moment().format('MM/YYYY')}` }]);
+        // validar time_start y time_over
+        let current_start = moment(`${datos.date} ${datos.time_start}`);
+        let current_over = moment(`${datos.date} ${datos.time_over}`);
+        if (current_start.format('HH:mm:ss') > current_over.format('HH:mm:ss')) throw new ValidatorError([{ field: 'time_over', message: `La hora de salida debe ser mayor a ${current_over.format('HH:mm:ss A')}` }]);
+        // obtener horario
+        schedule = await schedule.first();
+        if (!schedule) throw new NotFoundModelException("El horario");
+        // validar 
+        let current_date = moment(new Date(`${moment().format('YYYY-MM')}-01`));
+        let select_date = moment(new Date(`${moment(schedule.date).format('YYYY-MM')}-01`));
+        let isAllow = current_date.diff(select_date, 'months').valueOf() <= 0 ? true : false;
+        if (!isAllow) throw new Error("No se puede eliminar el horario!!!");
+        // validar assistance
+        let is_asssistances = await Assistance.query()
+            .where('schedule_id', schedule.id)
+            .getCount('id');
+        if (is_asssistances) throw new Error("No se puede elimnar el horario!!!");
+        // actualizar
+        schedule.merge({ 
+            time_start: datos.time_start,
+            time_over: datos.time_over,
+            delay_start: datos.delay_start,
+            delay_over: datos.delay_over,
+            observation: datos.observation || null
+        });
+        // guardar cambios
+        await schedule.save();
+        // response
+        return schedule;
+    }
+
+    async delete (id, filtros = {}) {
+        let schedule = Schedule.query()
+            .join('infos as i', 'i.id', 'schedules.info_id')
+            .where('i.estado', 1)
+            .where('schedules.id', id)
+            .select('schedules.*');
+        // filtrar
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) {
+                if (value.length) schedule.whereIn(attr, value);
+            } else if (value != '' && value != null) schedule.where(attr, value);
+        }
+        // obtener
+        schedule = await schedule.first();
+        if (!schedule) throw new NotFoundModelException("El horario");
+        // validar 
+        let current_date = moment(new Date(`${moment().format('YYYY-MM')}-01`));
+        let select_date = moment(new Date(`${moment(schedule.date).format('YYYY-MM')}-01`));
+        let isAllow = current_date.diff(select_date, 'months').valueOf() <= 0 ? true : false;
+        if (!isAllow) throw new Error("No se puede eliminar el horario!!!");
+        // validar assistance
+        let is_asssistances = await Assistance.query()
+            .where('schedule_id', schedule.id)
+            .getCount('id');
+        if (is_asssistances) throw new Error("No se puede elimnar el horario!!!");
+        // eliminar
+        await schedule.delete();
+        // response
+        return schedule;
+    }
+
+    async replicar (id, filtros = {}) {
+        let schedule = Schedule.query()
+            .join('infos as i', 'i.id', 'schedules.info_id')
+            .where('i.estado', 1)
+            .where('schedules.id', id)
+            .select('schedules.*');
+        // filtrar
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) {
+                if (value.length) schedule.whereIn(attr, value);
+            } else if (value != '' && value != null) schedule.where(attr, value);
+        }
+        // obtener
+        schedule = await schedule.first();
         if (!schedule) throw new NotFoundModelException("El horario");
         // validar 
         let current_date = moment(new Date(`${moment().format('YYYY-MM')}-01`));
@@ -158,7 +264,7 @@ class ScheduleEntity {
             throw new DBException(error, 'regíster');
         }
     }
-
+    
 }
 
 module.exports = ScheduleEntity;
