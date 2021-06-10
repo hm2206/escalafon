@@ -52,7 +52,7 @@ class SyncScheduleInfosProcedure extends BaseProcedure {
             "DECLARE v_count INT(20);",
             `${this.queryInfos(true)};`,
             ...this.queryInsert(),
-            "SELECT v_count as rows FROM DUAL;"
+            "SELECT v_count as rows;"
         ];
     }
 
