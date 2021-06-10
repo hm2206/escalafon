@@ -71,6 +71,12 @@
         "description": "Listar horario del contrato",
         "action_type": "VIEW"
     },
+    "InfoController.syncSchedules": {
+        "name": "InfoController.syncSchedules",
+        "url": "api/infos/:id/sync_schedules",
+        "description": "Sincronizar horarios a los contratos",
+        "action_type": "CREATE"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",

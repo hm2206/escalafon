@@ -66,7 +66,8 @@ const aliases = {
 |
 */
 const commands = [
-  'App/Commands/Installer'
+  'App/Commands/Installer',
+  'App/Commands/InstallerProcedured'
 ]
 
 /*

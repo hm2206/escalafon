@@ -67,6 +67,20 @@ class InfoController {
         }
     }
 
+    async syncSchedules ({ params, request }) {
+        const entity = request.$entity;
+        let authentication = request.api_authentication;
+        let year = request.input('year', moment().year());
+        let month = request.input('month', moment().month() + 1);
+        const infoEntity = new InfoEntity(authentication);
+        let { info, rows } = await infoEntity.syncSchedules(params.id, year, month, { entity_id : entity.id });
+        return {
+            success: true,
+            status: 200,
+            message: `Se sincronizarón ${rows} horarios a los contratos!`
+        }
+    }
+
 }   
 
 module.exports = InfoController

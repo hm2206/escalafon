@@ -8,6 +8,8 @@ const Schedule = use('App/Models/Schedule');
 const DB = use('Database');
 const { collect } = require('collect.js');
 const Info = use('App/Models/Info');
+const moment = require('moment');
+const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
 
 class InfoEntity {
 
@@ -198,6 +200,24 @@ class InfoEntity {
         schedules = await schedules.toJSON();
         // response
         return { info, schedules } ;
+    }
+
+    async syncSchedules (id, year, month, tmpFiltros = {}) {
+        let filtros = Object.assign({}, tmpFiltros);
+        delete filtros.cargo_id;
+        delete filtros.type_categoria_id;
+        let info = await this.show(id, filtros);
+        let current_date = moment();
+        if ((current_date.year() != year) || (current_date.month() + 1 != month)) throw new CustomException("No se puede sincronizar los horarios");
+        let [[[{ rows }]]] = await SyncScheduleInfosProcedure.call({
+            info_id: info.id,
+            entity_id: info.entity_id,
+            planilla_id: info.planilla_id,
+            cargo_id: filtros.cargo_id || 0,
+            type_categoria_id: filtros.type_categoria_id || 0
+        });
+        // reponse
+        return { info, rows };
     }
 
 }
