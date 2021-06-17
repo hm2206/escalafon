@@ -1,8 +1,10 @@
 'use strict';
 
-const { default: collect } = require('collect.js');
-const ConfigAssistance = use('App/Models/ConfigAssistance');
+const collect = require('collect.js');
+const Schedule = use('App/Models/Schedule');
 const Work = use('App/Models/Work'); 
+const Info = use('App/Models/Info');
+const PreAssistance = use('App/Models/PreAssistance');
 const Assistance = use('App/Models/Assistance');
 const Clock = use('App/Models/Clock');
 const moment = require('moment');
@@ -36,8 +38,8 @@ class SyncClock {
     if (exists) await Drive.delete(this.pathRelative);
   }
 
-  async connect () {
-    let zkInstance = new ZKLib(this.clock.host, this.clock.port, 10000, 4000);
+  async connect (timeout = 1000, inport = 1000) {
+    let zkInstance = new ZKLib(this.clock.host, this.clock.port, timeout, inport);
     // realizar conexión
     try {
       await zkInstance.createSocket();
@@ -47,16 +49,45 @@ class SyncClock {
     }
   }
 
-  async initialClock () {
+  async getCountLogs () {
     this.syncConnect = await this.connect();
-    // obtener info del reloj
-    let info = await this.syncConnect.getInfo();
-    let logs = await this.syncConnect.getAttendances();
+    let { logCounts } = await this.syncConnect.getInfo();
+    this.logCounts = logCounts;
+    await this.syncConnect.disconnect(); 
+  }
+
+  async getPreAssistances () {
+    // obtener configuración del schedule
+    let pre_assistances = await PreAssistance.query()
+      .join('works as w', 'w.code', 'pre_assistances.deviceUserId')
+      .join('infos as i', 'i.work_id', 'w.id')
+      .join('schedules as s', 's.info_id', 'i.id')
+      .where('s.date', DB.raw('pre_assistances.date'))
+      .where('pre_assistances.clock_id', this.clock.id)
+      .where('i.estado', 1)
+      .orderBy('w.orden', 'ASC')
+      .orderBy('pre_assistances.recordTime', 'ASC')
+      .select('s.id as schedule_id', 'pre_assistances.clock_id', 'pre_assistances.date', 
+        'pre_assistances.recordTime','s.time_start', 's.time_over', 's.delay_start', 's.delay_over')
+      .fetch();
+    // convertir en json
+    return pre_assistances.toJSON();
+  }
+
+  async initialClock () {
+    // volver a conectar y obtener los regístros
+    this.syncConnect = await this.connect(10000, this.logCounts);
+    let { data } = await this.syncConnect.getAttendances();
     // desconectar del reloj
     await this.syncConnect.disconnect();
-    if (info.logCounts != logs.data.length) return await this.initialClock();
+    // obtener logs
+    let logs = data;
+    // validar data
+    if (this.logCounts != logs.length) return await this.initialClock();
     // sincronizar los datos del reloj con el sistema de escalafón
-    await this.syncAssistance(logs.data);
+    await this.syncAssistance(logs);
+    // preparar datos
+    await this.preparateAssistance();
     // guardar datos
     await this.saveAssistance();
     // delete file
@@ -75,57 +106,78 @@ class SyncClock {
     let parseToString = await JSON.stringify(datos);
     await Drive.put(this.pathRelative, Buffer.from(parseToString));
     // setting logs
-    this.logs = datos;
+    this.logs = collect(datos);
+  }
+
+  async preparateAssistance () {
+    let payload = [];
+    for (let log of this.logs) {
+      let current_date = moment(log.recordTime);
+      // filtrar fecha permitidas
+      if (current_date.year() != this.year || (current_date.month() + 1) != this.month) continue;
+      // preperar 
+      payload.push({
+        deviceUserId: log.deviceUserId,
+        date: moment(log.recordTime).format('YYYY-MM-DD'),
+        recordTime: moment(log.recordTime).format('HH:mm:ss'),
+        clock_id: this.clock.id
+      });
+    }
+    // truncar datos
+    await PreAssistance.truncate();
+    // insert masive
+    await PreAssistance.createMany(payload);
   }
 
   async saveAssistance () {
-    // logs iterar
-    for (let log of this.logs) {
-      let current_date = moment(log.recordTime).format('YYYY-MM-DD');
-      let current_time = moment(log.recordTime).format('HH:mm:ss');
-      let diff_time = moment(log.recordTime).subtract(1, 'minutes').format('HH:mm:ss'); 
-      let config_assistance = this.config_assistances.where('date', current_date).first() || null;
-      if (!config_assistance) {
-        config_assistance = await ConfigAssistance.query()
-          .where('entity_id', this.clock.entity_id)
-          .where('date', current_date)
-          .first();
-        // agregar en caché
-        if (config_assistance) await this.config_assistances.push(config_assistance);
-      }
-      // validar config_assistance
-      if (!config_assistance) continue;
-      // obtener trabajador
-      let work = await Work.findBy('code', log.deviceUserId);
-      if (!work) continue;
-      // obtener el último regístro del trabajador
+    this.config_assistances = await this.getPreAssistances();
+    // validar
+    for (let config of this.config_assistances) {
+      // configs
+      let status = 'ENTRY';
+      let current_date = moment(`${config.date} ${config.recordTime}`);
+      let current_time = current_date.format('HH:mm:ss');
+      let diff_time = current_date.subtract(1, 'minutes').format('HH:mm:ss');
+      // obtener el ultimo regístro de asistencia
       let last_assistance = await Assistance.query()
-        .where('config_assistance_id', config_assistance.id)
-        .where('work_id', work.id)
+        .where('schedule_id', config.schedule_id)
         .where('state', 1)
         .orderBy('record_time', 'DESC')
         .first();
-      // obtener tipo de assistencia
-      let status = 'ENTRY';
+      // verificar si el regístro es igual al de la configuración
       if (last_assistance) {
-        // ya existe el record time
+        // verificar si la asistencia ya existe
         let exists_record_time = await Assistance.query()
-          .where('config_assistance_id', config_assistance.id)
-          .where('work_id', work.id)
+          .where('schedule_id', config.schedule_id)
           .where(DB.raw(`(record_time <= '${current_time}' AND record_time >= '${diff_time}')`))
           .getCount('id');
         if (exists_record_time) continue;
         status = last_assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';
       }
-      // preparar datos 
+      // generamos la pre carga
       let payload = {
-        config_assistance_id: config_assistance.id,
-        work_id: work.id,
-        clock_id: this.clock.id,
-        record_time: current_time,
+        schedule_id: config.schedule_id,
+        clock_id: config.clock_id,
+        record_time: config.recordTime,
         status
       }
-      // guardar en el assistance
+      // obtener recordTime
+      let time_record = moment(config.recordTime, 'HH:mm:ss');
+      // validar delay
+      let delay = 0;
+      let duration = 0;
+      if (payload.status == 'ENTRY') {
+        let time_start = moment(config.time_start, 'HH:mm:ss');
+        duration = moment.duration(time_record.diff(time_start)).asMinutes();
+        delay = duration > 0 ? duration : 0;
+      } else {
+        let time_over = moment(config.time_over, 'HH:mm:ss');
+        duration = moment.duration(time_over.diff(time_record)).asMinutes();
+        delay = duration > 0 ? duration : 0;
+      }
+      // save delay
+      payload.delay = delay;
+      // guardamos y agregamos al storage
       await Assistance.create(payload);
       await this.storage.push(payload);
     }
@@ -175,13 +227,15 @@ class SyncClock {
   }
 
   async handle (data) {
-    let { clocks, auth, app, method } = data;
+    let { clocks, auth, app, method, year, month } = data;
 
     this.auth = auth;
     this.app = app;
     this.method = method;
     this.config_assistances = collect([]);
     this.storage = collect([]);
+    this.year = year;
+    this.month = month;
 
     // obtener ids
     this.ids = await collect(clocks).pluck('id').toArray();
@@ -193,8 +247,12 @@ class SyncClock {
     try {
       for (let clock of clocks) {
         this.clock = clock;
+        // obtener info del reloj
+        await this.getCountLogs();
         // executar clok
         await this.initialClock();
+        // liberar sincronización
+        await this.changedSyncClock(0);
       }
       // enviar notificación
       await this.sendNotificationSuccess();

@@ -10,7 +10,7 @@ class AssistanceSchema extends Schema {
       table.integer('schedule_id').notNullable();
       table.integer('clock_id');
       table.time('record_time').notNullable();
-      table.float('delay', 2).notNullable().defaultTo(0).comment("Tardanza en minutos");
+      table.decimal('delay', 10, 2).notNullable().defaultTo(0).comment("Tardanza en minutos");
       table.enum('status', ['ENTRY', 'EXIT']);
       table.boolean('state').defaultTo(true);
       table.unique(['schedule_id', 'record_time'], 'unique_assistances');

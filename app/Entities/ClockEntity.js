@@ -40,7 +40,7 @@ class ClockEntity {
         }
     }
 
-    async syncAssistances (id, entity_id) {
+    async syncAssistances (id, entity_id, year, month) {
         const priority = 'normal';
         const attempts = 2;
         const remove = true;
@@ -60,6 +60,8 @@ class ClockEntity {
             auth: this.auth,
             app: this.app,
             method: this.method,
+            year,
+            month
         }, 
         { priority, attempts, remove, jobFn });
     }

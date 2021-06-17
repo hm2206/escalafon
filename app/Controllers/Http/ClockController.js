@@ -1,6 +1,7 @@
 'use strict'
 
 const ClockEntity = require('../../Entities/ClockEntity');
+const moment = require('moment');
 
 class ClockController {
 
@@ -34,9 +35,12 @@ class ClockController {
 
     async syncAssistances ({ params, request }) {
         let entity = request.$entity;
+        let date = moment();
+        let year = request.input('year', date.year());
+        let month = request.input('month', date.month() + 1);
         let id = params.id;
         let clockEntity = new ClockEntity(request);
-        await clockEntity.syncAssistances(id, entity.id);
+        await clockEntity.syncAssistances(id, entity.id, year, month);
         // render
         return {
             success: true,
