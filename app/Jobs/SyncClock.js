@@ -38,7 +38,7 @@ class SyncClock {
     if (exists) await Drive.delete(this.pathRelative);
   }
 
-  async connect (timeout = 1000, inport = 1000) {
+  async connect (timeout = 10000, inport = 4000) {
     let zkInstance = new ZKLib(this.clock.host, this.clock.port, timeout, inport);
     // realizar conexión
     try {
@@ -76,7 +76,7 @@ class SyncClock {
 
   async initialClock () {
     // volver a conectar y obtener los regístros
-    this.syncConnect = await this.connect(10000, this.logCounts);
+    this.syncConnect = await this.connect(100000, this.logCounts);
     let { data } = await this.syncConnect.getAttendances();
     // desconectar del reloj
     await this.syncConnect.disconnect();
