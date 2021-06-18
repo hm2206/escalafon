@@ -144,7 +144,7 @@ class ScheduleEntity {
         let is_asssistances = await Assistance.query()
             .where('schedule_id', schedule.id)
             .getCount('id');
-        if (is_asssistances) throw new Error("No se puede elimnar el horario!!!");
+        if (is_asssistances) throw new Error("No se puede actualizar el horario!!!");
         // actualizar
         schedule.merge({ 
             time_start: datos.time_start,
