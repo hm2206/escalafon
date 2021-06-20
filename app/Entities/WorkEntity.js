@@ -43,7 +43,7 @@ class WorkEntity {
         this.authentication = authentication;
     }
 
-    async index (page = 1, query_search = "", filtros = {}, perPage = 20) {
+    async index (page = 1, query_search = "", filtros = {}, entity_id = "", perPage = 20) {
         let works = Work.query();
         if (query_search) works.where('orden', 'like', `%${query_search}%`);
         // filtros
@@ -51,6 +51,11 @@ class WorkEntity {
             let value = filtros[value];
             if (value) works.where(attr, value); 
         }
+        // obtener contador de contratos
+        works.withCount('infos', (builder) => {
+            builder.where('estado', 1)
+            if (entity_id) builder.where('entity_id', entity_id)
+        });
         // obtener trabajadores
         works = await works.paginate(page, perPage);
         works = await works.toJSON();
