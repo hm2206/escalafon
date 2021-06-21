@@ -9,7 +9,7 @@ Route('get', 'AfpController.index').middleware(['jwt']);
 Route('get', 'BancoController.index').middleware(['jwt']);
 
 // Works
-Route('get', 'WorkController.index').middleware(['jwt']);
+Route('get', 'WorkController.index').middleware(['jwt', 'entityId']);
 Route('post', 'WorkController.store').middleware(['jwt']);
 Route('get', 'WorkController.show').middleware(['jwt']);
 Route('put', 'WorkController.update').middleware(['jwt']);
