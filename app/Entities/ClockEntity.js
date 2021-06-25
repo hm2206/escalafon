@@ -56,7 +56,7 @@ class ClockEntity {
         await clock.save();
         // poner en cola
         kue.dispatch(SyncClock.key, { 
-            clocks: [clock],
+            clock,
             auth: this.auth,
             app: this.app,
             method: this.method,

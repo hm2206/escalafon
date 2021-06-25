@@ -1,19 +1,13 @@
 'use strict';
 
 const collect = require('collect.js');
-const Schedule = use('App/Models/Schedule');
-const Work = use('App/Models/Work'); 
-const Info = use('App/Models/Info');
 const PreAssistance = use('App/Models/PreAssistance');
 const Assistance = use('App/Models/Assistance');
 const Clock = use('App/Models/Clock');
 const moment = require('moment');
-const ZKLib = require('node-zklib');
-const uid = require('uid');
-const Drive = use('Drive');
 const DB = use('Database');
 const { getSystemKey } = require('../Services/tools');
-const { authentication } = require('../Services/apis');
+const { authentication, apiClock } = require('../Services/apis');
 
 class SyncClock {
   // If this getter isn't provided, it will default to 1.
@@ -29,31 +23,25 @@ class SyncClock {
 
   async changedSyncClock (sync = 1) {
     await Clock.query()
-      .whereIn('id', this.ids)
+      .where('id', this.clock.id)
       .update({ sync });
   }
 
-  async deleteFileTemp () {
-    let exists = await Drive.exists(this.pathRelative);
-    if (exists) await Drive.delete(this.pathRelative);
+  async syncClock () {
+    // sincronizar reloj
+    let isSync = await apiClock.post(`assistances/${this.clock.host || ""}/syncronize`)
+    .then(() => true)
+    .catch(() => false)
+    // validar sincronización
+    if (!isSync) throw new Error("No se pudó sincronizar el reloj");
   }
 
-  async connect (timeout = 10000, inport = 4000) {
-    let zkInstance = new ZKLib(this.clock.host, this.clock.port, timeout, inport);
-    // realizar conexión
-    try {
-      await zkInstance.createSocket();
-      return zkInstance;
-    } catch (e) {
-      throw new Error("No se pudó realizar la conexión");
-    }
-  }
-
-  async getCountLogs () {
-    this.syncConnect = await this.connect();
-    let { logCounts } = await this.syncConnect.getInfo();
-    this.logCounts = logCounts;
-    await this.syncConnect.disconnect(); 
+  async getAttendances () {
+    let { success, assistances } = await apiClock.get(`assistances?ip=${this.clock.host}&year=${this.year}&month=${this.month}`)
+    .then(res => res.data)
+    .catch(() => ({ success: false }));
+    if (!success) throw new Error("No se pudó obtener los regístros de asistencia");
+    this.logs = collect(assistances);
   }
 
   async getPreAssistances () {
@@ -74,52 +62,14 @@ class SyncClock {
     return pre_assistances.toJSON();
   }
 
-  async initialClock () {
-    // volver a conectar y obtener los regístros
-    this.syncConnect = await this.connect(100000, this.logCounts);
-    let { data } = await this.syncConnect.getAttendances();
-    // desconectar del reloj
-    await this.syncConnect.disconnect();
-    // obtener logs
-    let logs = data;
-    // validar data
-    if (this.logCounts != logs.length) return await this.initialClock();
-    // sincronizar los datos del reloj con el sistema de escalafón
-    await this.syncAssistance(logs);
-    // preparar datos
-    await this.preparateAssistance();
-    // guardar datos
-    await this.saveAssistance();
-    // delete file
-    await this.deleteFileTemp();
-  }
-
-  async syncAssistance (datos) {
-    if (!datos.length) {
-      this.logs = [];
-      return;
-    }
-    // generar slug
-    this.slug = uid(10);
-    // guardar logs temporal
-    this.pathRelative = `clock/sync/assistance_${this.slug}.json`;
-    let parseToString = await JSON.stringify(datos);
-    await Drive.put(this.pathRelative, Buffer.from(parseToString));
-    // setting logs
-    this.logs = collect(datos);
-  }
-
-  async preparateAssistance () {
+  async preparateAssistances () {
     let payload = [];
     for (let log of this.logs) {
-      let current_date = moment(log.recordTime);
-      // filtrar fecha permitidas
-      if (current_date.year() != this.year || (current_date.month() + 1) != this.month) continue;
       // preperar 
       payload.push({
-        deviceUserId: log.deviceUserId,
-        date: moment(log.recordTime).format('YYYY-MM-DD'),
-        recordTime: moment(log.recordTime).format('HH:mm:ss'),
+        deviceUserId: log.user_device_id,
+        date: moment(`${log.year}-${log.month}-${log.day}`, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+        recordTime: log.time,
         clock_id: this.clock.id
       });
     }
@@ -129,7 +79,7 @@ class SyncClock {
     await PreAssistance.createMany(payload);
   }
 
-  async saveAssistance () {
+  async syncAssistances () {
     this.config_assistances = await this.getPreAssistances();
     // validar
     for (let config of this.config_assistances) {
@@ -227,8 +177,9 @@ class SyncClock {
   }
 
   async handle (data) {
-    let { clocks, auth, app, method, year, month } = data;
+    let { clock, auth, app, method, year, month } = data;
 
+    this.clock = clock;
     this.auth = auth;
     this.app = app;
     this.method = method;
@@ -237,29 +188,28 @@ class SyncClock {
     this.year = year;
     this.month = month;
 
-    // obtener ids
-    this.ids = await collect(clocks).pluck('id').toArray();
-
     // sync clocks
     await this.changedSyncClock(1);
 
     // procesar
     try {
-      for (let clock of clocks) {
-        this.clock = clock;
-        // obtener info del reloj
-        await this.getCountLogs();
-        // executar clok
-        await this.initialClock();
-        // liberar sincronización
-        await this.changedSyncClock(0);
-      }
+      // realizar sincronización del reloj
+      await this.syncClock();
+      // obtener los registros del reloj
+      await this.getAttendances();
+      // preparar asistencia
+      await this.preparateAssistances();
+      // executar sincronización de asistencia
+      await this.syncAssistances();
+      // liberar sincronización
+      await this.changedSyncClock(0);
       // enviar notificación
       await this.sendNotificationSuccess();
     } catch (error) {
+      // liberar sincronización
+      await this.changedSyncClock(0);
+      // notificar error
       await this.sendNotificationError(error);
-      // eliminar file temporal
-      await this.deleteFileTemp();
     }
   }
   
