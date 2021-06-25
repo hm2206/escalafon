@@ -24,7 +24,9 @@ class AssistanceEntity {
 
     async getAssistances (authentication, page = 1, filtros = {}, query_search = "") {
         let assistances = Assistance.query()
-            .join('works as w', 'w.id', 'assistances.work_id')
+            .join('schedules as s', 's.id', 'assistances.schedule_id')
+            .join('infos as i', 'i.id', 's.info_id')
+            .join('works as w', 'w.id', 'i.work_id')
             .select('assistances.*', 'w.person_id', 'w.orden')
             .where('assistances.state', 1)
             .orderBy('w.orden', 'ASC')

@@ -1,17 +1,15 @@
 'use strict'
 
 const AssistanceEntity = require('../../Entities/AssistanceEntity');
-const ConfigAssistance = use('App/Models/ConfigAssistance');
+const moment = require('moment')
 
 class AssistanceController {
 
     async index ({ request }) {
         let entity = request.$entity;
         let { page, query_search } = request.all();
-        let config_assistance = await ConfigAssistance.query()
-            .where('entity_id', entity.id)
-            .where('id', request.input('config_assistance'))
-        let filtros = { entity_id: entity.id };
+        let date = request.input('date', moment().format('YYYY-MM-DD'));
+        let filtros = { entity_id: entity.id, "s.date": date };
         let authentication = request.api_authentication;
         let assistanceEntity = new AssistanceEntity();
         let assistances = await assistanceEntity.getAssistances(authentication, page || 1, filtros, query_search || "");
