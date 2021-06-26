@@ -1,6 +1,7 @@
 'use strict';
 
 const Assistance = use('App/Models/Assistance');
+const ReportAssistanceBuild = require('../Helpers/ReportAssistanceBuilder');
 const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const { validation, ValidatorError } = require('validator-error-adonis');
@@ -20,6 +21,10 @@ class AssistanceEntity {
     status = {
         ENTRY: "EXIT",
         EXIT: "ENTRY",
+    }
+
+    constructor (authentication = null) {
+        if (authentication) this.authentication = authentication;
     }
 
     async getAssistances (authentication, page = 1, filtros = {}, query_search = "") {
@@ -105,6 +110,11 @@ class AssistanceEntity {
         assistance.merge({ state: 0 });
         await assistance.save();
         return assistance;
+    }
+
+    async reportMonthly(year, month, filters = {}) {
+        const reportAssistanceBuild = new ReportAssistanceBuild(this.authentication, year, month, filters);
+        return await reportAssistanceBuild.render();
     }
 
 }

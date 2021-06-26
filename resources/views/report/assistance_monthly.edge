@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{ style(link + "/css/default.css") }}
+    {{ style(link + "/css/report.css") }}
+    <title>Reporte de Ficha Escalafonaria</title>
+</head>
+
+<body class="a4" style="margin-bottom: 2em; margin-top: 2em;">
+
+    <h3 class="text-center mt-3 uppercase">REPORTE DE MARCACION DE ASISTENCIA | {{ displayMonth }} - {{ year }}</h3>
+
+    {{--  listado de contratos  --}}
+    @each(info in infos) 
+        <div class="pl-3 pr-3">
+            <table class="table text-left">
+                <thead>
+                    <tr>
+                        <td colspan="2">
+                            <div class="pt-2"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Trabajador</th>
+                        <td class="uppercase">: <b>{{ info.person && info.person.fullname || "" }}</b></td>
+                    </tr>
+                    <tr>
+                        <th>Categoría</th>
+                        <td>: {{ info.type_categoria && info.type_categoria.descripcion || "" }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="pt-2"></div>
+                        </td>
+                    </tr>
+                </thead>
+                @each(schedule in info.schedules )
+                    <tbody>
+                        <tr>
+                            <th colspan="2" style="border-bottom: 1.3px solid #000">Fecha: <span class="pl-1">{{ moment(schedule.date).format('dddd, DD') }} de {{ displayMonth }} de {{ year }}</span></th>
+                        </tr>
+                        @each(assistance in schedule.assistances) 
+                            <tr>
+                                <td>
+                                    <span class="pl-3">{{ assistance.clock_id ? 'RELOJ' : 'MANUAL' }}</span>
+                                </td>
+                                <td>
+                                    : {{ assistance.record_time || "" }}
+                                </td>
+                            </tr>
+                        @endeach
+                    </tbody>
+                @endeach
+            </table>
+        </div>
+    @endeach
+
+</body>
+</html>

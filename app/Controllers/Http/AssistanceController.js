@@ -57,6 +57,20 @@ class AssistanceController {
         }
     }
 
+    async reportMonthly ({ request, response }) {
+        let authentication = request.api_authentication;
+        let entity = request.$entity;
+        let date = moment();
+        let year = request.input('year', date.year())
+        let month = request.input('month', date.month() + 1)
+        let filters = request.only(['planilla_id', 'cargo_id', 'type_categoria_id', 'query_search', 'id']);
+        filters.entity_id = entity.id;
+        let assistanceEntity = new AssistanceEntity(authentication);
+        let monthly = await assistanceEntity.reportMonthly(year, month, filters);
+        response.header('Content-Type', 'application/pdf');
+        return response.send(monthly);
+    }
+
 }
 
 module.exports = AssistanceController

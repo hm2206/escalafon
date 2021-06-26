@@ -1,6 +1,5 @@
 'use strict';
 
-const ReportBuilder = use('ReportBuilder');
 const htmlToPdf = require('html-pdf-node');
 const Info = use('App/Models/Info');
 const DB = use('Database');

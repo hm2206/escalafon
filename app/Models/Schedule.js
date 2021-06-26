@@ -11,6 +11,10 @@ class Schedule extends Model {
         return moment(value).format('YYYY-MM-DD');
     }
 
+    assistances() {
+        return this.hasMany('App/Models/Assistance')
+    }
+
 }
 
 module.exports = Schedule

@@ -143,6 +143,12 @@
         "description": "Ocultar Asistencia",
         "action_type": "DELETE"
     },
+    "AssistanceController.reportMonthly": {
+        "name": "AssistanceController.reportMonthly",
+        "url": "api/assistances/report/monthly",
+        "description": "Reporte mensual de asistencia",
+        "action_type": "VIEW"
+    },
     "EntityController.works": {
         "name": "EntityController.works",
         "url": "api/entities/:id/works",
