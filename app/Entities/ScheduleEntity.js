@@ -67,10 +67,6 @@ class ScheduleEntity {
         let select_fecha = moment(`${moment(datos.date).format('YYYY-MM')}-01`);
         let isDeny = current_fecha.diff(select_fecha, 'months').valueOf();
         if (isDeny >= 1) throw new ValidatorError([{ field: 'date', message: `La fecha debe ser mayor/igual a 01/${moment().format('MM/YYYY')}` }]);
-        // validar time_start y time_over
-        let current_start = moment(`${datos.date} ${datos.time_start}`);
-        let current_over = moment(`${datos.date} ${datos.time_over}`);
-        if (current_start.format('HH:mm:ss') > current_over.format('HH:mm:ss')) throw new ValidatorError([{ field: 'time_over', message: `La hora de salida debe ser mayor a ${current_over.format('HH:mm:ss A')}` }]);
         // validar contrato que esté activo
         let info = await Info.query()
             .where('id', datos.info_id)
