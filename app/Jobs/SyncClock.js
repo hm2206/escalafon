@@ -69,7 +69,7 @@ class SyncClock {
       payload.push({
         deviceUserId: log.user_device_id,
         date: moment(`${log.year}-${log.month}-${log.day}`, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-        recordTime: log.time,
+        recordTime: `${moment(log.time, 'HH:mm:ss').format('HH:mm')}:00`,
         clock_id: this.clock.id
       });
     }
@@ -85,7 +85,7 @@ class SyncClock {
     for (let config of this.config_assistances) {
       // configs
       let status = 'ENTRY';
-      let current_date = moment(`${config.date} ${config.recordTime}`);
+      let current_date = moment(`${config.date} ${config.recordTime}`, 'YYYY-MM-DD HH:mm');
       let current_time = current_date.format('HH:mm:ss');
       let diff_time = current_date.subtract(1, 'minutes').format('HH:mm:ss');
       // obtener el ultimo regístro de asistencia

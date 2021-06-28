@@ -73,6 +73,9 @@ class ScheduleEntity {
             .where('estado', 1)
             .first();
         if (!info) throw NotFoundModelException("El contrato");
+        // formatear times
+        datos.time_start = `${moment(datos.time_start, 'HH:mm:ss').format('HH:mm')}:00`
+        datos.time_over = `${moment(datos.time_over, 'HH:mm:ss').format('HH:mm')}:00`
         // guardar horario
         try {
             return await Schedule.create({
@@ -137,6 +140,9 @@ class ScheduleEntity {
             .where('schedule_id', schedule.id)
             .getCount('id');
         if (is_asssistances) throw new Error("No se puede actualizar el horario!!!");
+        // formatear times
+        datos.time_start = `${moment(datos.time_start, 'HH:mm:ss').format('HH:mm')}:00`
+        datos.time_over = `${moment(datos.time_over, 'HH:mm:ss').format('HH:mm')}:00`
         // actualizar
         schedule.merge({ 
             time_start: datos.time_start,
