@@ -10,11 +10,11 @@ class ScheduleSchema extends Schema {
       table.integer('info_id').notNullable();
       table.integer('index').notNullable();
       table.date('date').notNullable();
-      table.time('time_start').notNullable();
+      table.time('time_start');
       table.float('delay_start').notNullable().defaultTo('0');
-      table.time('time_over').notNullable();
-      table.float('delay_over').notNullable().defaultTo('0');
+      table.time('time_over');
       table.text('observation');
+      table.enum('modo', ['ALL', 'ENTRY', 'EXIT']).defaultTo('ALL')
       table.boolean('state').defaultTo(true);
       table.unique(['info_id', 'index', 'date', 'time_start', 'time_over'], 'unique_schedule_info');
       table.timestamps()
