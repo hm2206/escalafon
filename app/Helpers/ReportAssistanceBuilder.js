@@ -83,9 +83,11 @@ class ReportAssistanceBuild {
                 .with('assistances', buildA => {
                     buildA.select('assistances.id', 'assistances.schedule_id', 'assistances.clock_id', 'assistances.record_time', 'assistances.status')
                         .where('assistances.state', 1)
+                        .orderBy('assistances.record_time', 'ASC')
                 })
                 .select(...attrs)
                 .groupBy(...attrs)
+                .orderBy('schedules.date', 'ASC')
             }) 
             .join('works as w', 'w.id', 'infos.work_id')
             .join('schedules as s', 's.info_id', 'infos.id')
@@ -106,7 +108,7 @@ class ReportAssistanceBuild {
         }
         // obtener datos
         tmpInfos = await tmpInfos.groupBy(...attributes)
-            .orderBy('s.date', 'ASC')
+            .orderBy('w.orden', 'ASC')
             .select(...attributes)
             .fetch();
         // response

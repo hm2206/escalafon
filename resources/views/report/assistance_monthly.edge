@@ -48,7 +48,7 @@
                                     <span class="pl-3">{{ assistance.clock_id ? 'RELOJ' : 'MANUAL' }}</span>
                                 </td>
                                 <td>
-                                    : {{ assistance.record_time || "" }}
+                                    : {{ assistance.record_time || "" }}  <span class="ml-2">{{ assistance.status == 'ENTRY' ? 'Entrada' : 'Salida' }}</span>
                                 </td>
                             </tr>
                         @endeach

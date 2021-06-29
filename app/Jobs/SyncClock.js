@@ -3,6 +3,7 @@
 const collect = require('collect.js');
 const PreAssistance = use('App/Models/PreAssistance');
 const Assistance = use('App/Models/Assistance');
+const Schedule = use('App/Models/Schedule');
 const Clock = use('App/Models/Clock');
 const moment = require('moment');
 const DB = use('Database');
@@ -45,6 +46,7 @@ class SyncClock {
   }
 
   async getPreAssistances () {
+    let allowAssistances = ['i.id', 'pre_assistances.clock_id', 'pre_assistances.date', 'pre_assistances.recordTime'];
     // obtener configuración del schedule
     let pre_assistances = await PreAssistance.query()
       .join('works as w', 'w.code', 'pre_assistances.deviceUserId')
@@ -54,12 +56,18 @@ class SyncClock {
       .where('pre_assistances.clock_id', this.clock.id)
       .where('i.estado', 1)
       .orderBy('w.orden', 'ASC')
+      .orderBy('pre_assistances.date', 'ASC')
       .orderBy('pre_assistances.recordTime', 'ASC')
-      .select('s.id as schedule_id', 'pre_assistances.clock_id', 'pre_assistances.date', 
-        'pre_assistances.recordTime','s.time_start', 's.time_over', 's.delay_start', 's.modo')
+      .select(...allowAssistances)
+      .groupBy(...allowAssistances)
       .fetch();
     // convertir en json
-    return pre_assistances.toJSON();
+    let index = 0;
+    let datos = collect(await pre_assistances.toJSON());
+    return await datos.map(d => {
+      d.index = index++;
+      return d;
+    });
   }
 
   async preparateAssistances () {
@@ -79,60 +87,106 @@ class SyncClock {
     await PreAssistance.createMany(payload);
   }
 
-  async syncAssistances () {
-    this.config_assistances = await this.getPreAssistances();
-    // validar
-    for (let config of this.config_assistances) {
-      // configs
-      let status = 'ENTRY';
-      let current_date = moment(`${config.date} ${config.recordTime}`, 'YYYY-MM-DD HH:mm');
-      let current_time = current_date.format('HH:mm:ss');
-      let diff_time = current_date.subtract(1, 'minutes').format('HH:mm:ss');
+  async getConfig(schedule = {}) {
+    let config = this.config_assistances.where('id', schedule.info_id)
+      .where('date', schedule.date)
+    // filtrar por modo
+    let findModo = ['ENTRY', 'EXIT'];
+    if (findModo.includes(schedule.modo)) {
+      return await config.first();
+    } else {
+      return await config.toArray();
+    }
+  }
+
+  async validateSchedule(schedule, config) {
+    if (!config) return;
+    // eliminar config
+    let indexes = this.config_assistances.pluck('index').toArray();
+    let current_index = indexes.indexOf(config.index); 
+    await this.config_assistances.splice(current_index, 1);
+    // obtener date y time
+    let current_date = moment(`${config.date} ${config.recordTime}`, 'YYYY-MM-DD HH:mm');
+    let current_time = current_date.format('HH:mm:ss');
+    let diff_time = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).subtract(5, 'minutes').format('HH:mm:ss');
+    // validar direfencia de hora
+    let exists_record_time = await Assistance.query()
+      .where('schedule_id', schedule.id)
+      .where(DB.raw(`(record_time <= '${current_time}' AND record_time >= '${diff_time}')`))
+      .getCount('id');
+    if (exists_record_time) return;
+    // preparar datos
+    let payload = {
+      schedule_id: schedule.id,
+      clock_id: config.clock_id,
+      record_time: current_time,
+      delay: 0,
+      extra: 0,
+      status: 'ENTRY'
+    }
+    // validar modo
+    if (schedule.modo == 'EXIT') payload.status = 'EXIT';
+    else if (schedule.modo == 'ENTRY') payload.status = 'ENTRY';
+    else {
       // obtener el ultimo regístro de asistencia
-      let last_assistance = await Assistance.query()
-        .where('schedule_id', config.schedule_id)
+      let assistance = await Assistance.query()
+        .where('schedule_id', schedule.id)
         .where('state', 1)
         .orderBy('record_time', 'DESC')
         .first();
-      // verificar si el regístro es igual al de la configuración
-      if (last_assistance) {
-        // verificar si la asistencia ya existe
-        let exists_record_time = await Assistance.query()
-          .where('schedule_id', config.schedule_id)
-          .where(DB.raw(`(record_time <= '${current_time}' AND record_time >= '${diff_time}')`))
-          .getCount('id');
-        if (exists_record_time) continue;
-        status = last_assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';
+      // verificar configuración del status
+      if (assistance) payload.status = assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';
+    }  
+    // validar delay y tiempo extra
+    let time_record = moment(config.recordTime, 'HH:mm:ss');
+    let duration = 0;
+    if (payload.status == 'ENTRY') {
+      let time_start = moment(schedule.time_start, 'HH:mm:ss');
+      duration = moment.duration(time_record.diff(time_start)).asMinutes() - schedule.delay_start;
+      payload.delay = duration > 0 ? duration : 0;
+    } else {
+      let time_over = moment(schedule.time_over, 'HH:mm:ss');
+      duration = moment.duration(time_over.diff(time_record)).asMinutes();
+      payload.delay = duration > 0 ? duration : 0;
+      // validar extra
+      if (payload.delay == 0) {
+        duration = moment.duration(time_record.diff(time_over)).asMinutes();
+        payload.extra = duration > 0 ? duration : 0;
       }
-      // validar solo entrada
-      if (config.modo == 'ENTRY') status = 'ENTRY';
-      else if (config.modo == 'EXIT') status = 'EXIT';
-      // generamos la pre carga
-      let payload = {
-        schedule_id: config.schedule_id,
-        clock_id: config.clock_id,
-        record_time: config.recordTime,
-        status
+    }
+    // guardamos la asistencias
+    await Assistance.create(payload);
+    // agregar assistencia
+    this.storage.push(payload);
+  }
+
+  async syncAssistances () {
+    this.config_assistances = await this.getPreAssistances();
+    let infoIds = await collect(this.config_assistances.toArray()).groupBy('id').keys().toArray();
+    // validar
+    for (let id of infoIds) {
+      // obtener schedules
+      let schedules = await Schedule.query()
+        .where('info_id', id)
+        .where(DB.raw(`YEAR(date) = ${this.year} AND MONTH(date) = ${this.month}`))
+        .orderBy('date', 'ASC')
+        .orderBy('orden', 'ASC')
+        .select('*', DB.raw(`IF(modo = 'EXIT', time_over, time_start) as orden`))
+        .fetch();
+      schedules = collect(await schedules.toJSON());
+      // configurar schedule
+      for (let schedule of schedules) {
+        let validateModo = ['ENTRY', 'EXIT'];
+        if (validateModo.includes(schedule.modo)) {
+          let config = await this.getConfig(schedule);
+          await this.validateSchedule(schedule, config);
+        } else {
+          let configs = await this.getConfig(schedule);
+          for (let current_config of configs) {
+            await this.validateSchedule(schedule, current_config);
+          }
+        }
       }
-      // obtener recordTime
-      let time_record = moment(config.recordTime, 'HH:mm:ss');
-      // validar delay
-      let delay = 0;
-      let duration = 0;
-      if (payload.status == 'ENTRY') {
-        let time_start = moment(config.time_start, 'HH:mm:ss');
-        duration = moment.duration(time_record.diff(time_start)).asMinutes();
-        delay = duration > 0 ? duration : 0;
-      } else {
-        let time_over = moment(config.time_over, 'HH:mm:ss');
-        duration = moment.duration(time_over.diff(time_record)).asMinutes();
-        delay = duration > 0 ? duration : 0;
-      }
-      // save delay
-      payload.delay = delay;
-      // guardamos y agregamos al storage
-      await Assistance.create(payload);
-      await this.storage.push(payload);
     }
   }
 
@@ -197,7 +251,7 @@ class SyncClock {
     // procesar
     try {
       // realizar sincronización del reloj
-      await this.syncClock();
+      // await this.syncClock();
       // obtener los registros del reloj
       await this.getAttendances();
       // preparar asistencia
