@@ -56,7 +56,7 @@ class SyncClock {
       .orderBy('w.orden', 'ASC')
       .orderBy('pre_assistances.recordTime', 'ASC')
       .select('s.id as schedule_id', 'pre_assistances.clock_id', 'pre_assistances.date', 
-        'pre_assistances.recordTime','s.time_start', 's.time_over', 's.delay_start', 's.delay_over')
+        'pre_assistances.recordTime','s.time_start', 's.time_over', 's.delay_start', 's.modo')
       .fetch();
     // convertir en json
     return pre_assistances.toJSON();
@@ -104,6 +104,9 @@ class SyncClock {
         if (exists_record_time) continue;
         status = last_assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';
       }
+      // validar solo entrada
+      if (config.modo == 'ENTRY') status = 'ENTRY';
+      else if (config.modo == 'EXIT') status = 'EXIT';
       // generamos la pre carga
       let payload = {
         schedule_id: config.schedule_id,

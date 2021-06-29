@@ -106,6 +106,7 @@ class ReportAssistanceBuild {
         }
         // obtener datos
         tmpInfos = await tmpInfos.groupBy(...attributes)
+            .orderBy('s.date', 'ASC')
             .select(...attributes)
             .fetch();
         // response
