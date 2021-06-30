@@ -6,6 +6,9 @@
     left: 0px;
 }
 
+@page {
+    margin: 1em 1.5em;
+}
 
 /* texto */
 .parrafo {

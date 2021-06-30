@@ -9,9 +9,9 @@
     <title>Reporte de Ficha Escalafonaria</title>
 </head>
 
-<body class="a4" style="margin-bottom: 2em; margin-top: 2em;">
+<body class="a4">
 
-    <h3 class="text-center mt-3 uppercase">REPORTE DE MARCACION DE ASISTENCIA | {{ displayMonth }} - {{ year }}</h3>
+    <h3 class="text-center mt-1 uppercase">REPORTE DE MARCACION DE ASISTENCIA | {{ displayMonth }} - {{ year }}</h3>
 
     {{--  listado de contratos  --}}
     @each(info in infos) 
@@ -38,7 +38,7 @@
                     </tr>
                 </thead>
                 @each(schedule in info.schedules )
-                    <tbody style="page-break-inside: auto;">
+                    <tbody>
                         <tr>
                             <th colspan="2" style="border-bottom: 1.3px solid #000">Fecha: <span class="pl-1">{{ moment(schedule.date).format('dddd, DD') }} de {{ displayMonth }} de {{ year }}</span></th>
                         </tr>
