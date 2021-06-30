@@ -124,7 +124,7 @@ class ReportAssistanceBuild {
 
     dateRender() {
         // displayers
-        let displayMonth = `${moment(new Date(`${this.year}-${this.month}-01`)).format('MMMM')}`;
+        let displayMonth = `${moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('MMMM')}`;
         // datos
         return {
             year: this.year,
