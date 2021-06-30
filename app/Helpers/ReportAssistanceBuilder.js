@@ -6,6 +6,7 @@ const moment = require('moment');
 const View = use('View');
 const DB = use('Database');
 const Info = use('App/Models/Info');
+const uid = require('uid')
 
 const days = {
     0: "Domingo",
@@ -32,6 +33,9 @@ class ReportAssistanceBuild {
     month = ""
     infos = []
     people = []
+    limit = 53
+    count = 0
+    page = 1
     options = {
         format: 'A4'
     }
@@ -122,26 +126,93 @@ class ReportAssistanceBuild {
         });
     }
 
-    dateRender() {
-        // displayers
-        let displayMonth = `${moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('MMMM')}`;
+    displayTitle() {
+        let textMonth = `${moment(`${this.date}`, 'YYYY-MM-DD').format('MMMM')}`;
+        return `REPORTE DE MARCACION DE ASISTENCIA | ${textMonth} - ${this.year}`;
+    }
+
+    displayJob(info = {}) {
+        return {
+            fullname: info.person && info.person.fullname || "",
+            categoria: info.type_categoria && info.type_categoria.descripcion || ""
+        }
+    }
+
+    displayFecha(schedule = {}) {
+        let currentDate = moment(schedule.date, 'YYYY-MM-DD');
+        let fecha = `${currentDate.format('dddd, DD') } de ${currentDate.format('MMMM')} de ${currentDate.year()}`;
+        let newAssistances = [];
+        // assistance
+        for (let assistance of schedule.assistances) {
+            newAssistances.push(this.displayAssistance(assistance));
+        }
+        // response
+        return { fecha, assistances: newAssistances };
+    }
+
+    displayAssistance(assistance) {
+        return { 
+            modo: assistance.clock_id ? 'RELOJ' : 'MANUAL',
+            time: assistance.record_time || "",
+            status: assistance.status == 'ENTRY' ? 'Entrada' : 'Salida'
+        }
+    }
+
+    schemaData(value = "", key, rows = 1) {
+        let type = typeof value;
+        let allowKey = ['TITLE', 'JOB', 'CATEGORIA', 'FECHA', 'ASSISTANCE', 'PAGE'];
+        if (!allowKey.includes(key)) throw new Error("El tipo es invalido!!!");
+        return {
+            id: uid(8),
+            current: value,
+            key,
+            type,
+            rows,
+        }
+    }
+
+    async settingData() {
+        let newDatos = [];
+        newDatos.push(this.schemaData(this.displayTitle(), 'TITLE', 2))
+        this.count = 2;
+        // infos
+        for (let info of this.infos) {
+            newDatos.push(this.schemaData(this.displayJob(info), 'JOB', 4));
+            this.count += 4;
+            // schedules
+            for (let schedule of info.schedules) {
+                newDatos.push(this.schemaData(this.displayFecha(schedule), 'FECHA'));
+                this.count += 1;
+                // assistances
+                // for (let assistance of schedule.assistances) {
+                //     this.count += 1;
+                //     newDatos.push(this.schemaData(this.displayAssistance(assistance), 'ASSISTANCE'));
+                // }
+            }
+            
+        }
+        // response datos
+        return newDatos;
+    }
+
+    async dataRender() {
         // datos
         return {
-            year: this.year,
-            month: this.year,
-            displayMonth,
-            infos: this.infos,
-            days,
+            datos: await this.settingData(),
             moment,
         }
     }
 
     async render() {
+        // date
+        this.date = moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        // configs
         await this.getAssistances();
         await this.stepPeople();
         await this.settingAssistances();
         // generar HTML
-        let html = await View.render('report/assistance_monthly', this.dateRender());
+        let datos = await this.dataRender();
+        let html = await View.render('report/assistance_monthly', datos);
         // generar PDF
         let file = { content: html };
         return await htmlToPdf.generatePdf(file, this.options);

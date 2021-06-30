@@ -11,52 +11,54 @@
 
 <body class="a4">
 
-    <h3 class="text-center mt-1 uppercase">REPORTE DE MARCACION DE ASISTENCIA | {{ displayMonth }} - {{ year }}</h3>
-
-    {{--  listado de contratos  --}}
-    @each(info in infos) 
-        <div class="pl-3 pr-3">
-            <table class="table text-left">
+    @each(data in datos)
+        {{--  type  title --}}
+        @if(data.key == 'TITLE') 
+            <h3 class="text-center mt-1 uppercase">{{ data.current }}</h3>
+            <br/>
+        @endif 
+        {{--  type job  --}}
+        @if(data.key == 'JOB')
+            <br/>
+            <table class="table f-11" width="100%" style="page-break-inside: avoid;">
                 <thead>
                     <tr>
-                        <td colspan="2">
-                            <div class="pt-2"></div>
-                        </td>
+                        <th width="120px" class="text-left">Trabajador</th>
+                        <td class="uppercase">: {{ data.current.fullname || "" }}</td>
                     </tr>
                     <tr>
-                        <th>Trabajador</th>
-                        <td class="uppercase">: <b>{{ info.person && info.person.fullname || "" }}</b></td>
-                    </tr>
-                    <tr>
-                        <th>Categoría</th>
-                        <td>: {{ info.type_categoria && info.type_categoria.descripcion || "" }}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <div class="pt-2"></div>
-                        </td>
+                        <th width="120px" class="text-left">Categoría</th>
+                        <td class="uppercase">: {{ data.current.categoria || "" }}</td>
                     </tr>
                 </thead>
-                @each(schedule in info.schedules )
-                    <tbody>
-                        <tr>
-                            <th colspan="2" style="border-bottom: 1.3px solid #000">Fecha: <span class="pl-1">{{ moment(schedule.date).format('dddd, DD') }} de {{ displayMonth }} de {{ year }}</span></th>
-                        </tr>
-                        @each(assistance in schedule.assistances) 
-                            <tr>
-                                <td>
-                                    <span class="pl-3">{{ assistance.clock_id ? 'RELOJ' : 'MANUAL' }}</span>
-                                </td>
-                                <td>
-                                    : {{ assistance.record_time || "" }}  <span class="ml-2">{{ assistance.status == 'ENTRY' ? 'Entrada' : 'Salida' }}</span>
-                                </td>
-                            </tr>
-                        @endeach
-                    </tbody>
-                @endeach
             </table>
-        </div>
+            <br/>
+        @endif
+        {{--  type fecha  --}}
+        @if(data.key == 'FECHA')
+            <table class="table f-11" width="100%" style="page-break-inside: avoid;">
+                <thead>
+                    <tr>
+                        <th style="border-bottom: 1.5px solid #000;" colspan="2" width="50px" class="text-left">
+                            Fecha: <span class="ml-2 pl-2">{{ data.current.fecha }}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @each(assistance in data.current.assistances)
+                        <tr>
+                            <td width="200px">
+                                <span class="pl-3">{{ assistance.modo || "" }}</span>
+                            </td>
+                            <td>
+                                {{ assistance.time }}  <span class="ml-2">{{ assistance.status }}</span>
+                            </td>
+                        </tr>
+                    @endeach
+                </tbody>
+            </table>
+        @endif
     @endeach
-
+    
 </body>
 </html>
