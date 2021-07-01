@@ -166,5 +166,17 @@
         "url": "api/ballots",
         "description": "Crear papeleta",
         "action_type": "CREATE"
+    },
+    "BallotController.update": {
+        "name": "BallotController.update",
+        "url": "api/ballots/:id",
+        "description": "Actualizar papeleta",
+        "action_type": "UPDATE"
+    },
+    "BallotController.delete": {
+        "name": "BallotController.delete",
+        "url": "api/ballots/:id",
+        "description": "Eliminar papeleta",
+        "action_type": "DELETE"
     }
 }

@@ -47,3 +47,5 @@ Route('get', 'AssistanceController.reportMonthly').middleware(['jwt', 'entityId'
 
 // Ballots
 Route('post', 'BallotController.store').middleware(['jwt', 'entityId']);
+Route('delete', 'BallotController.delete').middleware(['jwt', 'entityId']);
+Route('put', 'BallotController.update').middleware(['jwt', 'entityId']);

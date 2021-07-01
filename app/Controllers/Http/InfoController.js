@@ -83,11 +83,17 @@ class InfoController {
     
     async ballots ({ params, request }) {
         const entity = request.$entity;
+        const date = moment();
         let authentication = request.api_authentication;
         const page = request.input('page', 1);
         const query_search = request.input('query_search', '');
+        const year = request.input('year', date.year());
+        const month = request.input('month', date.month() + 1);
         const infoEntity = new InfoEntity(authentication);
-        const { info, ballots } = await infoEntity.ballots(params.id, { page, query_search, entity_id: entity.id });
+        const filtros = { page, query_search, entity_id: entity.id, custom: {} };
+        filtros.custom['YEAR(s.date)'] = year;
+        filtros.custom['MONTH(s.date)'] = month;
+        const { info, ballots } = await infoEntity.ballots(params.id, filtros);
         return {
             success: true,
             status: 200,

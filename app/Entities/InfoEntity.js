@@ -221,7 +221,8 @@ class InfoEntity {
         return { info, rows };
     }
 
-    async ballots(id, filtros = this.schemaPaginate) {
+    async ballots(id, tmpFiltros = this.schemaPaginate) {
+        let filtros = Object.assign(this.schemaPaginate, tmpFiltros);
         let info = Info.query()
             .where('id', id);
         if (filtros.entity_id) info.where('entity_id', filtros.entity_id);
@@ -232,7 +233,8 @@ class InfoEntity {
         // validar info
         if (!info) throw new NotFoundModelException("El contrato");
         const ballotEntity = new BallotEntity();
-        filtros["s.info_id"] = info.id;
+        filtros.custom["s.info_id"] = info.id;
+        filtros.perPage = 0;
         let ballots = await ballotEntity.index(filtros);
         return { info, ballots };
     }
