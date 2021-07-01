@@ -2,6 +2,9 @@
 
 const Route = require('../app/Services/route');
 
+// Entity
+Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);
+
 // Afps
 Route('get', 'AfpController.index').middleware(['jwt']);
 
@@ -22,6 +25,7 @@ Route('post', 'InfoController.store').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.schedules').middleware(['jwt', 'entityId']);
 Route('post', 'InfoController.syncSchedules').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.ballots').middleware(['jwt', 'entityId']);
 
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
@@ -41,5 +45,5 @@ Route('put', 'AssistanceController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'AssistanceController.delete').middleware(['jwt', 'entityId']);
 Route('get', 'AssistanceController.reportMonthly').middleware(['jwt', 'entityId']);
 
-// Entity
-Route('get', 'EntityController.works').middleware(['jwt', 'entityId']);
+// Ballots
+Route('post', 'BallotController.store').middleware(['jwt', 'entityId']);

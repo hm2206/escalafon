@@ -1,4 +1,10 @@
 {
+    "EntityController.works": {
+        "name": "EntityController.works",
+        "url": "api/entities/:id/works",
+        "description": "Listar trabajadores según entidad",
+        "action_type": "VIEW"
+    },
     "AfpController.index": {
         "name": "AfpController.index",
         "url": "api/afps",
@@ -77,6 +83,12 @@
         "description": "Sincronizar horarios a los contratos",
         "action_type": "CREATE"
     },
+    "InfoController.ballots": {
+        "name": "InfoController.ballots",
+        "url": "api/infos/:id/ballots",
+        "description": "Listar papeletas del contrato",
+        "action_type": "VIEW"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",
@@ -149,10 +161,10 @@
         "description": "Reporte mensual de asistencia",
         "action_type": "VIEW"
     },
-    "EntityController.works": {
-        "name": "EntityController.works",
-        "url": "api/entities/:id/works",
-        "description": "Listar trabajadores según entidad",
-        "action_type": "VIEW"
+    "BallotController.store": {
+        "name": "BallotController.store",
+        "url": "api/ballots",
+        "description": "Crear papeleta",
+        "action_type": "CREATE"
     }
 }

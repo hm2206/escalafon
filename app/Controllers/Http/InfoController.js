@@ -80,7 +80,21 @@ class InfoController {
             message: `Se sincronizarón ${rows} horarios a los contratos!`
         }
     }
-
+    
+    async ballots ({ params, request }) {
+        const entity = request.$entity;
+        let authentication = request.api_authentication;
+        const page = request.input('page', 1);
+        const query_search = request.input('query_search', '');
+        const infoEntity = new InfoEntity(authentication);
+        const { info, ballots } = await infoEntity.ballots(params.id, { page, query_search, entity_id: entity.id });
+        return {
+            success: true,
+            status: 200,
+            info,
+            ballots
+        }
+    }
 }   
 
 module.exports = InfoController

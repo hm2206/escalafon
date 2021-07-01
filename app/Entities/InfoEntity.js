@@ -10,6 +10,7 @@ const { collect } = require('collect.js');
 const Info = use('App/Models/Info');
 const moment = require('moment');
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
+const BallotEntity = require('./BallotEntity');
 
 class InfoEntity {
 
@@ -218,6 +219,22 @@ class InfoEntity {
         });
         // reponse
         return { info, rows };
+    }
+
+    async ballots(id, filtros = this.schemaPaginate) {
+        let info = Info.query()
+            .where('id', id);
+        if (filtros.entity_id) info.where('entity_id', filtros.entity_id);
+        // obtener
+        info = await info.first();
+        // eliminat entity_id
+        delete filtros.entity_id;
+        // validar info
+        if (!info) throw new NotFoundModelException("El contrato");
+        const ballotEntity = new BallotEntity();
+        filtros["s.info_id"] = info.id;
+        let ballots = await ballotEntity.index(filtros);
+        return { info, ballots };
     }
 
 }
