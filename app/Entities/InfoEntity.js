@@ -129,9 +129,12 @@ class InfoEntity {
                 is_pay: 1,
                 estado: 1
             });
+            // verificar si tiene aportacion
+            if (datos.type_aportacion_id) await info.type_aportacions().attach([datos.type_aportacion_id])
             // save
             return info;
         } catch (error) {
+            console.log(error);
             throw new DBException(error, "regístro");
         }
     }

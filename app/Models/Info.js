@@ -48,6 +48,11 @@ class Info extends Model {
         return this.hasMany('App/Models/Schedule');
     }
 
+    type_aportacions() {
+        return this.belongsToMany('App/Models/TypeAportacion')
+            .pivotTable('info_type_aportacion')
+    }
+
 }
 
 module.exports = Info
