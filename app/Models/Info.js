@@ -5,6 +5,10 @@ const Model = use('Model')
 const moment = require('moment');
 
 class Info extends Model {
+    static boot () {
+        super.boot();
+        this.addHook('afterCreate', 'InfoHook.syncConfig');
+    }
 
     // gettings
     getFechaDeResolucion (value) {

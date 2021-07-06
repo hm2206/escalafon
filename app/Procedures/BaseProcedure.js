@@ -47,7 +47,9 @@ class BaseProcedure {
 
     static async up () {
         let procedure = new this;
-        return await procedure.execute(this);
+        const upProcedure = await procedure.execute(this);
+        console.log(`up procedure => ${this.name}`);
+        return upProcedure;
     }
 
     static async call (args = this.arguments, debug = false) {

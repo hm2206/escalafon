@@ -2,6 +2,7 @@
 
 const { Command } = require('@adonisjs/ace')
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
+const SyncConfigInfoProcedure = require('../Procedures/SyncConfigInfoProcedure')
 
 class InstallerProcedured extends Command {
   static get signature () {
@@ -14,6 +15,7 @@ class InstallerProcedured extends Command {
 
   async handle (args, options) {
     await SyncScheduleInfosProcedure.up();
+    await SyncConfigInfoProcedure.up();
     process.exit();
   }
 }
