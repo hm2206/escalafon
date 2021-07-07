@@ -7,11 +7,11 @@ class VacationSchema extends Schema {
   up () {
     this.create('vacations', (table) => {
       table.increments()
-      table.integer('info_id').notNullable();
       table.integer('config_vacation_id').notNullable();
       table.date('date_start').notNullable();
       table.date('date_over').notNullable();
-      table.integer('count_days').notNullable();
+      table.integer('days_used').notNullable();
+      table.text('observation')
       table.boolean('state').defaultTo(true).notNullable();
       table.timestamps()
     })

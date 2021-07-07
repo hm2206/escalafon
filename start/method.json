@@ -178,5 +178,23 @@
         "url": "api/ballots/:id",
         "description": "Eliminar papeleta",
         "action_type": "DELETE"
+    },
+    "ConfigVacationController.store": {
+        "name": "ConfigVacationController.store",
+        "url": "api/config_vacations",
+        "description": "Crear configuración de vacaciones",
+        "action_type": "CREATE"
+    },
+    "ConfigVacationController.update": {
+        "name": "ConfigVacationController.update",
+        "url": "api/config_vacations/:id",
+        "description": "Actualizar configuración de vacaciones",
+        "action_type": "UPDATE"
+    },
+    "ConfigVacationController.delete": {
+        "name": "ConfigVacationController.delete",
+        "url": "api/config_vacations/:id",
+        "description": "Eliminar configuración de vacaciones",
+        "action_type": "DELETE"
     }
 }

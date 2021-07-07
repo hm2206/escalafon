@@ -49,3 +49,8 @@ Route('get', 'AssistanceController.reportMonthly').middleware(['jwt', 'entityId'
 Route('post', 'BallotController.store').middleware(['jwt', 'entityId']);
 Route('delete', 'BallotController.delete').middleware(['jwt', 'entityId']);
 Route('put', 'BallotController.update').middleware(['jwt', 'entityId']);
+
+// Config Vacation
+Route('post', 'ConfigVacationController.store').middleware(['jwt', 'entityId']);
+Route('put', 'ConfigVacationController.update').middleware(['jwt']);
+Route('delete', 'ConfigVacationController.delete').middleware(['jwt']);
