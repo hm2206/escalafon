@@ -196,5 +196,23 @@
         "url": "api/config_vacations/:id",
         "description": "Eliminar configuración de vacaciones",
         "action_type": "DELETE"
+    },
+    "VacationController.store": {
+        "name": "VacationController.store",
+        "url": "api/vacations",
+        "description": "Crear vacaciones",
+        "action_type": "CREATE"
+    },
+    "VacationController.update": {
+        "name": "VacationController.update",
+        "url": "api/vacations/:id",
+        "description": "Actualizar vacaciones",
+        "action_type": "UPDATE"
+    },
+    "VacationController.delete": {
+        "name": "VacationController.delete",
+        "url": "api/vacations/:id",
+        "description": "Eliminar vacaciones",
+        "action_type": "DELETE"
     }
 }

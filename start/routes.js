@@ -54,3 +54,8 @@ Route('put', 'BallotController.update').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigVacationController.store').middleware(['jwt', 'entityId']);
 Route('put', 'ConfigVacationController.update').middleware(['jwt']);
 Route('delete', 'ConfigVacationController.delete').middleware(['jwt']);
+
+// Vacaciones
+Route('post', 'VacationController.store').middleware(['jwt', 'entityId']);
+Route('put', 'VacationController.update').middleware(['jwt']);
+Route('delete', 'VacationController.delete').middleware(['jwt']);

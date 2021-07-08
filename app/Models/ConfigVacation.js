@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class ConfigVacation extends Model {
+
+    info() {
+        return this.belongsTo('App/Models/Info');
+    }
+
 }
 
 module.exports = ConfigVacation
