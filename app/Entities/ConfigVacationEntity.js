@@ -127,7 +127,7 @@ class ConfigVacationEntity {
         let datos = Object.assign(this.dataPaginate, tmpDatos);
         let config_vacation = await ConfigVacation.find(id);
         if (!config_vacation) throw new NotFoundModelException("la configuración de vacaciones");
-        datos.config_vacation_id = config_vacation.id;
+        datos.custom.config_vacation_id = config_vacation.id;
         const vacationEntity = new VacationEntity();
         const vacations = await vacationEntity.index(datos);
         return { config_vacation, vacations };

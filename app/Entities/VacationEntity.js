@@ -12,6 +12,7 @@ class VacationEntity {
 
     attributes = {
         config_vacation_id: "",
+        resolucion: "",
         date_start: "",
         date_over: "",
         days_used: "",
@@ -47,27 +48,25 @@ class VacationEntity {
         if (!exists) throw new NotFoundModelException("La configuración de vacaciones");
         // validar datos
         await validation(null, datos, {
+            resolucion: "required|max:255",
             date_start: "required|dateFormat:YYYY-MM-DD",
             date_over: "required|dateFormat:YYYY-MM-DD",
             observation: "max:1000"
         });
-        // diff dias
-        let date_start = moment(datos.date_start);
-        let date_over = moment(datos.date_over);
-        let duration = date_over.diff(date_start, 'days').valueOf();
-        duration = duration > 0 ? duration + 1 : 0;
-        // validar year start
-        if (date_start.year() != config_vacation.year) throw new ValidatorError([{
-            field: 'date_start', message: `La fecha de inicio debe ser del año ${config_vacation.year}`
-        }]);
-        // validar year over
-        if (date_over.year() != config_vacation.year) throw new ValidatorError([{
-            field: 'date_start', message: `La fecha de fin debe ser del año ${config_vacation.year}`
-        }]);
         // validar fechas
         if (datos.date_over <= datos.date_start) throw new ValidatorError([{
             field: 'date_over', message: `La fecha de fin debe ser mayor a ${datos.date_start}`
         }])
+        // diff dias
+        let date_start = moment(datos.date_start);
+        let date_over = moment(datos.date_over);
+        // validar año
+        if (date_start.year() < config_vacation.year) throw new ValidatorError([{
+            field: 'date_start', message: `La fecha de inicio debe ser mayor/igual a ${config_vacation.year}`
+        }]);
+        // validar duracion
+        let duration = date_over.diff(date_start, 'days').valueOf();
+        duration = duration > 0 ? duration + 1 : 0;
         // obtener dias usados
         let [{days_used}] = await Vacation.query()
             .where('config_vacation_id', config_vacation.id)
@@ -83,6 +82,7 @@ class VacationEntity {
             // guardar datos
             return Vacation.create({ 
                 config_vacation_id: config_vacation.id,
+                resolucion: datos.resolucion,
                 date_start: datos.date_start,
                 date_over: datos.date_over,
                 observation: datos.observation
@@ -94,10 +94,15 @@ class VacationEntity {
 
     async update(id, datos = this.attributes) {
         await validation(null, datos, {
+            resolucion: "required|max:255",
             date_start: 'required|dateFormat:YYYY-MM-DD',
             date_over: 'required|dateFormat:YYYY-MM-DD',
             observation: 'max:1000'
         });
+        // validar fechas
+        if (datos.date_over <= datos.date_start) throw new ValidatorError([{
+            field: 'date_over', message: `La fecha de fin debe ser mayor a ${datos.date_start}`
+        }])
         // obtener vacation
         let vacation = await Vacation.find(id);
         if (!vacation) throw new NotFoundModelException("la vacación");
@@ -106,20 +111,13 @@ class VacationEntity {
         // diff dias
         let date_start = moment(datos.date_start);
         let date_over = moment(datos.date_over);
+        // validar año
+        if (date_start.year() < config_vacation.year) throw new ValidatorError([{
+            field: 'date_start', message: `La fecha de inicio debe ser mayor/igual a ${config_vacation.year}`
+        }]);
+        // obtener duración
         let duration = date_over.diff(date_start, 'days').valueOf();
         duration = duration > 0 ? duration + 1 : 0;
-        // validar year start
-        if (date_start.year() != config_vacation.year) throw new ValidatorError([{
-            field: 'date_start', message: `La fecha de inicio debe ser del año ${config_vacation.year}`
-        }]);
-        // validar year over
-        if (date_over.year() != config_vacation.year) throw new ValidatorError([{
-            field: 'date_start', message: `La fecha de fin debe ser del año ${config_vacation.year}`
-        }]);
-        // validar fechas
-        if (datos.date_over <= datos.date_start) throw new ValidatorError([{
-            field: 'date_over', message: `La fecha de fin debe ser mayor a ${datos.date_start}`
-        }])
         // obtener dias usados
         let [{days_used}] = await Vacation.query()
             .where('config_vacation_id', config_vacation.id)
@@ -135,6 +133,7 @@ class VacationEntity {
         try {
             // preparar cambios
             vacation.merge({
+                resolucion: datos.resolucion,
                 date_start: datos.date_start,
                 date_over: datos.date_over,
                 observation: datos.observation

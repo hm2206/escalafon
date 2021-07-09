@@ -8,6 +8,7 @@ class VacationSchema extends Schema {
     this.create('vacations', (table) => {
       table.increments()
       table.integer('config_vacation_id').notNullable();
+      table.string('resolucion').notNullable();
       table.date('date_start').notNullable();
       table.date('date_over').notNullable();
       table.integer('days_used').notNullable();
