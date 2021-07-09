@@ -203,6 +203,12 @@
         "description": "Eliminar configuración de vacaciones",
         "action_type": "DELETE"
     },
+    "ConfigVacationController.vacations": {
+        "name": "ConfigVacationController.vacations",
+        "url": "api/config_vacations/:id/vacations",
+        "description": "Listar vacaciones",
+        "action_type": "VIEW"
+    },
     "VacationController.store": {
         "name": "VacationController.store",
         "url": "api/vacations",

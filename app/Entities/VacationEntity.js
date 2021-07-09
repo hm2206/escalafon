@@ -6,6 +6,7 @@ const Vacation = use('App/Models/Vacation');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
 const moment = require('moment');
+const DB = use('Database');
 
 class VacationEntity {
 
@@ -16,6 +17,28 @@ class VacationEntity {
         days_used: "",
         observation: "",
         state: 1
+    }
+
+    schemaPaginate = {
+        page: 1,
+        perPage: 20,
+        query_search: "",
+        custom: {}
+    }
+
+    async index(tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let vacations = Vacation.query();
+        // filtros avanzados
+        for(let attr in datos.custom) {
+            let value = datos.custom[attr];
+            if (Array.isArray(value)) vacations.whereIn(DB.raw(attr), value);
+            else if (typeof value != 'undefined' && value != '' && value != null) vacations.where(DB.raw(attr), value);
+        }
+        // obtener datos
+        vacations = datos.perPage ? await vacations.paginate(datos.page, datos.perPage) : await vacations.fetch();
+        vacations = await vacations.toJSON();
+        return vacations;
     }
 
     async store(config_vacation = {}, datos = this.attributes) {

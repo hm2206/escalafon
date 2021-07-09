@@ -6,6 +6,7 @@ const ConfigVacation = use('App/Models/ConfigVacation');
 const Vacation = use('App/Models/Vacation');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
+const VacationEntity = require('../Entities/VacationEntity');
 const DB = use('Database');
 const moment = require('moment');
 
@@ -120,6 +121,16 @@ class ConfigVacationEntity {
         } catch (error) {
             throw new CustomException("No se pudo eliminar la configuración")
         }
+    }
+
+    async vacations(id, tmpDatos = this.dataPaginate) {
+        let datos = Object.assign(this.dataPaginate, tmpDatos);
+        let config_vacation = await ConfigVacation.find(id);
+        if (!config_vacation) throw new NotFoundModelException("la configuración de vacaciones");
+        datos.config_vacation_id = config_vacation.id;
+        const vacationEntity = new VacationEntity();
+        const vacations = await vacationEntity.index(datos);
+        return { config_vacation, vacations };
     }
 
 }

@@ -48,6 +48,18 @@ class ConfigVacationController {
         }
     }
 
+    async vacations({ params, request }) {
+        let page = request.input('page', 1);
+        let configVacationEntity = new ConfigVacationEntity();
+        const { config_vacation, vacations } = await configVacationEntity.vacations(params.id, { page });
+        return {
+            success: true,
+            status: 200,
+            config_vacation,
+            vacations
+        }
+    }
+
 }
 
 module.exports = ConfigVacationController
