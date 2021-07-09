@@ -89,6 +89,12 @@
         "description": "Listar papeletas del contrato",
         "action_type": "VIEW"
     },
+    "InfoController.config_vacations": {
+        "name": "InfoController.config_vacations",
+        "url": "api/infos/:id/config_vacations",
+        "description": "Listar configuracion de vacaciones",
+        "action_type": "VIEW"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",

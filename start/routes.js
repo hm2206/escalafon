@@ -26,6 +26,7 @@ Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.schedules').middleware(['jwt', 'entityId']);
 Route('post', 'InfoController.syncSchedules').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.ballots').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.config_vacations').middleware(['jwt', 'entityId']);
 
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);

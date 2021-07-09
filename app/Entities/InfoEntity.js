@@ -11,6 +11,7 @@ const Info = use('App/Models/Info');
 const moment = require('moment');
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
 const BallotEntity = require('./BallotEntity');
+const ConfigVacationEntity = require('../Entities/ConfigVacationEntity');
 
 class InfoEntity {
 
@@ -240,6 +241,26 @@ class InfoEntity {
         filtros.perPage = 0;
         let ballots = await ballotEntity.index(filtros);
         return { info, ballots };
+    }
+
+    async config_vacations(id, filtros = {}, tmpdatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpdatos);
+        let info = Info.query()
+            .where('id', id);
+        // filtros
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if(Array.isArray(value)) info.whereIn(DB.raw(attr), value);
+            else if(typeof value != 'undefined' && value != '' && value != null) info.where(DB.raw(attr), value);
+        }
+        // obtener info
+        info = await info.first();
+        // validar info
+        if (!info) throw new NotFoundModelException("El contrato");
+        datos.custom.info_id = info.id;
+        const configVacationEntity = new ConfigVacationEntity();
+        const config_vacations = await configVacationEntity.index(datos);
+        return { info, config_vacations };
     }
 
 }
