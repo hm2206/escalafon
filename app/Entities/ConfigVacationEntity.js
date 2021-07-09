@@ -29,6 +29,7 @@ class ConfigVacationEntity {
     async index(tmpDatos = this.dataPaginate) {
         let datos = Object.assign(this.dataPaginate, tmpDatos);
         let config_vacations = ConfigVacation.query()
+            .orderBy('year', 'DESC')
         // query search
         if (datos.query_search) config_vacations.where('year', 'like', `%${datos.query_search}%`);
         // filtros avanzados

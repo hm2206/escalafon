@@ -29,7 +29,8 @@ class VacationEntity {
 
     async index(tmpDatos = this.schemaPaginate) {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
-        let vacations = Vacation.query();
+        let vacations = Vacation.query()
+            .orderBy('date_start', 'ASC');
         // filtros avanzados
         for(let attr in datos.custom) {
             let value = datos.custom[attr];
