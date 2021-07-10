@@ -1,6 +1,6 @@
 'use strict'
 
-const Info = use('App/Models/Info');
+const Work = use('App/Models/Work');
 const ConfigVacationEntity = require('../../Entities/ConfigVacationEntity');
 const { validation } = require('validator-error-adonis');
 
@@ -9,15 +9,17 @@ class ConfigVacationController {
     async store({ request, }) {
         let entity = request.$entity;
         let datos = request.all();
-        await validation(null, datos, { info_id: 'required' });
+        datos.entity_id = entity.id;
+        await validation(null, datos, { work_id: 'required' });
         let configVacationEntity = new ConfigVacationEntity();
-        let info_id = request.input('info_id', '__error');
-        let info = await Info.query()
-            .where('entity_id', entity.id)
-            .where('id', info_id)
+        let work_id = request.input('work_id', '__error');
+        let work = await Work.query()
+            .join('infos as i', 'i.work_id', 'works.id')
+            .where('works.id', work_id)
+            .where('i.entity_id', entity.id)
             .first() || {}
         // crear config_vacation
-        const config_vacation = await configVacationEntity.store(info, datos);
+        const config_vacation = await configVacationEntity.store(work, datos);
         return { 
             success: true,
             status: 201,

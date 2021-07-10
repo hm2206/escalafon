@@ -1,6 +1,6 @@
 'use strict';
 
-const Info = use('App/Models/Info');
+const Work = use('App/Models/Work');
 const { validation, ValidatorError } = require('validator-error-adonis');
 const ConfigVacation = use('App/Models/ConfigVacation');
 const Vacation = use('App/Models/Vacation');
@@ -13,7 +13,8 @@ const moment = require('moment');
 class ConfigVacationEntity {
 
     attributes = {
-        info_id: "",
+        entity_id: "",
+        work_id: "",
         year: "",
         scheduled_days: "",
         state: 1
@@ -46,19 +47,21 @@ class ConfigVacationEntity {
         return config_vacations;
     }
 
-    async store(info = {}, datos = this.attributes) {
-        if (!info.id) throw new CustomException("El contrato es inválido!");
+    async store(work = {}, datos = this.attributes) {
+        if (!work.id) throw new CustomException("El trabajador es inválido!");
         // validar otros datos
         await validation(null, datos, {
+            entity_id: 'required',
             year: 'required|dateFormat:YYYY',
             scheduled_days: 'required|number',
         }); 
         // validar info
-        let exists = await Info.find(info.id);
+        let exists = await Work.find(work.id);
         if (!exists) throw new NotFoundModelException("El contrato");
         // validar si ya existe una configuración
         let existsConfig = await ConfigVacation.query()
-            .where('info_id', info.id)
+            .where('entity_id', datos.entity_id)
+            .where('work_id', work.id)
             .where('year', datos.year)
             .getCount('id');
         if (existsConfig) throw new CustomException("Solo se puede tener una configuración anual");
@@ -66,7 +69,8 @@ class ConfigVacationEntity {
         try {
             // guardar los datos
             const config_vacation = await ConfigVacation.create({ 
-                info_id: info.id,
+                entity_id: datos.entity_id,
+                work_id: work.id,
                 year: datos.year,
                 scheduled_days: datos.scheduled_days,
             })

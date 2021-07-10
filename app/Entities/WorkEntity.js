@@ -8,9 +8,7 @@ const Info = use('App/Models/Info');
 const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
-const ScheduleEntity = require('./ScheduleEntity');
-const ConfigSchedule = use('App/Models/ConfigSchedule');
-const Schedule = use('App/Models/Schedule');
+const ConfigVacationEntity = require('./ConfigVacationEntity');
 const DB = use('Database');
 
 class WorkEntity {
@@ -196,6 +194,26 @@ class WorkEntity {
         });
         // response
         return { work, infos } ;
+    }
+
+    async config_vacations(id, filtros = {}, tmpdatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpdatos);
+        let work = Work.query()
+            .where('id', id);
+        // filtros
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if(Array.isArray(value)) work.whereIn(DB.raw(attr), value);
+            else if(typeof value != 'undefined' && value != '' && value != null) work.where(DB.raw(attr), value);
+        }
+        // obtener info
+        work = await work.first();
+        // validar info
+        if (!work) throw new NotFoundModelException("El contrato");
+        datos.custom.work_id = work.id;
+        const configVacationEntity = new ConfigVacationEntity();
+        const config_vacations = await configVacationEntity.index(datos);
+        return { info, config_vacations };
     }
 
 }
