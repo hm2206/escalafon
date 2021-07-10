@@ -53,6 +53,12 @@
         "description": "Listar contratos del trabajador",
         "action_type": "VIEW"
     },
+    "WorkController.config_vacations": {
+        "name": "WorkController.config_vacations",
+        "url": "api/works/:id/config_vacations",
+        "description": "Listar configuracion de vacaciones",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -87,12 +93,6 @@
         "name": "InfoController.ballots",
         "url": "api/infos/:id/ballots",
         "description": "Listar papeletas del contrato",
-        "action_type": "VIEW"
-    },
-    "InfoController.config_vacations": {
-        "name": "InfoController.config_vacations",
-        "url": "api/infos/:id/config_vacations",
-        "description": "Listar configuracion de vacaciones",
         "action_type": "VIEW"
     },
     "ClockController.index": {

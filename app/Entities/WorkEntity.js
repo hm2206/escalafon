@@ -213,7 +213,7 @@ class WorkEntity {
         datos.custom.work_id = work.id;
         const configVacationEntity = new ConfigVacationEntity();
         const config_vacations = await configVacationEntity.index(datos);
-        return { info, config_vacations };
+        return { work, config_vacations };
     }
 
 }

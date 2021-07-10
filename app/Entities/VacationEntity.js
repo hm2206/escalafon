@@ -77,7 +77,7 @@ class VacationEntity {
         let saldo_days = config_vacation.scheduled_days - days_used;
         let total_days_used = days_used + duration;
         let diff_days_used =  config_vacation.scheduled_days - total_days_used;
-        if (diff_days_used < 0) throw new CustomException(`El contrato solo cuenta con ${saldo_days} días disponibles de vacaciones`);
+        if (diff_days_used < 0) throw new CustomException(`El trabajador solo cuenta con ${saldo_days} días disponibles de vacaciones`);
         // procesar
         try {
             // guardar datos

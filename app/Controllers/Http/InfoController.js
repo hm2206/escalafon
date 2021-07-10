@@ -101,21 +101,6 @@ class InfoController {
             ballots
         }
     }
-
-    async config_vacations ({ params, request }) {
-        let authentication = request.api_authentication;
-        let entity = request.$entity;
-        const page = request.input('page', 1);
-        const infoEntity = new InfoEntity(authentication);
-        const filtros = { entity_id: entity.id };
-        const { info, config_vacations } = await infoEntity.config_vacations(params.id, filtros, { page });
-        return {
-            success: true,
-            status: 200,
-            info,
-            config_vacations
-        }
-    }
 }   
 
 module.exports = InfoController

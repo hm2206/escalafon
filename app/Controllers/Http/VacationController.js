@@ -11,7 +11,7 @@ class VacationController {
         let entity = request.$entity;
         await validation(null, datos, { config_vacation_id: 'required' });
         const config_vacation = await ConfigVacation.query()
-            .has('info', (build) => build.where('entity_id', entity.id))
+            .where('entity_id', entity.id)
             .where('id', datos.config_vacation_id)
             .first() || {}; 
         const vacationEntity = new VacationEntity();

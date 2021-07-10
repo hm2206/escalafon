@@ -18,6 +18,7 @@ Route('get', 'WorkController.show').middleware(['jwt']);
 Route('put', 'WorkController.update').middleware(['jwt']);
 Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
@@ -26,7 +27,6 @@ Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.schedules').middleware(['jwt', 'entityId']);
 Route('post', 'InfoController.syncSchedules').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.ballots').middleware(['jwt', 'entityId']);
-Route('get', 'InfoController.config_vacations').middleware(['jwt', 'entityId']);
 
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
@@ -55,7 +55,6 @@ Route('put', 'BallotController.update').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigVacationController.store').middleware(['jwt', 'entityId']);
 Route('put', 'ConfigVacationController.update').middleware(['jwt']);
 Route('delete', 'ConfigVacationController.delete').middleware(['jwt']);
-Route('get', 'ConfigVacationController.vacations').middleware(['jwt']);
 
 // Vacaciones
 Route('post', 'VacationController.store').middleware(['jwt', 'entityId']);

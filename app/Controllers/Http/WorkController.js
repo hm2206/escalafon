@@ -77,6 +77,21 @@ class WorkController {
         };
     }
 
+    async config_vacations ({ params, request }) {
+        let authentication = request.api_authentication;
+        let entity = request.$entity;
+        const page = request.input('page', 1);
+        const workEntity = new WorkEntity(authentication);
+        let filtros = { page, custom: { entity_id: entity.id } }
+        const { work, config_vacations } = await workEntity.config_vacations(params.id, {}, filtros);
+        return {
+            success: true,
+            status: 200,
+            work,
+            config_vacations
+        }
+    }
+
 }
 
 module.exports = WorkController
