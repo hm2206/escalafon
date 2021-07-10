@@ -17,6 +17,7 @@ class ConfigVacationController {
             .join('infos as i', 'i.work_id', 'works.id')
             .where('works.id', work_id)
             .where('i.entity_id', entity.id)
+            .select('works.*')
             .first() || {}
         // crear config_vacation
         const config_vacation = await configVacationEntity.store(work, datos);
