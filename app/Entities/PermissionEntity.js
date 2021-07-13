@@ -142,7 +142,7 @@ class PermissionEntity {
             let [{count_permissions}] = await Permission.query() 
             .where('type_permission_id', type_permission.id)
             .where('work_id', work.id)
-            .where('id', permission.id)
+            .where('id', '<>', permission.id)
             .sum('days_used as count_permissions');
             count_permissions = count_permissions || 0;
             let schedule_days = type_permission.day_of_year - count_permissions;
