@@ -66,8 +66,7 @@ class VacationEntity {
             field: 'date_start', message: `La fecha de inicio debe ser mayor/igual a ${config_vacation.year}`
         }]);
         // validar duracion
-        let duration = date_over.diff(date_start, 'days').valueOf();
-        duration = duration > 0 ? duration + 1 : 0;
+        let duration = date_over.diff(date_start, 'days').valueOf() + 1;
         // obtener dias usados
         let [{days_used}] = await Vacation.query()
             .where('config_vacation_id', config_vacation.id)
@@ -117,8 +116,7 @@ class VacationEntity {
             field: 'date_start', message: `La fecha de inicio debe ser mayor/igual a ${config_vacation.year}`
         }]);
         // obtener duración
-        let duration = date_over.diff(date_start, 'days').valueOf();
-        duration = duration > 0 ? duration + 1 : 0;
+        let duration = date_over.diff(date_start, 'days').valueOf() + 1;
         // obtener dias usados
         let [{days_used}] = await Vacation.query()
             .where('config_vacation_id', config_vacation.id)

@@ -226,5 +226,47 @@
         "url": "api/vacations/:id",
         "description": "Eliminar vacaciones",
         "action_type": "DELETE"
+    },
+    "TypePermissionController.index": {
+        "name": "TypePermissionController.index",
+        "url": "api/type_permissions",
+        "description": "Lista de tipos de permisos",
+        "action_type": "VIEW"
+    },
+    "TypePermissionController.store": {
+        "name": "TypePermissionController.store",
+        "url": "api/type_permissions",
+        "description": "Crear de tipos de permisos",
+        "action_type": "CREATE"
+    },
+    "TypePermissionController.update": {
+        "name": "TypePermissionController.update",
+        "url": "api/type_permissions/:id",
+        "description": "Actualizar de tipos de permisos",
+        "action_type": "UPDATE"
+    },
+    "PermissionController.index": {
+        "name": "PermissionController.index",
+        "url": "api/permissions",
+        "description": "Listar permisos",
+        "action_type": "VIEW"
+    },
+    "PermissionController.store": {
+        "name": "PermissionController.store",
+        "url": "api/permissions",
+        "description": "Crear permisos",
+        "action_type": "CREATE"
+    },
+    "PermissionController.update": {
+        "name": "PermissionController.update",
+        "url": "api/permissions/:id",
+        "description": "Actualizar permisos",
+        "action_type": "UPDATE"
+    },
+    "PermissionController.delete": {
+        "name": "PermissionController.delete",
+        "url": "api/permissions/:id",
+        "description": "Eliminar permiso",
+        "action_type": "DELETE"
     }
 }
