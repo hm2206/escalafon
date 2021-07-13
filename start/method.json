@@ -59,6 +59,12 @@
         "description": "Listar configuracion de vacaciones",
         "action_type": "VIEW"
     },
+    "WorkController.permissions": {
+        "name": "WorkController.permissions",
+        "url": "api/works/:id/permissions",
+        "description": "Listar de permisos",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",

@@ -41,9 +41,11 @@ class PermissionEntity {
         return obj;
     }
 
-    async index(tmpDatos = this.schemaPaginate) {
+    async index(entity_id, tmpDatos = this.schemaPaginate) {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
-        let permissions = Permission.query();
+        let permissions = Permission.query()
+            .whereHas('type_permission', (build) => build.where('entity_id', entity_id))
+            .with('type_permission')
         // query_search
         if (datos.query_search) permissions.where('description', 'like', `%${datos.query_search}%`);
         // filtros avanzados
@@ -66,13 +68,13 @@ class PermissionEntity {
             date_start: 'required|dateFormat:YYYY-MM-DD',
             date_over: 'required|dateFormat:YYYY-MM-DD',
             option: 'required',
-            document_number: 'required|100',
+            document_number: 'required|max:100',
             justification: 'required|max:1000'
         })
         // obtener type_permisos
         let type_permission = await TypePermission.first(datos.type_permission_id);
         if (!type_permission) throw new NotFoundModelException("El tipo de permiso");
-        let work = await Work.first(datos.work_id);
+        let work = await Work.find(datos.work_id);
         if (!work) throw new NotFoundModelException("El trabajador");
         // moment dates
         let date_start = moment(datos.date_start);
@@ -83,6 +85,7 @@ class PermissionEntity {
         if (type_permission.day_of_year) {
             let [{count_permissions}] = await Permission.query() 
             .where('type_permission_id', type_permission.id)
+            .where('work_id', work.id)
             .sum('days_used as count_permissions');
             count_permissions = count_permissions || 0;
             let schedule_days = type_permission.day_of_year - count_permissions;
@@ -138,6 +141,7 @@ class PermissionEntity {
         if (type_permission.day_of_year) {
             let [{count_permissions}] = await Permission.query() 
             .where('type_permission_id', type_permission.id)
+            .where('work_id', work.id)
             .where('id', permission.id)
             .sum('days_used as count_permissions');
             count_permissions = count_permissions || 0;

@@ -19,6 +19,7 @@ Route('put', 'WorkController.update').middleware(['jwt']);
 Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.permissions').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
@@ -68,7 +69,7 @@ Route('post', 'TypePermissionController.store').middleware(['jwt', 'entityId']);
 Route('put', 'TypePermissionController.update').middleware(['jwt', 'entityId']);
 
 // Permissions
-Route('get', 'PermissionController.index').middleware(['jwt']);
+Route('get', 'PermissionController.index').middleware(['jwt', 'entityId']);
 Route('post', 'PermissionController.store').middleware(['jwt']);
 Route('put', 'PermissionController.update').middleware(['jwt']);
 Route('delete', 'PermissionController.delete').middleware(['jwt']);

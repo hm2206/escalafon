@@ -9,6 +9,7 @@ const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
 const ConfigVacationEntity = require('./ConfigVacationEntity');
+const PermissionEntity = require('./PermissionEntity');
 const DB = use('Database');
 
 class WorkEntity {
@@ -39,6 +40,15 @@ class WorkEntity {
 
     constructor(authentication) {
         this.authentication = authentication;
+    }
+
+    handleFilters(obj, filtros = {}) {
+        for(let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) obj.whereIn(DB.raw(attr), value);
+            else if (typeof value != 'undefined' && value !== '' && value !== null) obj.where(DB.raw(attr), value);
+        }
+        return obj;
     }
 
     async index (page = 1, query_search = "", filtros = {}, entity_id = "", perPage = 20) {
@@ -214,6 +224,18 @@ class WorkEntity {
         const configVacationEntity = new ConfigVacationEntity();
         const config_vacations = await configVacationEntity.index(datos);
         return { work, config_vacations };
+    }
+
+    async permissions(id, entity_id, tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let work = await Work.find(id);
+        if (!work) throw new NotFoundModelException("El trabajador");
+        datos.custom.work_id = work.id;
+        // preload permissions
+        const permissionEntity = new PermissionEntity();
+        const permissions = await permissionEntity.index(entity_id, datos);
+        // response
+        return { work, permissions } ;
     }
 
 }

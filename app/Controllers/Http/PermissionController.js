@@ -5,12 +5,13 @@ const PermissionEntity = require('../../Entities/PermissionEntity');
 class PermissionController {
 
     async index({ request }) {
+        const entity = request.$entity;
         const permissionEntity = new PermissionEntity();
         const type_permission_id = request.input('type_permission_id', '');
         const page = request.input('page', 1);
         const query_search = request.input('query_search', '');
         const custom = { type_permission_id: type_permission_id };
-        const permissions = await permissionEntity.index({ page, query_search, custom });
+        const permissions = await permissionEntity.index(entity.id, { page, query_search, custom });
         return {
             success: true,
             status: 200,
