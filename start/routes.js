@@ -20,6 +20,7 @@ Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.permissions').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);

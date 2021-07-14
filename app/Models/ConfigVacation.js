@@ -5,8 +5,12 @@ const Model = use('Model')
 
 class ConfigVacation extends Model {
 
-    info() {
-        return this.belongsTo('App/Models/Info');
+    work() {
+        return this.belongsTo('App/Models/Work');
+    }
+
+    vacations() {
+        return this.hasMany('App/Models/Vacation');
     }
 
 }

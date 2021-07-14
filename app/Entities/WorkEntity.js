@@ -10,6 +10,7 @@ const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
 const ConfigVacationEntity = require('./ConfigVacationEntity');
 const PermissionEntity = require('./PermissionEntity');
+const ReportVacationBuilder = require('../Helpers/ReportVacationBuilder');
 const DB = use('Database');
 
 class WorkEntity {
@@ -236,6 +237,11 @@ class WorkEntity {
         const permissions = await permissionEntity.index(entity_id, datos);
         // response
         return { work, permissions } ;
+    }
+
+    async reportVacations(id, entity) {
+        const reportVacationBuilder = new ReportVacationBuilder(this.authentication, entity, id);
+        return await reportVacationBuilder.render();
     }
 
 }

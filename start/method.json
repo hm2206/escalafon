@@ -65,6 +65,12 @@
         "description": "Listar de permisos",
         "action_type": "VIEW"
     },
+    "WorkController.reportVacations": {
+        "name": "WorkController.reportVacations",
+        "url": "api/works/:id/report_vacations",
+        "description": "Reporte de vacaciones",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",

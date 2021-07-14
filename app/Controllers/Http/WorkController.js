@@ -106,6 +106,15 @@ class WorkController {
         }
     }
 
+    async reportVacations({ params, request, response }) {
+        let entity = request.$entity;
+        let authentication = request.api_authentication;
+        const workEntity = new WorkEntity(authentication);
+        const report = await workEntity.reportVacations(params.id, entity);
+        response.header('Content-Type', 'application/pdf');
+        return response.send(report);
+    }
+
 }
 
 module.exports = WorkController

@@ -8,16 +8,6 @@ const DB = use('Database');
 const Info = use('App/Models/Info');
 const uid = require('uid')
 
-const days = {
-    0: "Domingo",
-    1: "Lunes",
-    2: "Martes",
-    3: "Míercoles",
-    4: "Jueves",
-    5: "Viernes",
-    6: "Sábado"
-}
-
 class ReportAssistanceBuild {
 
     filters = {
@@ -183,11 +173,6 @@ class ReportAssistanceBuild {
             for (let schedule of info.schedules) {
                 newDatos.push(this.schemaData(this.displayFecha(schedule), 'FECHA'));
                 this.count += 1;
-                // assistances
-                // for (let assistance of schedule.assistances) {
-                //     this.count += 1;
-                //     newDatos.push(this.schemaData(this.displayAssistance(assistance), 'ASSISTANCE'));
-                // }
             }
             
         }
