@@ -24,7 +24,7 @@ class InfoController {
         }
     }
 
-    async stor({ request }) {
+    async store({ request }) {
         const entity = request.$entity;
         let authentication = request.api_authentication;
         let payload = request.all();

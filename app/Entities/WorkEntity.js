@@ -47,8 +47,17 @@ class WorkEntity {
     handleFilters(obj, filtros = {}) {
         for(let attr in filtros) {
             let value = filtros[attr];
-            if (Array.isArray(value)) obj.whereIn(DB.raw(attr), value);
-            else if (typeof value != 'undefined' && value !== '' && value !== null) obj.where(DB.raw(attr), value);
+            if (Array.isArray(value)) {
+                if (!value.length) continue;
+                obj.whereIn(attr, value);
+                continue;
+            }
+
+            if (typeof value != 'undefined' && value !== '' && value !== null) {
+                obj.where(DB.raw(attr), value);
+                console.log(attr)
+                continue;
+            }
         }
         return obj;
     }
@@ -195,7 +204,7 @@ class WorkEntity {
         // custom
         infos = this.handleFilters(infos, datos.custom);
         // obtener
-        infos = await infos.paginate(datos.page, datos.perPage);
+        infos = datos.perPage ? await infos.paginate(datos.page, datos.perPage) : await infos.fetch();
         infos = await infos.toJSON();
         await infos.data.map(i => {
             i.work = work;

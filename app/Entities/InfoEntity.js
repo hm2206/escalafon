@@ -11,7 +11,6 @@ const Info = use('App/Models/Info');
 const moment = require('moment');
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
 const BallotEntity = require('./BallotEntity');
-const ConfigVacationEntity = require('../Entities/ConfigVacationEntity');
 
 class InfoEntity {
 
@@ -135,7 +134,6 @@ class InfoEntity {
             // save
             return info;
         } catch (error) {
-            console.log(error);
             throw new DBException(error, "regístro");
         }
     }
