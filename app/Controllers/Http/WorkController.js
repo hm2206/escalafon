@@ -64,12 +64,13 @@ class WorkController {
         return response.send(ficha);
     }
 
-    async infos ({ params, request, response }) {
+    async infos ({ params, request }) {
         let page = request.input('page', 1);
         let estados = collect(request.collect(['estado'])).pluck('estado').toArray();
+        let principal = request.input('principal', null)
         let authentication = request.api_authentication;
         const workEntity = new WorkEntity(authentication);
-        const { infos } = await workEntity.infos(params.id, { page, custom: { estado: estados } });
+        const { infos } = await workEntity.infos(params.id, { page, principal, custom: { estado: estados } });
         return {
             success: true,
             status: 201,
@@ -103,6 +104,20 @@ class WorkController {
             status: 200,
             work,
             permissions
+        }
+    }
+
+    async licenses({ params, request }) {
+        let authentication = request.api_authentication;
+        let entity = request.$entity;
+        const page = request.input('page', 1);
+        const workEntity = new WorkEntity(authentication);
+        const { work, licenses } = await workEntity.licenses(params.id, entity.id, { page });
+        return {
+            success: true,
+            status: 200,
+            work,
+            licenses
         }
     }
 

@@ -20,6 +20,7 @@ Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.permissions').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.licenses').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
 
 // Infos
@@ -74,3 +75,8 @@ Route('get', 'PermissionController.index').middleware(['jwt', 'entityId']);
 Route('post', 'PermissionController.store').middleware(['jwt']);
 Route('put', 'PermissionController.update').middleware(['jwt']);
 Route('delete', 'PermissionController.delete').middleware(['jwt']);
+
+// License
+Route('post', 'LicenseController.store').middleware(['jwt', 'entityId']);
+Route('put', 'LicenseController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'LicenseController.delete').middleware(['jwt', 'entityId']);

@@ -10,6 +10,7 @@ const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
 const ConfigVacationEntity = require('./ConfigVacationEntity');
 const PermissionEntity = require('./PermissionEntity');
+const LicenseEntity = require('./LicenseEntity');
 const ReportVacationBuilder = require('../Helpers/ReportVacationBuilder');
 const DB = use('Database');
 
@@ -189,13 +190,10 @@ class WorkEntity {
             .with('type_categoria')
             .with('meta')
             .where('work_id', work.id);
+        // validar dependencia
+        if (datos.principal != null ) infos.whereHas('planilla', (builder) => builder.where('principal', datos.principal));
         // custom
-        for (let attr in datos.custom) {
-            let value = datos.custom[attr];
-            if (Array.isArray(value)) {
-                if (value.length) infos.whereIn(attr, value);
-            } else if (value !== '') infos.where(attr, value);
-        }
+        infos = this.handleFilters(infos, datos.custom);
         // obtener
         infos = await infos.paginate(datos.page, datos.perPage);
         infos = await infos.toJSON();
@@ -237,6 +235,18 @@ class WorkEntity {
         const permissions = await permissionEntity.index(entity_id, datos);
         // response
         return { work, permissions } ;
+    }
+
+    async licenses(id, entity_id, tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let work = await Work.find(id);
+        if (!work) throw new NotFoundModelException("El trabajador");
+        datos.custom.work_id = work.id;
+        // preload permissions
+        const licenseEntity = new LicenseEntity();
+        const licenses = await licenseEntity.index(entity_id, datos);
+        // response
+        return { work, licenses };
     }
 
     async reportVacations(id, entity) {

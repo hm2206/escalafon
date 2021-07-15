@@ -65,6 +65,12 @@
         "description": "Listar de permisos",
         "action_type": "VIEW"
     },
+    "WorkController.licenses": {
+        "name": "WorkController.licenses",
+        "url": "api/works/:id/licenses",
+        "description": "Listar de licencias",
+        "action_type": "VIEW"
+    },
     "WorkController.reportVacations": {
         "name": "WorkController.reportVacations",
         "url": "api/works/:id/report_vacations",
@@ -280,5 +286,23 @@
         "url": "api/permissions/:id",
         "description": "Eliminar permiso",
         "action_type": "DELETE"
+    },
+    "LicenseController.store": {
+        "name": "LicenseController.store",
+        "url": "api/licenses",
+        "description": "Crear licencia",
+        "action_type": "CREATE"
+    },
+    "LicenseController.update": {
+        "name": "LicenseController.update",
+        "url": "api/licenses/:id",
+        "description": "Actualizar licencia",
+        "action_type": "UPDATE"
+    },
+    "LicenseController.delete": {
+        "name": "LicenseController.delete",
+        "url": "api/licenses/:id",
+        "description": "Eliminar licencia",
+        "action_type": "DELTE"
     }
 }
