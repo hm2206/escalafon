@@ -2,6 +2,7 @@
 
 const TypePermission = use('App/Models/TypePermission');
 const Permission = use('App/Models/Permission');
+const Info = use('App/Models/Info');
 const Work = use('App/Models/Work');
 const DB = use('Database');
 const CustomException = require('../Exceptions/CustomException');
@@ -13,7 +14,7 @@ class PermissionEntity {
 
     attributes = {
         type_permission_id: "",
-        work_id: "",
+        info_id: "",
         date_start: "",
         date_over: "",
         days_used: 0,
@@ -60,11 +61,11 @@ class PermissionEntity {
         return permissions;
     }
 
-    async store(tmpDatos = this.attributes) {
+    async store(tmpDatos = this.attributes, filtros = {}) {
         let datos = Object.assign(this.attributes, tmpDatos);
         await validation(null, datos, {
             type_permission_id: 'required',
-            work_id: 'required',
+            info_id: 'required',
             date_start: 'required|dateFormat:YYYY-MM-DD',
             date_over: 'required|dateFormat:YYYY-MM-DD',
             option: 'required',
@@ -74,8 +75,13 @@ class PermissionEntity {
         // obtener type_permisos
         let type_permission = await TypePermission.first(datos.type_permission_id);
         if (!type_permission) throw new NotFoundModelException("El tipo de permiso");
-        let work = await Work.find(datos.work_id);
-        if (!work) throw new NotFoundModelException("El trabajador");
+        let info = Info.query()
+            .where('id', datos.info_id);
+        // filtros info
+        info = this.handleFilters(info, filtros);
+        // obtener info
+        info = await info.first();
+        if (!info) throw new NotFoundModelException("El contrato");
         // moment dates
         let date_start = moment(datos.date_start);
         let date_over = moment(datos.date_over);
@@ -85,7 +91,7 @@ class PermissionEntity {
         if (type_permission.day_of_year) {
             let [{count_permissions}] = await Permission.query() 
             .where('type_permission_id', type_permission.id)
-            .where('work_id', work.id)
+            .where('info_id', info.id)
             .sum('days_used as count_permissions');
             count_permissions = count_permissions || 0;
             let schedule_days = type_permission.day_of_year - count_permissions;
@@ -97,7 +103,7 @@ class PermissionEntity {
             // guardar
             let permission = await Permission.create({
                 type_permission_id: datos.type_permission_id,
-                work_id: datos.work_id,
+                info_id: datos.info_id,
                 date_start: datos.date_start,
                 date_over: datos.date_over,
                 option: datos.option,
@@ -105,7 +111,7 @@ class PermissionEntity {
                 justification: datos.justification,
             });
             // setting
-            permission.work = work;
+            permission.info = info;
             permission.type_permission;
             // response
             return permission;

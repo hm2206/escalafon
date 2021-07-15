@@ -66,13 +66,13 @@ Route('put', 'VacationController.update').middleware(['jwt']);
 Route('delete', 'VacationController.delete').middleware(['jwt']);
 
 // Type Permissions
-Route('get', 'TypePermissionController.index').middleware(['jwt', 'entityId']);
-Route('post', 'TypePermissionController.store').middleware(['jwt', 'entityId']);
-Route('put', 'TypePermissionController.update').middleware(['jwt', 'entityId']);
+Route('get', 'TypePermissionController.index').middleware(['jwt']);
+Route('post', 'TypePermissionController.store').middleware(['jwt']);
+Route('put', 'TypePermissionController.update').middleware(['jwt']);
 
 // Permissions
 Route('get', 'PermissionController.index').middleware(['jwt', 'entityId']);
-Route('post', 'PermissionController.store').middleware(['jwt']);
+Route('post', 'PermissionController.store').middleware(['jwt', 'entityId']);
 Route('put', 'PermissionController.update').middleware(['jwt']);
 Route('delete', 'PermissionController.delete').middleware(['jwt']);
 

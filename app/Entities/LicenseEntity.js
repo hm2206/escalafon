@@ -1,7 +1,7 @@
 'use strict';
 
 const { validation, ValidatorError } = require('validator-error-adonis');
-const Work = use('App/Models/Work');
+const Info = use('App/Models/Info');
 const License = use('App/Models/License');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
@@ -11,8 +11,7 @@ const DB = use('Database');
 class LicenseEntity {
 
     attributes = {
-        entity_id: "",
-        work_id: "",
+        info_id: "",
         situacion_laboral_id: "",
         resolution: "",
         date_resolution: "",
@@ -54,11 +53,10 @@ class LicenseEntity {
         return licenses;
     }
 
-    async store(tmpDatos = this.attributes) {
+    async store(tmpDatos = this.attributes, filtros = {}) {
         let datos = Object.assign(this.attributes, tmpDatos);
         await validation(null, datos, {
-            entity_id: "required",
-            work_id: "required",
+            info_id: "required",
             situacion_laboral_id: "required",
             resolution: "required",
             date_resolution: "required|dateFormat:YYYY-MM-DD",
@@ -67,11 +65,11 @@ class LicenseEntity {
             description: "required|max:255"
         });
         // obtener info
-        let work = await Work.query()
-            .whereHas('infos', (builder) => builder.where('entity_id', datos.entity_id))
-            .where('id', datos.work_id)
-            .first();
-        if (!work) throw new NotFoundModelException("El trabajador");
+        let info = Info.query()
+            .where('id', datos.info_id)
+        info = this.handleFilters(info, filtros)
+        info = await info.first();
+        if (!info) throw new NotFoundModelException("El Contrato");
         // validar fecha
         let date_start = moment(datos.date_start);
         let date_over = moment(datos.date_over);
@@ -80,8 +78,7 @@ class LicenseEntity {
         // procesar dato
         try {
             let license = await License.create({
-                entity_id: datos.entity_id,
-                work_id: work.id,
+                info_id: datos.info_id,
                 situacion_laboral_id: datos.situacion_laboral_id,
                 resolution: datos.resolution,
                 date_resolution: datos.date_resolution,
@@ -93,7 +90,6 @@ class LicenseEntity {
             // response
             return license;
         } catch (error) {
-            console.log(error);
             throw new CustomException("No se pudó guardar los datos");
         }
     }

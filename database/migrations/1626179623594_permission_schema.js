@@ -7,8 +7,8 @@ class PermissionSchema extends Schema {
   up () {
     this.create('permissions', (table) => {
       table.increments()
+      table.integer('info_id').notNullable();
       table.integer('type_permission_id').notNullable();
-      table.integer('work_id').notNullable();
       table.date('date_start').notNullable();
       table.date('date_over').notNullable();
       table.integer('days_used').notNullable();

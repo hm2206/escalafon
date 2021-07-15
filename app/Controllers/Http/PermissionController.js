@@ -20,8 +20,10 @@ class PermissionController {
     }
 
     async store({ request }) {
+        const entity = request.$entity;
         const permissionEntity = new PermissionEntity();
         const datos = request.all();
+        datos.entity_id = entity.id;
         const permission = await permissionEntity.store(datos);
         return {
             success: true,
