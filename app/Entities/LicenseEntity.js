@@ -87,12 +87,13 @@ class LicenseEntity {
                 date_resolution: datos.date_resolution,
                 date_start: datos.date_start,
                 date_over: datos.date_over,
-                description: datos.descriptionm,
+                description: datos.description,
                 is_pay: datos.is_pay ? 1 : 0
             });
             // response
             return license;
         } catch (error) {
+            console.log(error);
             throw new CustomException("No se pudó guardar los datos");
         }
     }

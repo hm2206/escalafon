@@ -23,7 +23,7 @@ class LicenseController {
         const datos = request.all();
         const filtros = { entity_id: entity.id };
         const licenseEntity = new LicenseEntity();
-        const license = await licenseEntity.update(params, datos, filtros);
+        const license = await licenseEntity.update(params.id, datos, filtros);
         return {
             success: true,
             status: 200,
@@ -36,7 +36,7 @@ class LicenseController {
         const entity = request.$entity;
         const filtros = { entity_id: entity.id };
         const licenseEntity = new LicenseEntity();
-        const license = await licenseEntity.delete(params, filtros);
+        const license = await licenseEntity.delete(params.id, filtros);
         return {
             success: true,
             status: 200,
