@@ -194,6 +194,8 @@ class WorkEntity {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
         let work = await this.show(id);
         let infos = Info.query()
+            .orderBy('estado', 'DESC')
+            .orderBy('fecha_de_ingreso', 'DESC')
             .with('planilla')
             .with('cargo')
             .with('type_categoria')
@@ -232,30 +234,6 @@ class WorkEntity {
         const configVacationEntity = new ConfigVacationEntity();
         const config_vacations = await configVacationEntity.index(datos);
         return { work, config_vacations };
-    }
-
-    async permissions(id, entity_id, tmpDatos = this.schemaPaginate) {
-        let datos = Object.assign(this.schemaPaginate, tmpDatos);
-        let work = await Work.find(id);
-        if (!work) throw new NotFoundModelException("El trabajador");
-        datos.custom.work_id = work.id;
-        // preload permissions
-        const permissionEntity = new PermissionEntity();
-        const permissions = await permissionEntity.index(entity_id, datos);
-        // response
-        return { work, permissions } ;
-    }
-
-    async licenses(id, entity_id, tmpDatos = this.schemaPaginate) {
-        let datos = Object.assign(this.schemaPaginate, tmpDatos);
-        let work = await Work.find(id);
-        if (!work) throw new NotFoundModelException("El trabajador");
-        datos.custom.work_id = work.id;
-        // preload permissions
-        const licenseEntity = new LicenseEntity();
-        const licenses = await licenseEntity.index(entity_id, datos);
-        // response
-        return { work, licenses };
     }
 
     async reportVacations(id, entity) {

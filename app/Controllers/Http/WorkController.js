@@ -93,34 +93,6 @@ class WorkController {
         }
     }
 
-    async permissions ({ params, request }) {
-        let authentication = request.api_authentication;
-        let entity = request.$entity;
-        const page = request.input('page', 1);
-        const workEntity = new WorkEntity(authentication);
-        const { work, permissions } = await workEntity.permissions(params.id, entity.id, { page });
-        return {
-            success: true,
-            status: 200,
-            work,
-            permissions
-        }
-    }
-
-    async licenses({ params, request }) {
-        let authentication = request.api_authentication;
-        let entity = request.$entity;
-        const page = request.input('page', 1);
-        const workEntity = new WorkEntity(authentication);
-        const { work, licenses } = await workEntity.licenses(params.id, entity.id, { page });
-        return {
-            success: true,
-            status: 200,
-            work,
-            licenses
-        }
-    }
-
     async reportVacations({ params, request, response }) {
         let entity = request.$entity;
         let authentication = request.api_authentication;

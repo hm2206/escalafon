@@ -42,10 +42,9 @@ class PermissionEntity {
         return obj;
     }
 
-    async index(entity_id, tmpDatos = this.schemaPaginate) {
+    async index(tmpDatos = this.schemaPaginate) {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
         let permissions = Permission.query()
-            .whereHas('type_permission', (build) => build.where('entity_id', entity_id))
             .with('type_permission')
         // query_search
         if (datos.query_search) permissions.where('description', 'like', `%${datos.query_search}%`);
@@ -136,7 +135,7 @@ class PermissionEntity {
         // obtener
         permission = await permission.first();
         if (!permission) throw new NotFoundModelException("El permiso");
-        let work = await permission.work().fetch();
+        let info = await permission.info().fetch();
         let type_permission = await permission.type_permission().fetch();
         // moment dates
         let date_start = moment(datos.date_start);
@@ -147,7 +146,7 @@ class PermissionEntity {
         if (type_permission.day_of_year) {
             let [{count_permissions}] = await Permission.query() 
             .where('type_permission_id', type_permission.id)
-            .where('work_id', work.id)
+            .where('info_id', info.id)
             .where('id', '<>', permission.id)
             .sum('days_used as count_permissions');
             count_permissions = count_permissions || 0;
@@ -168,7 +167,7 @@ class PermissionEntity {
 
             await permission.save();
             // setting
-            permission.work = work;
+            permission.info = info;
             permission.type_permission = type_permission;
             // reponse
             return permission;

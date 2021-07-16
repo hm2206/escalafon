@@ -38,11 +38,10 @@ class LicenseEntity {
         return obj;
     }
     
-    async index(entity_id, tmpDatos = this.schemaPaginate) {
+    async index(tmpDatos = this.schemaPaginate) {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
         let licenses = License.query()
             .with('situacion_laboral')
-            .where('entity_id', entity_id)
         // query_search
         if (datos.query_search) licenses.where('resolution', 'like', `%${datos.query_search}%`) 
         // filtros avanzados

@@ -101,6 +101,40 @@ class InfoController {
             ballots
         }
     }
+
+    async permissions ({ params, request }) {
+        const entity = request.$entity;
+        let authentication = request.api_authentication;
+        const page = request.input('page', 1);
+        const query_search = request.input('query_search', '');
+        const infoEntity = new InfoEntity(authentication);
+        const filtros = { entity_id: entity.id };
+        const datos = { page, query_search };
+        const { info, permissions } = await infoEntity.permissions(params.id, datos, filtros);
+        return {
+            success: true,
+            status: 200,
+            info,
+            permissions
+        }
+    }
+
+    async licenses ({ params, request }) {
+        const entity = request.$entity;
+        let authentication = request.api_authentication;
+        const page = request.input('page', 1);
+        const query_search = request.input('query_search', '');
+        const infoEntity = new InfoEntity(authentication);
+        const filtros = { entity_id: entity.id };
+        const datos = { page, query_search };
+        const { info, licenses } = await infoEntity.licenses(params.id, datos, filtros);
+        return {
+            success: true,
+            status: 200,
+            info,
+            licenses
+        }
+    }
 }   
 
 module.exports = InfoController

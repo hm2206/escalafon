@@ -20,8 +20,8 @@ class Permission extends Model {
     }
 
     // relations
-    work() {
-        return this.belongsTo('App/Models/Work');
+    info() {
+        return this.belongsTo('App/Models/Info');
     }
 
     type_permission() {

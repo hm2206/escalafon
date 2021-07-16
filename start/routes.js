@@ -19,8 +19,6 @@ Route('put', 'WorkController.update').middleware(['jwt']);
 Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
-Route('get', 'WorkController.permissions').middleware(['jwt', 'entityId']);
-Route('get', 'WorkController.licenses').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
 
 // Infos
@@ -30,6 +28,8 @@ Route('get', 'InfoController.show').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.schedules').middleware(['jwt', 'entityId']);
 Route('post', 'InfoController.syncSchedules').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.ballots').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.permissions').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.licenses').middleware(['jwt', 'entityId']);
 
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
@@ -73,8 +73,8 @@ Route('put', 'TypePermissionController.update').middleware(['jwt']);
 // Permissions
 Route('get', 'PermissionController.index').middleware(['jwt', 'entityId']);
 Route('post', 'PermissionController.store').middleware(['jwt', 'entityId']);
-Route('put', 'PermissionController.update').middleware(['jwt']);
-Route('delete', 'PermissionController.delete').middleware(['jwt']);
+Route('put', 'PermissionController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'PermissionController.delete').middleware(['jwt', 'entityId']);
 
 // License
 Route('post', 'LicenseController.store').middleware(['jwt', 'entityId']);

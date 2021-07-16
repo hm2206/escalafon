@@ -1,6 +1,8 @@
 'use strict';
 
 const PermissionEntity = require('../../Entities/PermissionEntity');
+const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
+const Info = use('App/Models/Info');
 
 class PermissionController {
 
@@ -34,8 +36,17 @@ class PermissionController {
     }
 
     async update({ params, request }) {
+        const entity = request.$entity;
         const permissionEntity = new PermissionEntity();
+        const info = await Info.query()
+            .join('permissions as p', 'p.info_id', 'infos.id')
+            .where('p.id', params.id)
+            .where('infos.entity_id', entity.id)
+            .select('infos.*')
+            .first();
+        if (!info) throw new NotFoundModelException("El contrato"); 
         const datos = request.all();
+        datos.info_id = info.id;
         const permission = await permissionEntity.update(params.id, datos);
         return {
             success: true,
@@ -45,9 +56,19 @@ class PermissionController {
         }
     }
 
-    async delete({ params }) {
+    async delete({ params, request }) {
+        const entity = request.$entity;
         const permissionEntity = new PermissionEntity();
-        const permission = await permissionEntity.delete(params.id);
+        const info = await Info.query()
+            .join('permissions as p', 'p.info_id', 'infos.id')
+            .where('p.id', params.id)
+            .where('infos.entity_id', entity.id)
+            .select('infos.*')
+            .first();
+        if (!info) throw new NotFoundModelException("El contrato"); 
+        const datos = request.all();
+        datos.info_id = info.id;
+        await permissionEntity.delete(params.id);
         return {
             success: true,
             status: 200,

@@ -27,6 +27,10 @@ class License extends Model {
         return this.belongsTo('App/Models/SituacionLaboral');
     }
 
+    info() {
+        return this.belongsTo('App/Models/Info');
+    }
+
 }
 
 module.exports = License

@@ -113,6 +113,18 @@
         "description": "Listar papeletas del contrato",
         "action_type": "VIEW"
     },
+    "InfoController.permissions": {
+        "name": "InfoController.permissions",
+        "url": "api/infos/:id/permissions",
+        "description": "Listar permisos del contrato",
+        "action_type": "VIEW"
+    },
+    "InfoController.licenses": {
+        "name": "InfoController.licenses",
+        "url": "api/infos/:id/licenses",
+        "description": "Listar licencias del contrato",
+        "action_type": "VIEW"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",

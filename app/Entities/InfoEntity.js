@@ -1,6 +1,6 @@
 'use strict';
 
-const { validation, Storage } = require('validator-error-adonis');
+const { validation } = require('validator-error-adonis');
 const DBException = require('../Exceptions/DBException');
 const NotFoundModelException = require('../Exceptions/NotFoundModelException');
 const CustomException = require('../Exceptions/CustomException');
@@ -11,6 +11,8 @@ const Info = use('App/Models/Info');
 const moment = require('moment');
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
 const BallotEntity = require('./BallotEntity');
+const PermissionEntity = require('./PermissionEntity');
+const LicenseEntity = require('./LicenseEntity');
 
 class InfoEntity {
 
@@ -48,6 +50,15 @@ class InfoEntity {
         perPage: 20,
         query_search: "",
         custom: {}
+    }
+
+    handleFilters(obj, filtros = {}) {
+        for(let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) obj.whereIn(DB.raw(attr), value);
+            else if (typeof value != 'undefined' && value !== '' && value !== null) obj.where(DB.raw(attr), value);
+        }
+        return obj;
     }
 
     async index (tmpDatos = this.schemaPaginate) {
@@ -240,6 +251,37 @@ class InfoEntity {
         let ballots = await ballotEntity.index(filtros);
         return { info, ballots };
     }
+
+    async permissions(id, tmpDatos = this.schemaPaginate, filtros = {}) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let info = Info.query()
+            .where('id', id);
+        info = this.handleFilters(info, filtros);
+        // obtener
+        info = await info.first();
+        // validar info
+        if (!info) throw new NotFoundModelException("El contrato");
+        const permissionEntity = new PermissionEntity();
+        datos.custom.info_id = info.id;
+        let permissions = await permissionEntity.index(datos);
+        return { info, permissions };
+    }
+
+    async licenses(id, tmpDatos = this.schemaPaginate, filtros = {}) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let info = Info.query()
+            .where('id', id);
+        info = this.handleFilters(info, filtros);
+        // obtener
+        info = await info.first();
+        // validar info
+        if (!info) throw new NotFoundModelException("El contrato");
+        const licenseEntity = new LicenseEntity();
+        datos.custom.info_id = info.id;
+        let licenses = await licenseEntity.index(datos);
+        return { info, licenses };
+    }
+
 
 }
 
