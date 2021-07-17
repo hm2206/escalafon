@@ -251,7 +251,7 @@ class SyncClock {
     // procesar
     try {
       // realizar sincronización del reloj
-      // await this.syncClock();
+      await this.syncClock();
       // obtener los registros del reloj
       await this.getAttendances();
       // preparar asistencia
