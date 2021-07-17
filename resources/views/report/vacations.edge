@@ -16,37 +16,32 @@
             <tr>
                 <th width="100px">
                     <img src="{{ entity.logo_images.logo_200x200 }}"
-                        style="height: 70px; object-fit: contain;"
+                        style="height: 100px; object-fit: contain;"
                     >
                 </th>
                 <th class="text-center">
-                    <div class="uppercase f-11">{{ entity.name }}</div>
-                    <div class="f-9">{{ entity.ruc }}</div>
+                    <div class="uppercase f-15">{{ entity.name }}</div>
+                    <div class="f-11">{{ entity.ruc }}</div>
                 </th>
             </tr>
         </thead>
     </table>
 
-    <h3 class="text-center mt-1 pt-1 uppercase font-11">REPORTE DE VACACIONES</h3>
+    <h3 class="text-center mt-1 pt-1 uppercase f-15">REPORTE DE VACACIONES</h3>
     
     @each(data in datos)
-        {{--  type  title --}}
-        @if(data.key == 'TITLE') 
-            <h3 class="text-center mt-1 uppercase">{{ data.current }}</h3>
-            <br/>
-        @endif 
         {{--  type work  --}}
         @if(data.key == 'WORK')
             <br/>
-            <table class="table f-11" width="100%" style="page-break-inside: avoid;">
+            <table class="table f-15" width="100%" style="page-break-inside: avoid;">
                 <thead>
                     <tr>
-                        <th width="120px" class="text-left">TRABAJADOR</th>
-                        <td class="uppercase">: {{ data.current.fullname || "" }}</td>
+                        <th width="120px" class="text-left f-13">TRABAJADOR</th>
+                        <td class="uppercase f-12">: {{ data.current.fullname || "" }}</td>
                     </tr>
                     <tr>
-                        <th width="120px" class="text-left">{{ data.current.document_type }}</th>
-                        <td class="uppercase">: {{ data.current.document_number || "" }}</td>
+                        <th width="120px" class="text-left f-13">{{ data.current.document_type }}</th>
+                        <td class="uppercase f-12">: {{ data.current.document_number || "" }}</td>
                     </tr>
                 </thead>
             </table>
@@ -54,56 +49,56 @@
         @endif
         {{--  type vacation  --}}
         @if(data.key == 'VACATION')
-            <table class="table f-11" style="page-break-inside: avoid;  border-top: 1.5px solid #000;">
+            <table class="table f-12 bbt-1" style="page-break-inside: avoid; width: 100vh;">
                 <thead class="text-center">
                     <tr>
-                        <th width="40px" style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                        <th width="40px" class="bbb-1 bbl-1 f-13">
                             Año
                         </th>
-                        <th width="35px" colspan="2" style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                        <th width="35px" colspan="2" class="bbb-1 bbl-1 f-13">
                             Dias Programados
                         </th>
-                        <th width="200px" style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                        <th width="200px" class="bbb-1 bbl-1 f-13">
                             Dias Ejecutados
                         </th>
-                        <th width="50px" style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">Saldo</th>
+                        <th width="50px" class="bbl-1 bbb-1 bbr-1 f-13">Saldo</th>
                     </tr>
                     <tr>
-                        <td style="padding-top: 0.4em; border-left: 1.5px solid #000;">{{ data.current.year }}</td>
-                        <td colspan="2" style="padding-top: 0.4em; border-left: 1.5px solid #000;">{{ data.current.scheduled_days }}</td>
-                        <td style="padding-top: 0.4em; border-left: 1.5px solid #000;">{{ data.current.executed_days }}</td>
-                        <td style="padding-top: 0.4em; border-left: 1.5px solid #000;">{{ data.current.balance }}</td>
+                        <td style="padding-top: 0.4em;" class="bbl-1 f-13">{{ data.current.year }}</td>
+                        <td colspan="2" style="padding-top: 0.4em;" class="bbl-1 f-13">{{ data.current.scheduled_days }}</td>
+                        <td style="padding-top: 0.4em;" class="bbl-1 f-13">{{ data.current.executed_days }}</td>
+                        <td style="padding-top: 0.4em;" class="bbr-1 bbl-1 f-13">{{ data.current.balance }}</td>
                     </tr>
                 </thead>
                 <tbody class="text-center">
                     <tr>
-                        <td style="border-top: 1.5px solid #000;"></td>
-                        <td colspan="4">
-                            <table class="table f-10" style="border-top: 1.5px solid #000;">
+                        <td class="bbt-1"></td>
+                        <td colspan="4" class="bbt-1">
+                            <table class="table">
                                 <thead>
                                     <tr>
-                                        <th colspan="4" style="padding: 0.4em; border-bottom: 1.5px solid #000;"></th>
+                                        <th colspan="4" class="bbb-1"><div class="pt-2"></div></th>
                                     </tr>
                                     <tr>
-                                        <th style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">Inicio</th>
-                                        <th style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">Termino</th>
-                                        <th style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">Dias ejecut.</th>
-                                        <th style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">Resolución</th>
+                                        <th class="bbl-1 bbb-1 f-13">Inicio</th>
+                                        <th class="bbl-1 bbb-1 f-13">Termino</th>
+                                        <th class="bbl-1 bbb-1 f-13">Dias ejecut.</th>
+                                        <th class="bbl-1 bbb-1 bbr-1 f-13">Resolución</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @each(vacation in data.current.vacations) 
                                         <tr>
-                                            <td style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                                            <td class="bbl-1 bbb-1 f-13">
                                                 {{ vacation.date_start }}
                                             </td>
-                                            <td style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                                            <td class="bbl-1 bbb-1 f-13">
                                                 {{ vacation.date_over }}
                                             </td>
-                                            <td style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                                            <td class="bbl-1 bbb-1 f-13">
                                                 {{ vacation.days_used }}
                                             </td>
-                                            <td style="border-left: 1.5px solid #000; border-bottom: 1.5px solid #000;" width="300px">
+                                            <td class="bbl-1 bbb-1 bbr-1 f-13" width="300px">
                                                 {{ vacation.resolucion }}
                                             </td>
                                         </tr>
