@@ -15,6 +15,7 @@ class BallotEntity {
         schedule_id: "",
         ballot_number: "",
         motivo: "",
+        modo: "",
         time_start: "",
         time_over: "",
         time_return: "",
@@ -57,9 +58,8 @@ class BallotEntity {
             schedule_id: "required",
             ballot_number: "required",
             motivo: "required|max:255",
-            time_start: "required",
+            modo: "required",
             time_over: "required",
-            total: "number",
             justification: "max:1000"
         });
         // obtener schedule
@@ -83,7 +83,11 @@ class BallotEntity {
             if (!value) continue;
             let isValid = await moment(value, 'HH:mm').isValid();
             if (!isValid) throw new ValidatorError([{ field: attr, message: `El formato no es válido!` }])
+            datos[attr] = moment(value, 'HH:mm').format('HH:mm:ss');
         }
+        // validar times por modo
+        if (datos.modo == 'ENTRY' && !datos.time_start) throw new ValidatorError([{ field: 'time_start', message: `La hora de ingreso es requerido!` }]);
+        else if (datos.modo == 'EXIT' && !datos.time_return) throw new ValidatorError([{ field: 'time_return', message: `La hora de retorno es requerido!` }]);
         // crear papeleta
         try {
             // save
@@ -91,10 +95,10 @@ class BallotEntity {
                 schedule_id: datos.schedule_id,
                 ballot_number: datos.ballot_number,
                 motivo: datos.motivo,
+                modo: datos.modo,
                 time_start: datos.time_start,
                 time_over: datos.time_over,
                 time_return: datos.time_return || null,
-                total: datos.total || 0,
                 justification: datos.justification || ""
             })
             // agregar schedule
@@ -110,9 +114,7 @@ class BallotEntity {
         await validation(null, datos, {
             ballot_number: "required",
             motivo: "required|max:255",
-            time_start: "required",
             time_over: "required",
-            total: "number",
             justification: "max:1000"
         });
         // obtener ballot
@@ -139,17 +141,21 @@ class BallotEntity {
             if (!value) continue;
             let isValid = await moment(value, 'HH:mm').isValid();
             if (!isValid) throw new ValidatorError([{ field: attr, message: `El formato no es válido!` }])
+            datos[attr] = moment(value, 'HH:mm').format('HH:mm:ss');
         }
+        // validar times por modo
+        if (datos.modo == 'ENTRY' && !datos.time_start) throw new ValidatorError([{ field: 'time_start', message: `La hora de ingreso es requerido!` }]);
+        else if (datos.modo == 'EXIT' && !datos.time_return) throw new ValidatorError([{ field: 'time_return', message: `La hora de retorno es requerido!` }]);
         // actualizar
         try {
             // preparar cambios
             ballot.merge({
                 ballot_number: datos.ballot_number,
                 motivo: datos.motivo,
+                modo: datos.modo,
                 time_start: datos.time_start,
                 time_over: datos.time_over,
                 time_return: datos.time_return || null,
-                total: datos.total || 0,
                 justification: datos.justification || ""
             })
             // guardar cambios
