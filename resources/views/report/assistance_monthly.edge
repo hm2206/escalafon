@@ -14,13 +14,13 @@
     @each(data in datos)
         {{--  type  title --}}
         @if(data.key == 'TITLE') 
-            <h3 class="text-center mt-1 uppercase">{{ data.current }}</h3>
+            <h3 class="text-center mt-1 uppercase f-16">{{ data.current }}</h3>
             <br/>
         @endif 
         {{--  type job  --}}
         @if(data.key == 'JOB')
             <br/>
-            <table class="table f-11" width="100%" style="page-break-inside: avoid;">
+            <table class="table f-14" width="100%" style="page-break-inside: avoid;">
                 <thead>
                     <tr>
                         <th width="120px" class="text-left">Trabajador</th>
@@ -36,7 +36,7 @@
         @endif
         {{--  type fecha  --}}
         @if(data.key == 'FECHA')
-            <table class="table f-11" width="100%" style="page-break-inside: avoid;">
+            <table class="table f-14" width="100%" style="page-break-inside: avoid;">
                 <thead>
                     <tr>
                         <th style="border-bottom: 1.5px solid #000;" colspan="2" width="50px" class="text-left">
