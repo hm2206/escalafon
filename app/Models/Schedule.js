@@ -15,6 +15,10 @@ class Schedule extends Model {
         return this.hasMany('App/Models/Assistance')
     }
 
+    ballots() {
+        return this.hasMany('App/Models/Ballot');
+    }
+
 }
 
 module.exports = Schedule
