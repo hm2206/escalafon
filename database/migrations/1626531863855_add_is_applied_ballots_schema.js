@@ -5,13 +5,13 @@ const Schema = use('Schema')
 
 class AddIsAppliedBallotsSchema extends Schema {
   up () {
-    this.table('add_is_applied_ballots', (table) => {
+    this.table('ballots', (table) => {
       table.boolean('is_applied').defaultTo(true);
     })
   }
 
   down () {
-    this.table('add_is_applied_ballots', (table) => {
+    this.table('ballots', (table) => {
       table.dropColumn('is_applied');
     })
   }
