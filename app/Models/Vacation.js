@@ -12,11 +12,15 @@ class Vacation extends Model {
     }
 
     getDateStart(value) {
-        return moment(value).format('YYYY-MM-DD')
+        return moment(value).format('YYYY-MM-DD');
     }
 
     getDateOver(value) {
-        return moment(value).format('YYYY-MM-DD')
+        return moment(value).format('YYYY-MM-DD');
+    }
+
+    config_vacation() {
+        return this.belongsTo('App/Models/ConfigVacation');
     }
 
 }

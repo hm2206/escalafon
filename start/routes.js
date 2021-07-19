@@ -80,3 +80,7 @@ Route('delete', 'PermissionController.delete').middleware(['jwt', 'entityId']);
 Route('post', 'LicenseController.store').middleware(['jwt', 'entityId']);
 Route('put', 'LicenseController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'LicenseController.delete').middleware(['jwt', 'entityId']);
+
+// Discount
+Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
+Route('post', 'DiscountController.process').middleware(['jwt', 'entityId']);

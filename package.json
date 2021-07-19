@@ -43,6 +43,7 @@
     "pfx-load": "^1.2.5",
     "qrcode": "^1.4.4",
     "random": "^2.2.0",
+    "round-to": "^5.0.0",
     "slugify": "^1.4.4",
     "strtotime": "^1.0.0",
     "uid": "^1.0.0",

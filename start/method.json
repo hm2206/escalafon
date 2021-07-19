@@ -315,6 +315,18 @@
         "name": "LicenseController.delete",
         "url": "api/licenses/:id",
         "description": "Eliminar licencia",
-        "action_type": "DELTE"
+        "action_type": "DELETE"
+    },
+    "DiscountController.preView": {
+        "name": "DiscountController.preView",
+        "url": "api/discounts/:year/:month/pre_view",
+        "description": "Procesar descuentos",
+        "action_type": "UPDATE"
+    },
+    "DiscountController.process": {
+        "name": "DiscountController.process",
+        "url": "api/discounts/:year/:month/process",
+        "description": "Procesar descuentos",
+        "action_type": "UPDATE"
     }
 }

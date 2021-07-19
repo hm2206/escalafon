@@ -11,7 +11,7 @@ class ScheduleSchema extends Schema {
       table.integer('index').notNullable();
       table.date('date').notNullable();
       table.time('time_start');
-      table.float('delay_start').notNullable().defaultTo('0');
+      table.float('delay_start', 8, 2).notNullable().defaultTo('0');
       table.time('time_over');
       table.text('observation');
       table.enum('modo', ['ALL', 'ENTRY', 'EXIT']).defaultTo('ALL')

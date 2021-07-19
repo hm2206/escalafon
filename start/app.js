@@ -79,7 +79,8 @@ const commands = [
 |
 */
 const jobs = [
-  'App/Jobs/SyncClock'
+  'App/Jobs/SyncClock',
+  'App/Jobs/ProcessDiscounts',
 ]
 
 module.exports = { providers, aceProviders, aliases, commands, jobs }

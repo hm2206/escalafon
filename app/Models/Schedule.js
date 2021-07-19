@@ -15,6 +15,10 @@ class Schedule extends Model {
         return this.hasMany('App/Models/Assistance')
     }
 
+    info () {
+        return this.belongsTo('App/Models/Info');
+    }
+
     ballots() {
         return this.hasMany('App/Models/Ballot');
     }
