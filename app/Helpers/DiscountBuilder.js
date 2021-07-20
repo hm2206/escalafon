@@ -154,6 +154,7 @@ class DiscountBuilder {
             .whereIn('s.info_id', infoIds)
             .where(DB.raw('YEAR(s.date)'), this.year)
             .where(DB.raw('MONTH(s.date)'), this.month)
+            .select('ballots.*')
             .fetch();
         this.ballots = collect(await ballots.toJSON());
     }
@@ -179,6 +180,17 @@ class DiscountBuilder {
                 // obtener schedule
                 let current_schedule = await this.schedules.where('info_id', info.id).where('date', date.date).first();
                 if (current_schedule) {
+
+                    // validar ballots
+                    let ballots = await this.ballots.where('schedule_id', current_schedule.id).toArray();
+                    for(let ballot of ballots) {
+                        date.discounts.push({
+                            type: 'App/Models/Ballot',
+                            object: ballot
+                        });
+                    }
+
+                    // agregar contador de schedule
                     date.schedule = current_schedule;
                     info.count += current_schedule.discount;
                 }

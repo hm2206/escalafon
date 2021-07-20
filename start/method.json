@@ -320,8 +320,14 @@
     "DiscountController.preView": {
         "name": "DiscountController.preView",
         "url": "api/discounts/:year/:month/pre_view",
-        "description": "Procesar descuentos",
-        "action_type": "UPDATE"
+        "description": "Lista de descuentos",
+        "action_type": "VIEW"
+    },
+    "DiscountController.preViewDetails": {
+        "name": "DiscountController.preViewDetails",
+        "url": "api/discounts/:year/:month/pre_view_details",
+        "description": "Lista de descuentos detallados",
+        "action_type": "VIEW"
     },
     "DiscountController.process": {
         "name": "DiscountController.process",

@@ -6,6 +6,7 @@ const ProcessDiscounts = use('App/Jobs/ProcessDiscounts');
 const CustomException = require('../Exceptions/CustomException');
 const Redis = use('Redis');
 const DiscountBuilder = require('../Helpers/DiscountBuilder');
+const DiscountDetailBuilder = require('../Helpers/DiscountDetailBuilder');
 
 class DiscountEntity {
 
@@ -21,6 +22,11 @@ class DiscountEntity {
     async preView(entity_id, year, month, datos = { page: 1, query_search: "" }) {
         const discountBuilder = new DiscountBuilder(this.authentication, entity_id, year, month, datos);
         return await discountBuilder.handle();
+    }
+
+    async preViewDetails(entity_id, year, month) {
+        const discountDetailBuilder = new DiscountDetailBuilder(entity_id, year, month);
+        return await discountDetailBuilder.handle();
     }
 
     async process(entity, year, month) {

@@ -19,6 +19,19 @@ class DiscountController {
         };
     }
 
+    async preViewDetails({ params, request }) {
+        let year = params.year;
+        let month = params.month;
+        let entity = request.$entity;
+        const discountEntity = new DiscountEntity(request);
+        const details = await discountEntity.preViewDetails(entity.id, year, month);
+        return {
+            success: true,
+            status: 200,
+            details
+        }
+    }
+
     async process({ params, request }) {
         let year = params.year;
         let month = params.month;
