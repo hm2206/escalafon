@@ -66,7 +66,7 @@ class PrepareDiscountProcedure extends BaseProcedure {
                 )
                 GROUP BY i.id, i.fecha_de_ingreso, i.fecha_de_cese, i.hours
             ) as up ON up.id = dis.info_id AND up.new_year = dis.year AND up.new_month = dis.month
-            SET dis.days = up.days, dis.base = up.base, dis.hours = up.hours;
+            SET dis.days = up.days, dis.base = (up.base * 30) / 30, dis.hours = up.hours;
         `
     }
 
