@@ -18,8 +18,8 @@ class DiscountEntity {
         }
     }
 
-    async preView(entity_id, year, month) {
-        const discountBuilder = new DiscountBuilder(this.authentication, entity_id, year, month);
+    async preView(entity_id, year, month, datos = { page: 1, query_search: "" }) {
+        const discountBuilder = new DiscountBuilder(this.authentication, entity_id, year, month, datos);
         return await discountBuilder.handle();
     }
 

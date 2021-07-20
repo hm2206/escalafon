@@ -19,12 +19,18 @@ class DiscountBuilder {
     body = [];
     people = [];
 
-    constructor(authentication, entity_id, year, month, page = 1) {
+    dataPage = {
+        page: 10,
+        perPage: 20,
+        query_search: ""
+    }
+
+    constructor(authentication, entity_id, year, month, tmpDatos = this.dataPage) {
+        this.dataPage = Object.assign(this.dataPage, tmpDatos);
         this.authentication = authentication;
         this.entity_id = entity_id;
         this.year = year;
         this.month = month;
-        this.page = page;
     }
 
     async getDates() {
@@ -69,7 +75,7 @@ class DiscountBuilder {
                 'd.base', 'd.discount_min', 'd.discount'
             )
             .orderBy('w.orden', 'ASC')
-            .paginate(this.page, 20);
+            .paginate(this.dataPage.page, this.dataPage.perPage);
         this.infos = await infos.toJSON();
     }
 

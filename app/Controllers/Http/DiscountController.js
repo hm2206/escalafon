@@ -8,8 +8,10 @@ class DiscountController {
         let year = params.year;
         let month = params.month;
         let entity = request.$entity;
+        let page = request.input('page', 1);
+        let query_search = request.input('query_search', '');
         const discountEntity = new DiscountEntity(request);
-        const discounts = await discountEntity.preView(entity.id, year, month);
+        const discounts = await discountEntity.preView(entity.id, year, month, { page, query_search });
         return {  
             success: true,
             status: 200,
