@@ -37,11 +37,11 @@ class DiscountController {
         let month = params.month;
         let entity = request.$entity;
         const discountEntity = new DiscountEntity();
-        await discountEntity.process(entity, year, month);
+        await discountEntity.process(entity.id, year, month);
         return {
             success: true,
             status: 201,
-            message: "Los descuentos están siendo procesados en segundo plano"
+            message: "Los descuentos se procesarón correctamente!"
         }
     }
 

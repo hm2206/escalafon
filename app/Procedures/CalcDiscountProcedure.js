@@ -20,35 +20,6 @@ class CalcDiscountProcedure extends BaseProcedure {
         }
     }
 
-    static queryUpdateStatus() {
-        return `
-            UPDATE schedules as sch 
-            INNER JOIN (
-                SELECT s.id, s.date, 
-                (SELECT count(*) FROM assistances as a 
-                where a.schedule_id = s.id) as total
-                FROM schedules as s
-                INNER JOIN infos as i ON i.id = s.info_id
-                WHERE i.entity_id = ${this.params.entity_id.name}
-                AND YEAR(s.date) = ${this.params.year.name}
-                AND MONTH(s.date) = ${this.params.month.name}
-            ) as up ON up.id = sch.id 
-            SET sch.status = IF(up.total > 0, 'A', 'F');
-        `
-    }
-
-    static queryUpdateLack() {
-        return `
-            UPDATE schedules as s
-            INNER JOIN infos as i ON i.id = s.info_id
-            SET s.discount = (i.hours * 60)
-            WHERE i.entity_id = ${this.params.entity_id.name}
-            AND YEAR(s.date) = ${this.params.year.name}
-            AND MONTH(s.date) = ${this.params.month.name}
-            AND s.status = 'F';
-        `
-    }
-
     static queryUpdateBallots() {
         return `
             UPDATE schedules as sch INNER JOIN (
@@ -139,8 +110,6 @@ class CalcDiscountProcedure extends BaseProcedure {
 
     static get query () {
         return [ 
-            this.queryUpdateStatus(),
-            this.queryUpdateLack(),
             this.queryUpdateBallots(),
             this.queryUpdatePermissions(),
             this.queryUpdateLicenses(),

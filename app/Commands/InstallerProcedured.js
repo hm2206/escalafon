@@ -3,6 +3,7 @@
 const { Command } = require('@adonisjs/ace')
 const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProcedure');
 const SyncConfigInfoProcedure = require('../Procedures/SyncConfigInfoProcedure')
+const PreparateDiscountProcedure = require('../Procedures/PrepareDiscountProcedure');
 const CalcDiscountProcedure = require('../Procedures/CalcDiscountProcedure');
 
 class InstallerProcedured extends Command {
@@ -17,6 +18,7 @@ class InstallerProcedured extends Command {
   async handle (args, options) {
     await SyncScheduleInfosProcedure.up();
     await SyncConfigInfoProcedure.up();
+    await PreparateDiscountProcedure.up();
     await CalcDiscountProcedure.up();
     process.exit();
   }
