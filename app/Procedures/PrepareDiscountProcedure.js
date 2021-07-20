@@ -30,7 +30,7 @@ class PrepareDiscountProcedure extends BaseProcedure {
             i.hours, 0 as discount_min, 0 as discount, 0 as verify
             FROM infos as i
             INNER JOIN config_infos as c ON c.info_id = i.id 
-            WHERE i.entity_id = 1 
+            WHERE i.entity_id = ${this.params.entity_id.name}
             AND c.base = 0
             AND i.estado = 1
             AND EXISTS (
