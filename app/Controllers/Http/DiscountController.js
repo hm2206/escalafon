@@ -8,7 +8,7 @@ class DiscountController {
         let year = params.year;
         let month = params.month;
         let entity = request.$entity;
-        const discountEntity = new DiscountEntity();
+        const discountEntity = new DiscountEntity(request);
         const discounts = await discountEntity.preView(entity.id, year, month);
         return {  
             success: true,

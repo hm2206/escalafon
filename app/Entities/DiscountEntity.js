@@ -11,6 +11,7 @@ class DiscountEntity {
 
     constructor(request = null) {
         if (request) {
+            this.authentication = request.api_authentication;
             this.auth = request.$auth;
             this.app = request.$app;
             this.method = request.$method;
@@ -18,7 +19,7 @@ class DiscountEntity {
     }
 
     async preView(entity_id, year, month) {
-        const discountBuilder = new DiscountBuilder(entity_id, year, month);
+        const discountBuilder = new DiscountBuilder(this.authentication, entity_id, year, month);
         return await discountBuilder.handle();
     }
 

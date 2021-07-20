@@ -17,12 +17,14 @@ class DiscountBuilder {
     vacations = [];
     dates = [];
     body = [];
+    people = [];
 
-    constructor(entity_id, year, month, page = 1) {
+    constructor(authentication, entity_id, year, month, page = 1) {
+        this.authentication = authentication;
         this.entity_id = entity_id;
         this.year = year;
         this.month = month;
-        this.page = 1;
+        this.page = page;
     }
 
     async getDates() {
@@ -55,22 +57,28 @@ class DiscountBuilder {
 
     async getInfos() {
         let infos = await Info.query() 
+            .with('work', build => build.select('works.id', 'works.person_id'))
+            .with('type_categoria', build => build.select('type_categorias.id', 'type_categorias.descripcion'))
             .join('works as w', 'w.id', 'infos.work_id')
-            .join('config_infos as c', 'c.info_id', 'infos.id')
-            .with('work', (builder) => builder.select('works.id', 'works.person_id'))
-            .with('type_categoria', (builder) => builder.select('type_categorias.id', 'type_categorias.descripcion')) 
-            .where('entity_id', this.entity_id)
-            .where('infos.id', 17)
-            .where('c.base', 0)
-            .whereHas('schedules', (builder) => 
-                builder.where(DB.raw('YEAR(date)'), this.year)
-                .where(DB.raw('MONTH(date)'), this.month)
+            .join('discounts as d', 'd.info_id', 'infos.id')
+            .where('infos.entity_id', this.entity_id)
+            .where('d.year', this.year)
+            .where('d.month', this.month)
+            .select(
+                'infos.id', DB.raw('d.id as discount_id'), 'infos.work_id', 'infos.type_categoria_id', 
+                'd.base', 'd.discount_min', 'd.discount'
             )
-            .select('infos.id', 'infos.type_categoria_id', 'infos.work_id', DB.raw('SUM(c.monto) as base'))
             .orderBy('w.orden', 'ASC')
-            .groupBy('infos.id', 'infos.type_categoria_id', 'infos.work_id')
             .paginate(this.page, 20);
         this.infos = await infos.toJSON();
+    }
+
+    async getPeople() {
+        let personIds = collect(this.infos.data).pluck('work.person_id').toArray();
+        let people = await this.authentication.get(`person?ids[]=${personIds.join('&ids[]=')}`)
+        .then(res => res.data.people.data || [])
+        .catch(() => ([]));
+        this.people = collect(people);
     }
 
     async getVacationes() {
@@ -148,17 +156,26 @@ class DiscountBuilder {
         let newInfos = this.infos.data || [];
         for(let info of newInfos) {
 
+            // obtener people
+            let person = this.people.where('id', info.work.person_id).first() || {};
+            info.work.person = person;
+
             let newDates = JSON.parse(JSON.stringify(this.dates));
             info.dates = newDates;
+            info.count = 0;
 
             // precargar datos
             for(let date of info.dates) {
 
-
                 // coleción de descuentos
                 date.discounts = collect([]);
-                date.delay = 0;
-                date.modo = "A";
+
+                // obtener schedule
+                let current_schedule = await this.schedules.where('info_id', info.id).where('date', date.date).first();
+                if (current_schedule) {
+                    date.schedule = current_schedule;
+                    info.count += current_schedule.discount;
+                }
 
 
                 // validar vacaciones
@@ -171,7 +188,6 @@ class DiscountBuilder {
                         type: 'App/Models/Vacation',
                         object: vacation
                     });
-                    continue;
                 }
 
 
@@ -185,7 +201,6 @@ class DiscountBuilder {
                         type: 'App/Models/License',
                         object: license
                     });
-                    continue;
                 }
 
 
@@ -199,58 +214,7 @@ class DiscountBuilder {
                         type: 'App/Models/Permission',
                         object: permission
                     });
-                    continue;
                 }
-
-
-                // validar si el trabajador tiene que asistir ese día
-                let schedules = await this.schedules.where('info_id', info.id).where('date', date.date);
-                let tried = schedules.count();
-                if (!tried) {
-                    date.modo = "E";
-                    continue;
-                }
-
-
-                // validar si el trabajador no asistío
-                let plucked = schedules.pluck('id').toArray();
-                let assistances = await this.assistances.whereIn('schedule_id', plucked);
-                let count_assistance = assistances.count();
-                if (!count_assistance) {
-                    date.modo = "F";
-                    date.delay = 1;
-                    continue;
-                }
-
-
-                // validar tardanza
-                for (let schedule of schedules) {
-                    let delay_assistance = assistances.where('schedule_id', schedule.id).sum('delay');
-                    let extra_assistance = assistances.where('schedule_id', schedule.id).sum('extra');
-                    let delay = delay_assistance - extra_assistance;
-                    // verificar que el trabajador ingresó a su hora esperada
-                    if (delay <= 0) continue;
-                    //  verificar si el trabajador persentó sustento de papeleta
-                    let ballots = await this.ballots.where('schedule_id', schedule.id);
-                    let count_ballot = ballots.count();
-                    if (!count_ballot) {
-                        date.modo = "F";
-                        date.delay = 1;
-                    }
-
-                    // validar papeletas persentadas
-                    for (let ballot of ballots.toArray()) {
-                        if (ballot.is_applied) continue;
-                        date.modo = "T"
-                        date.delay = ballot.total;
-                        date.discounts.push({
-                            type: 'App/Models/Ballot',
-                            object: ballot
-                        });
-                    }
-                }
-
-
             };
         }   
     }
@@ -260,6 +224,8 @@ class DiscountBuilder {
         await this.getDates();
         // obtener infos
         await this.getInfos();
+        // onbtener people
+        await this.getPeople();
         // obtener vacations
         await this.getVacationes();
         // obetener licenses
@@ -275,7 +241,7 @@ class DiscountBuilder {
         // setting datos
         await this.settingBody();
         // response
-        return { header: this.dates, body: this.infos }
+        return this.infos;
     }
 
 }
