@@ -86,6 +86,11 @@ Route('post', 'AscentController.store').middleware(['jwt', 'entityId']);
 Route('put', 'AscentController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'AscentController.delete').middleware(['jwt', 'entityId']);
 
+// Displacements
+Route('post', 'DisplacementController.store').middleware(['jwt', 'entityId']);
+Route('put', 'DisplacementController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'DisplacementController.delete').middleware(['jwt', 'entityId']);
+
 // Discount
 Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
 Route('get', 'DiscountController.preViewDetails').middleware(['jwt', 'entityId']);

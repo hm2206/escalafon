@@ -335,6 +335,24 @@
         "description": "Eliminar Ascenso laboral",
         "action_type": "DELETE"
     },
+    "DisplacementController.store": {
+        "name": "DisplacementController.store",
+        "url": "api/displacements",
+        "description": "Crear Desplazamiento de Personal",
+        "action_type": "CREATE"
+    },
+    "DisplacementController.update": {
+        "name": "DisplacementController.update",
+        "url": "api/displacements/:id",
+        "description": "Actualizar Desplazamiento de Personal",
+        "action_type": "UPDATE"
+    },
+    "DisplacementController.delete": {
+        "name": "DisplacementController.delete",
+        "url": "api/displacements/:id",
+        "description": "Eliminar Desplazamiento de Personal",
+        "action_type": "DELETE"
+    },
     "DiscountController.preView": {
         "name": "DiscountController.preView",
         "url": "api/discounts/:year/:month/pre_view",

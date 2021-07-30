@@ -14,6 +14,7 @@ class AscentSchema extends Schema {
       table.date('date_start').notNullable()
       table.text('description')
       table.boolean('state').defaultTo(true)
+      table.unique(['info_id', 'resolution'])
       table.timestamps()
     })
   }

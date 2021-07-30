@@ -16,6 +16,7 @@ class DisplacementSchema extends Schema {
       table.integer('perfil_laboral_id').notNullable()
       table.text('description')
       table.boolean('state').defaultTo(true)
+      table.unique(['info_id', 'resolution'])
       table.timestamps()
     })
   }
