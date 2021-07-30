@@ -81,6 +81,11 @@ Route('post', 'LicenseController.store').middleware(['jwt', 'entityId']);
 Route('put', 'LicenseController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'LicenseController.delete').middleware(['jwt', 'entityId']);
 
+// Ascents
+Route('post', 'AscentController.store').middleware(['jwt', 'entityId']);
+Route('put', 'AscentController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'AscentController.delete').middleware(['jwt', 'entityId']);
+
 // Discount
 Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
 Route('get', 'DiscountController.preViewDetails').middleware(['jwt', 'entityId']);

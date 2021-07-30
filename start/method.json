@@ -317,6 +317,24 @@
         "description": "Eliminar licencia",
         "action_type": "DELETE"
     },
+    "AscentController.store": {
+        "name": "AscentController.store",
+        "url": "api/ascents",
+        "description": "Crear Ascenso laboral",
+        "action_type": "CREATE"
+    },
+    "AscentController.update": {
+        "name": "AscentController.update",
+        "url": "api/ascents/:id",
+        "description": "Actualizar Ascenso laboral",
+        "action_type": "UPDATE"
+    },
+    "AscentController.delete": {
+        "name": "AscentController.delete",
+        "url": "api/ascents/:id",
+        "description": "Eliminar Ascenso laboral",
+        "action_type": "DELETE"
+    },
     "DiscountController.preView": {
         "name": "DiscountController.preView",
         "url": "api/discounts/:year/:month/pre_view",
