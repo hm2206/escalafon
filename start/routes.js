@@ -91,6 +91,11 @@ Route('post', 'DisplacementController.store').middleware(['jwt', 'entityId']);
 Route('put', 'DisplacementController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'DisplacementController.delete').middleware(['jwt', 'entityId']);
 
+// Merit
+Route('post', 'MeritController.store').middleware(['jwt', 'entityId']);
+Route('put', 'MeritController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'MeritController.delete').middleware(['jwt', 'entityId']);
+
 // Discount
 Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
 Route('get', 'DiscountController.preViewDetails').middleware(['jwt', 'entityId']);

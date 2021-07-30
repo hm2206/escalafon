@@ -350,7 +350,25 @@
     "DisplacementController.delete": {
         "name": "DisplacementController.delete",
         "url": "api/displacements/:id",
-        "description": "Eliminar Desplazamiento de Personal",
+        "description": "Eliminar Desplazamiento del Personal",
+        "action_type": "DELETE"
+    },
+    "MeritController.store": {
+        "name": "MeritController.store",
+        "url": "api/merits",
+        "description": "Crear Mérito/Demérito del Personal",
+        "action_type": "CREATE"
+    },
+    "MeritController.update": {
+        "name": "MeritController.update",
+        "url": "api/merits/:id",
+        "description": "Actualizar Mérito/Demérito del Personal",
+        "action_type": "UPDATE"
+    },
+    "MeritController.delete": {
+        "name": "MeritController.delete",
+        "url": "api/merits/:id",
+        "description": "Eliminar Mérito/Demérito del Personal",
         "action_type": "DELETE"
     },
     "DiscountController.preView": {
