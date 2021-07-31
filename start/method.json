@@ -125,6 +125,24 @@
         "description": "Listar licencias del contrato",
         "action_type": "VIEW"
     },
+    "InfoController.ascents": {
+        "name": "InfoController.ascents",
+        "url": "api/infos/:id/ascents",
+        "description": "Listar Ascensos del contrato",
+        "action_type": "VIEW"
+    },
+    "InfoController.displacements": {
+        "name": "InfoController.displacements",
+        "url": "api/infos/:id/displacements",
+        "description": "Listar Desplazamientos del contrato",
+        "action_type": "VIEW"
+    },
+    "InfoController.merits": {
+        "name": "InfoController.merits",
+        "url": "api/infos/:id/merits",
+        "description": "Listar méritos/desméritos del contrato",
+        "action_type": "VIEW"
+    },
     "ClockController.index": {
         "name": "ClockController.index",
         "url": "api/clock",

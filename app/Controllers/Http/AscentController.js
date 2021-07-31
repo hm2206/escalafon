@@ -64,6 +64,7 @@ class AscentController {
                 description: datos.description
             })
             await ascent.save()
+            ascent.type_categoria = await ascent.type_categoria().fetch();
             // response
             return {
                 success: true,

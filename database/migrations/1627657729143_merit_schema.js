@@ -8,6 +8,7 @@ class MeritSchema extends Schema {
     this.create('merits', (table) => {
       table.increments()
       table.integer('info_id').notNullable()
+      table.date('date').notNullable()
       table.string('title').notNullable()
       table.enum('modo', ['MERIT', 'DEMERIT'])
       table.text('description')

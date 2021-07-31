@@ -30,6 +30,9 @@ Route('post', 'InfoController.syncSchedules').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.ballots').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.permissions').middleware(['jwt', 'entityId']);
 Route('get', 'InfoController.licenses').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.ascents').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.displacements').middleware(['jwt', 'entityId']);
+Route('get', 'InfoController.merits').middleware(['jwt', 'entityId']);
 
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);

@@ -3,6 +3,11 @@
 const InfoEntity = require('../../Entities/InfoEntity');
 const collect = require('collect.js');
 const moment = require('moment');
+const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
+const Ascent = use('App/Models/Ascent');
+const Info = use('App/Models/Info');
+const Displacement = use('App/Models/Displacement')
+const Merit = use('App/Models/Merit')
 
 class InfoController {
 
@@ -133,6 +138,79 @@ class InfoController {
             status: 200,
             info,
             licenses
+        }
+    }
+
+    async ascents ({ params, request }) {
+        const info = await Info.find(params.id);
+        if (!info) throw new NotFoundModelException("el contrato")
+        const page = request.input('page', 1);
+        const perPage = request.input('perPage', 20)
+        const query_search = request.input('query_search', '');
+        let ascents = Ascent.query()
+            .with('type_categoria')
+            .where('info_id', info.id)
+        if (query_search) ascents.where('description', 'like', `%${query_search}%`)
+        ascents = await ascents.paginate(page, perPage)
+        return {
+            success: true, 
+            status: 200,
+            ascents
+        }
+    }
+
+    async displacements ({ params, request }) {
+        const authentication = request.api_authentication
+        const info = await Info.find(params.id);
+        if (!info) throw new NotFoundModelException("el contrato")
+        const page = request.input('page', 1);
+        const perPage = request.input('perPage', 20)
+        const query_search = request.input('query_search', '');
+        let displacements = Displacement.query()
+            .where('info_id', info.id)
+        if (query_search) displacements.where('resolution', 'like', `%${query_search}%`)
+        displacements = await displacements.paginate(page, perPage)
+        displacements = await displacements.toJSON()
+        // obtener dependencias
+        let dependenciaIds = collect(displacements.data || []).pluck('dependencia_id').toArray();
+        let dependencias = await authentication.get(`dependencia?ids[]=${dependenciaIds.join('ids[]=')}`)
+        .then(({ data }) => data.dependencia && data.dependencia.data || [])
+        .catch(() => ([]))
+        dependencias = collect(dependencias)
+        // obtener perfil laboral
+        let perfilIds = collect(displacements.data || []).pluck('perfil_laboral_id').toArray();
+        let perfil_laborals = await authentication.get(`perfil_laboral?ids[]=${perfilIds.join('ids[]=')}`)
+        .then(({ data }) => data.perfil_laboral && data.perfil_laboral.data || [])
+        .catch(() => ([]))
+        perfil_laborals = collect(perfil_laborals)
+        // settinf data
+        await displacements.data.map(d => {
+            d.dependencia = dependencias.where('id', d.dependencia_id).first() || {}
+            d.perfil_laboral = perfil_laborals.where('id', d.perfil_laboral_id).first() || {}
+            return d 
+        })
+        // response
+        return {
+            success: true, 
+            status: 200,
+            displacements
+        }
+    }
+
+    async merits ({ params, request }) {
+        const info = await Info.find(params.id);
+        if (!info) throw new NotFoundModelException("el contrato")
+        const page = request.input('page', 1);
+        const perPage = request.input('perPage', 20)
+        const query_search = request.input('query_search', '');
+        let merits = Merit.query()
+            .where('info_id', info.id)
+        if (query_search) merits.where('title', 'like', `%${query_search}%`)
+        merits = await merits.paginate(page, perPage)
+        return {
+            success: true, 
+            status: 200,
+            merits
         }
     }
 }   

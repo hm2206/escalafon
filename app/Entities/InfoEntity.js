@@ -281,8 +281,6 @@ class InfoEntity {
         let licenses = await licenseEntity.index(datos);
         return { info, licenses };
     }
-
-
 }
 
 

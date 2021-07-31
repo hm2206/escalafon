@@ -46,6 +46,7 @@ class DisplacementController {
 
     async update({ params, request }) {
         // obtener displacement
+        let authentication = request.api_authentication;
         let displacement = await Displacement.find(params.id) 
         if (!displacement) throw new NotFoundModelException("El desplazamiento")
         // validar datos
@@ -71,6 +72,17 @@ class DisplacementController {
                 description: datos.description
             })
             await displacement.save()
+            // obtener dependencia
+            let dependencia = await authentication.get(`dependencia/${displacement.dependencia_id}`)
+                .then(({ data }) => data.dependencia || {})
+                .catch(() => ({}))
+            // obtener perfil laboral
+            let perfil_laboral = await authentication.get(`perfil_laboral/${displacement.perfil_laboral_id}`)
+                .then(({ data }) => data.perfil_laboral || {})
+                .catch(() => ({}))
+            // setting data
+            displacement.dependencia = dependencia;
+            displacement.perfil_laboral = perfil_laboral;
             // response
             return {
                 success: true,
