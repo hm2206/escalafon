@@ -2,6 +2,9 @@
 
 const { default: collect } = require('collect.js');
 const WorkEntity = require('../../Entities/WorkEntity');
+const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
+const Degree = use('App/Models/Degree')
+const Work = use('App/Models/Work')
 
 class WorkController {
 
@@ -100,6 +103,24 @@ class WorkController {
         const report = await workEntity.reportVacations(params.id, entity);
         response.header('Content-Type', 'application/pdf');
         return response.send(report);
+    }
+
+    async degrees ({ params, request }) {
+        let work = await Work.find(params.id)
+        if (!work) throw new NotFoundModelException("El trabajador")
+        let page = request.input('page', 1)
+        let perPage = request.input('perPage', 20)
+        let query_search = request.input('query_search', '') 
+        let degrees = Degree.query()
+            .with('type_degree')
+            .where('work_id', work.id)
+        if (query_search) degrees.where('document_number', 'like', `%${degrees}%`)
+        degrees = await degrees.paginate(page, perPage)
+        return {
+            success: true,
+            status: 200,
+            degrees
+        };
     }
 
 }

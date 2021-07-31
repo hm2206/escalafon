@@ -20,6 +20,7 @@ Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.degrees').middleware(['jwt']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
@@ -98,6 +99,14 @@ Route('delete', 'DisplacementController.delete').middleware(['jwt', 'entityId'])
 Route('post', 'MeritController.store').middleware(['jwt', 'entityId']);
 Route('put', 'MeritController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'MeritController.delete').middleware(['jwt', 'entityId']);
+
+// TypeDegree
+Route('get', 'TypeDegreeController.index').middleware(['jwt']);
+
+// Degree
+Route('post', 'DegreeController.store').middleware(['jwt', 'entityId']);
+Route('put', 'DegreeController.update').middleware(['jwt', 'entityId']);
+Route('delete', 'DegreeController.delete').middleware(['jwt', 'entityId']);
 
 // Discount
 Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);

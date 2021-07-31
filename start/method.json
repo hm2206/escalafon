@@ -77,6 +77,12 @@
         "description": "Reporte de vacaciones",
         "action_type": "VIEW"
     },
+    "WorkController.degrees": {
+        "name": "WorkController.degrees",
+        "url": "api/works/:id/degrees",
+        "description": "Listado de Formación académica del personal",
+        "action_type": "VIEW"
+    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -387,6 +393,30 @@
         "name": "MeritController.delete",
         "url": "api/merits/:id",
         "description": "Eliminar Mérito/Demérito del Personal",
+        "action_type": "DELETE"
+    },
+    "TypeDegreeController.index": {
+        "name": "TypeDegreeController.index",
+        "url": "api/type_degrees",
+        "description": "Listar Tipo de Formación académica",
+        "action_type": "VIEW"
+    },
+    "DegreeController.store": {
+        "name": "DegreeController.store",
+        "url": "api/degrees",
+        "description": "Crear Formación académica del Personal",
+        "action_type": "CREATE"
+    },
+    "DegreeController.update": {
+        "name": "DegreeController.update",
+        "url": "api/degrees/:id",
+        "description": "Actualizar Formación académica del Personal",
+        "action_type": "UPDATE"
+    },
+    "DegreeController.delete": {
+        "name": "DegreeController.delete",
+        "url": "api/degrees/:id",
+        "description": "Eliminar Formación académica del Personal",
         "action_type": "DELETE"
     },
     "DiscountController.preView": {
