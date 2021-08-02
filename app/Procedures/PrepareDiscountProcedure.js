@@ -45,31 +45,6 @@ class PrepareDiscountProcedure extends BaseProcedure {
         `
     }
 
-    static queryUpdateDiscount () {
-        return `
-            UPDATE discounts as dis 
-            INNER JOIN (
-                SELECT i.id, ${this.params.year.name} as new_year, ${this.params.month.name} as new_month, SUM(c.monto) as base,
-                IF((i.fecha_de_ingreso is null OR i.fecha_de_ingreso = '') 
-                OR (i.fecha_de_cese is null OR i.fecha_de_cese = ''), 30, 
-                IF(DATEDIFF(i.fecha_de_cese, i.fecha_de_ingreso) + 1 >= 30, 30, DATEDIFF(i.fecha_de_cese, i.fecha_de_ingreso) + 1)) as days, 
-                i.hours, 0 as discount_min, 0 as discount, 0 as verify
-                FROM infos as i
-                INNER JOIN config_infos as c ON c.info_id = i.id 
-                WHERE i.entity_id = ${this.params.entity_id.name}
-                AND c.base = 0
-                AND i.estado = 1
-                AND EXISTS (
-                    SELECT null FROM schedules as s
-                    WHERE s.info_id = i.id AND
-                    YEAR(s.date) = ${this.params.year.name} AND MONTH(s.date) = ${this.params.month.name}
-                )
-                GROUP BY i.id, i.fecha_de_ingreso, i.fecha_de_cese, i.hours
-            ) as up ON up.id = dis.info_id AND up.new_year = dis.year AND up.new_month = dis.month
-            SET dis.days = up.days, dis.base = (up.base * 30) / 30, dis.hours = up.hours;
-        `
-    }
-
     static queryUpdateStatus() {
         return `
             UPDATE schedules as sch 
@@ -102,7 +77,6 @@ class PrepareDiscountProcedure extends BaseProcedure {
     static get query () {
         return [ 
             this.queryAddDiscount(),
-            this.queryUpdateDiscount(),
             this.queryUpdateStatus(),
             this.queryUpdateLack(),
         ];
