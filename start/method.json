@@ -436,5 +436,23 @@
         "url": "api/discounts/:year/:month/process",
         "description": "Procesar descuentos",
         "action_type": "UPDATE"
+    },
+    "FileController.store": {
+        "name": "FileController.store",
+        "url": "api/files",
+        "description": "Crear Archivo",
+        "action_type": "CREATE"
+    },
+    "FileController.objectType": {
+        "name": "FileController.objectType",
+        "url": "api/files/:object_id/object_type",
+        "description": "Listar Archivos por su object_type",
+        "action_type": "VIEW"
+    },
+    "FileController.binary": {
+        "name": "FileController.binary",
+        "url": "api/files/:token/binary",
+        "description": "Obtener archivo en binario",
+        "action_type": "VIEW"
     }
 }
