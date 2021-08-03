@@ -108,7 +108,7 @@ class SyncClock {
     // obtener date y time
     let current_date = moment(`${config.date} ${config.recordTime}`, 'YYYY-MM-DD HH:mm');
     let current_time = current_date.format('HH:mm:ss');
-    let diff_time = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).subtract(5, 'minutes').format('HH:mm:ss');
+    let diff_time = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).subtract(15, 'minutes').format('HH:mm:ss');
     // validar direfencia de hora
     let exists_record_time = await Assistance.query()
       .where('schedule_id', schedule.id)
