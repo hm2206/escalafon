@@ -30,7 +30,7 @@ class SyncClock {
 
   async syncClock () {
     // sincronizar reloj
-    let isSync = await apiClock.post(`assistances/${this.clock.host || ""}/syncronize`)
+    let isSync = await apiClock.post(`assistances/${this.clock.host}/syncronize?year=${this.year}&month=${this.month}`)
     .then(() => true)
     .catch(() => false)
     // validar sincronización
@@ -220,7 +220,7 @@ class SyncClock {
   async sendNotificationSuccess () {
     await this.sendNotification(
       `La sincronización de asistencia "${this.clock.name}" se realizó correctamente`,
-      `Se encontrarón ${this.storage.count()} regístros de asistanecia, la cual se sincronizó con el sistema`
+      `Se encontrarón ${this.storage.count()} regístros de asistencia en el mes de ${this.month} del ${this.year}, la cual se sincronizó con el sistema`
     )
     console.log('successfull');
   }
