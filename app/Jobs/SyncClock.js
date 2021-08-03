@@ -52,8 +52,9 @@ class SyncClock {
       .join('works as w', 'w.code', 'pre_assistances.deviceUserId')
       .join('infos as i', 'i.work_id', 'w.id')
       .join('schedules as s', 's.info_id', 'i.id')
+      .join('clocks as c', 'c.id', 'pre_assistances.clock_id')
       .where('s.date', DB.raw('pre_assistances.date'))
-      .where('pre_assistances.clock_id', this.clock.id)
+      .where('c.entity_id', this.clock.entity_id)
       .where('i.estado', 1)
       .orderBy('w.orden', 'ASC')
       .orderBy('pre_assistances.date', 'ASC')
@@ -108,11 +109,12 @@ class SyncClock {
     // obtener date y time
     let current_date = moment(`${config.date} ${config.recordTime}`, 'YYYY-MM-DD HH:mm');
     let current_time = current_date.format('HH:mm:ss');
-    let diff_time = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).subtract(15, 'minutes').format('HH:mm:ss');
+    let diff_time_before = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).subtract(15, 'minutes').format('HH:mm:ss');
+    let diff_time_after = moment(current_date.format('YYYY-MM-DD HH:mm:ss')).add(15, 'minutes').format('HH:mm:ss');
     // validar direfencia de hora
     let exists_record_time = await Assistance.query()
       .where('schedule_id', schedule.id)
-      .where(DB.raw(`(record_time <= '${current_time}' AND record_time >= '${diff_time}')`))
+      .where(DB.raw(`(record_time >= '${diff_time_before}' AND record_time <= '${diff_time_after}')`))
       .getCount('id');
     if (exists_record_time) return;
     // preparar datos
@@ -124,18 +126,26 @@ class SyncClock {
       extra: 0,
       status: 'ENTRY'
     }
+    // obtener contador de registros
+    let count_assistances = await Assistance.query()
+      .where('schedule_id', schedule.id)
+      .getCount('id'); 
     // validar modo
-    if (schedule.modo == 'EXIT') payload.status = 'EXIT';
-    else if (schedule.modo == 'ENTRY') payload.status = 'ENTRY';
-    else {
+    if (schedule.modo == 'EXIT') {
+
+      if (count_assistances) return;
+      payload.status = 'EXIT';
+
+    } else if (schedule.modo == 'ENTRY') {
+
+      if (count_assistances) return;
+      payload.status = 'ENTRY';
+
+    } else {
       // obtener el ultimo regístro de asistencia
-      let assistance = await Assistance.query()
-        .where('schedule_id', schedule.id)
-        .where('state', 1)
-        .orderBy('record_time', 'DESC')
-        .first();
+      let isOver = ((count_assistances + 1) % 2) == 0 ? true : false;
       // verificar configuración del status
-      if (assistance) payload.status = assistance.status == 'ENTRY' ? 'EXIT' : 'ENTRY';
+      payload.status = isOver ? 'EXIT' : 'ENTRY';
     }  
     // validar delay y tiempo extra
     let time_record = moment(config.recordTime, 'HH:mm:ss');
@@ -228,7 +238,7 @@ class SyncClock {
   async sendNotificationError (error) {
     await this.sendNotification(
       `La sincronización falló`,
-      `No se pudo procesar la sincronización de asistencia, intente de nuevo!!!`
+      `No se pudo procesar la sincronización de asistencia del reloj ${this.clock.name}, intente de nuevo!!!`
     )
     console.log('error', error.message);
   }
