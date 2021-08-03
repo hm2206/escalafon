@@ -74,6 +74,8 @@ class ReportAssistanceBuild {
             .with('schedules', build => {   
                 let attrs = ['schedules.id', 'schedules.date', 'schedules.index', 'schedules.info_id']
                 build.join('assistances as ass', 'ass.schedule_id', 'schedules.id')
+                .where(DB.raw(`YEAR(schedules.date) = ${this.year}`))
+                .where(DB.raw(`MONTH(schedules.date) = ${this.month}`))
                 .with('assistances', buildA => {
                     buildA.select('assistances.id', 'assistances.schedule_id', 'assistances.clock_id', 'assistances.record_time', 'assistances.status')
                         .where('assistances.state', 1)

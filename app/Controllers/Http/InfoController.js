@@ -14,11 +14,13 @@ class InfoController {
     async index({ request }) {
         let page = request.input('page', 1);
         let query_search = request.input('query_search', '');
+        let principal = request.input('principal', null);
         const entity = request.$entity;
         let filtros = request.only(['planilla_id', 'cargo_id', 'type_categoria_id', 'meta_id']);
         let states = collect(request.collect(['estado'])).pluck('estado').toArray();
         filtros['infos.entity_id'] = entity.id;
         filtros['infos.estado'] = states;
+        filtros['p.principal'] = principal;
         let authentication = request.api_authentication;
         const infoEntity = new InfoEntity(authentication);
         const infos = await infoEntity.index({ page, query_search, custom: filtros });

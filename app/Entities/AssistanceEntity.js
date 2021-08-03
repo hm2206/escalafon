@@ -12,8 +12,8 @@ const moment = require('moment');
 class AssistanceEntity {
 
     datosDefault = {
-        config_assistance_id: "",
-        work_id: "",
+        schedule_id: "",
+        clock_id: "",
         record_time: "",
         status: "ENTRY"
     }
@@ -64,22 +64,19 @@ class AssistanceEntity {
 
     async store (datos = this.datosDefault) {
         await validation(validateAll, datos, {
-            config_assistance_id: "required",
-            work_id: "required",
-            record_time: "required|date" 
+            schedule_id: "required",
+            record_time: "required" 
         });
         // preparar datos
-        let record_time = moment(datos.record_time).format('HH:mm:ss');
+        let record_time = moment(datos.record_time, 'HH:mm').format('HH:mm:ss');
         let payload = {
-            config_assistance_id: datos.config_assistance_id,
-            work_id: datos.work_id,
+            schedule_id: datos.schedule_id,
             record_time,
             status: this.datosDefault.status,
         };
         // obtener ultimo registro
         let assistance_old = await Assistance.query()
-            .where('config_assistance_id', datos.config_assistance_id)
-            .where('work_id', datos.work_id)
+            .where('schedule_id', datos.schedule_id)
             .orderBy('record_time', 'DESC')
             .first();
         if (assistance_old) {
@@ -113,7 +110,8 @@ class AssistanceEntity {
     }
 
     async reportMonthly(year, month, filters = {}) {
-        const reportAssistanceBuild = new ReportAssistanceBuild(this.authentication, year, month, filters);
+        let integerMonth = parseInt(month)
+        const reportAssistanceBuild = new ReportAssistanceBuild(this.authentication, year, integerMonth, filters);
         return await reportAssistanceBuild.render();
     }
 

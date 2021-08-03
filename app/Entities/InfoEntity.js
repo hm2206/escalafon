@@ -70,6 +70,7 @@ class InfoEntity {
             .with('type_categoria')
             .with('meta')
             .join('works as w', 'w.id', 'infos.work_id')
+            .join('planillas as p', 'p.id', 'infos.planilla_id')
             .orderBy('w.orden', 'ASC')
             .select('infos.*', 'w.person_id');
         // filtros
