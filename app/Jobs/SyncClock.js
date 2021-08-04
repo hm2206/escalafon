@@ -9,6 +9,7 @@ const moment = require('moment');
 const DB = use('Database');
 const { getSystemKey } = require('../Services/tools');
 const { authentication, apiClock } = require('../Services/apis');
+const UpdateAssistanceStatusProcedure = require('../Procedures/UpdateAssistanceStatusProcedure')
 
 class SyncClock {
   // If this getter isn't provided, it will default to 1.
@@ -196,6 +197,8 @@ class SyncClock {
             await this.validateSchedule(schedule, current_config);
           }
         }
+        // actualizar status
+        await UpdateAssistanceStatusProcedure.call({ schedule_id: schedule.id })
       }
     }
   }

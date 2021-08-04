@@ -5,6 +5,7 @@ const SyncScheduleInfosProcedure = require('../Procedures/SyncScheduleInfosProce
 const SyncConfigInfoProcedure = require('../Procedures/SyncConfigInfoProcedure')
 const PreparateDiscountProcedure = require('../Procedures/PrepareDiscountProcedure');
 const CalcDiscountProcedure = require('../Procedures/CalcDiscountProcedure');
+const UpdateAssistanceStatusProcedure = require('../Procedures/UpdateAssistanceStatusProcedure')
 
 class InstallerProcedured extends Command {
   static get signature () {
@@ -20,6 +21,7 @@ class InstallerProcedured extends Command {
     await SyncConfigInfoProcedure.up();
     await PreparateDiscountProcedure.up();
     await CalcDiscountProcedure.up();
+    await UpdateAssistanceStatusProcedure.up();
     process.exit();
   }
 }
