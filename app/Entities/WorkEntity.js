@@ -183,10 +183,10 @@ class WorkEntity {
         }
     }
 
-    async ficha (id, filtros = {}) {
+    async ficha (id, filters = {}) {
         let work = await this.show(id);
         work = await work.toJSON();
-        const fichaBuilder = new FichaBuilder(work);
+        const fichaBuilder = new FichaBuilder(work, filters);
         return await fichaBuilder.execute();
     }
 

@@ -72,7 +72,7 @@ class DiscountBuilder {
             .where('d.month', this.month)
             .select(
                 'infos.id', DB.raw('d.id as discount_id'), 'infos.work_id', 'infos.type_categoria_id', 
-                'd.base', 'd.discount_min', 'd.discount'
+                'd.base', 'd.discount_min', 'd.discount', 'd.days'
             )
             .orderBy('w.orden', 'ASC')
             .paginate(this.dataPage.page, this.dataPage.perPage);

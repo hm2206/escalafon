@@ -9,17 +9,9 @@
     <title>Reporte de Ficha Escalafonaria</title>
 </head>
 
-<body class="pt-8">
+<body>
 
-    <div class="mark-water">
-        <img src="{{ link + '/images/marca-agua.png' }}" alt="">
-    </div>
-
-    <div class="code-qr">
-        <img src="{{ code_qr }}" class="logo logo-mini">
-    </div>
-
-    <div class="float-header">
+    <div class="float-header" style="position: relative;">
         <table class="table">
             <thead>
                 <tr>
@@ -39,21 +31,29 @@
         </table>
     </div>
 
-    <div class="">
+    <div class="mark-water">
+        <img src="{{ $entity.logo }}" alt="">
+        <h2 class="uppercase mt-2" style="opacity: 0.3;">{{ $entity.name }}</h2>
+    </div>
 
-        <h1 class="text-center">
+    <div class="code-qr">
+        <img src="{{ code_qr }}" class="logo logo-mini">
+    </div>
+
+    <div id="content">
+        <h1 class="text-center mt-3">
             <u>FICHA ESCALAFONARIA</u>
         </h1>
-
+    
         <br><br><br>
-
+    
         <div class="f-12 pl-4 pr-4">
             <p class="-parrafo">El que suscribe; </p>
             <p class="-parrafo text-right pl-4">Jefe de la Unidad de Recursos Humanos de la <span class="capitalize">{{ $entity.name }}</span> - {{ $entity.slug }} Certifica que; </p>
             <br>
             <br>
             <br>
-
+    
             <h2 class="text-center">
                 <i>
                     El {{ work.person && work.person.profession || "" }}
@@ -62,10 +62,10 @@
                     <span class="uppercase">{{ work.person && work.person.ape_mat || "" }}</span>
                 </i>
             </h2>
-
+    
             <br><br>
-
-            <div class="ml-4 mr-4">
+    
+            <div class="ml-4 mr-4 w-100">
                 <p class="-parrafo">
                     Identificado con {{ work.person.document_type &&  work.person.document_type.name }}. Nº {{ work.person.document_number  }}, labora en esta Casa Superior de Estudios, según
                     el siguiente detalle en su condición de 
@@ -75,12 +75,12 @@
                     de acuerdo al siguiente:
                 </p>
             </div>
-
+    
             <br>
             <br>
             <br>
-
-            <div class="ml-4 mr-4">
+    
+            <div class="ml-4 mr-4 w-100">
                 <table class="table text-left uppercase">
                     <tbody>
                         <tr>
@@ -141,51 +141,78 @@
                         </tr>
                     </tbody>
                 </table>
-
+    
                 <br>
-
-                <div class="pagebreak pt-8">
-                    <table class="table text-left mb-5">
-                        <tbody>
+    
+                <table class="table text-left mb-5">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">
+                                <u><b>CONTRATOS: </b></u>
+                            </th>
+                        </tr>
+                        {{--  contratos  --}}
+                        @each(info in infos)
                             <tr>
-                                <th colspan="2">
-                                    <u><b>CONTRATOS: </b></u>
-                                </th>
+                                <th width="50%">NIVEL REMUNERATIVO</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.information }} - {{ info.type_categoria }}</td>
                             </tr>
-                            {{--  contratos  --}}
-                            @each(info in infos)
-                                <tr>
-                                    <th width="50%">NIVEL REMUNERATIVO</th>
-                                    <th witth="5%">:</th>
-                                    <td width="45%">{{ info.information }} - {{ info.type_categoria }}</td>
-                                </tr>
-                                <tr>
-                                    <th width="50%">DESDE</th>
-                                    <th witth="5%">:</th>
-                                    <td width="45%">{{ info.fecha_de_ingreso ? moment(info.fecha_de_ingreso).format('LL') : '' }}</td>
-                                </tr>
-                                <tr>
-                                    <th width="50%">HASTA</th>
-                                    <th witth="5%">:</th>
-                                    <td width="45%">{{ info.fecha_de_cese ? moment(info.fecha_de_cese).format('LL') : "" }}</td>
-                                </tr>
-                                <tr>
-                                    <th width="50%">DOCUMENTO ACREDITA</th>
-                                    <th witth="5%">:</th>
-                                    <td width="45%">{{ info.resolucion || "" }} {{ info.fecha_de_resolucion ? '(Fecha:' + info.fecha_de_resolucion + ")"  : "No hay documento" }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <div class="pt-1"></div>
-                                    </td>
-                                </tr>
-                            @endeach
-                        </tbody>
-                    </table>
-                </div>
+                            <tr>
+                                <th width="50%">DESDE</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.fecha_de_ingreso ? moment(info.fecha_de_ingreso).format('LL') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th width="50%">HASTA</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.fecha_de_cese ? moment(info.fecha_de_cese).format('LL') : "" }}</td>
+                            </tr>
+                            <tr>
+                                <th width="50%">DOCUMENTO ACREDITA</th>
+                                <th witth="5%">:</th>
+                                <td width="45%">{{ info.resolucion || "" }} {{ info.fecha_de_resolucion ? '(Fecha:' + info.fecha_de_resolucion + ")"  : "No hay documento" }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="pt-1"></div>
+                                </td>
+                            </tr>
+                        @endeach
+                    </tbody>
+                </table>
+
+                {{--  demeritos  --}}
+                <h3 class="text-left mt-3">
+                    <u>LICENCIAS</u>
+                </h3>
+
+                {{--  permisos  --}}
+                <h3 class="text-left mt-3">
+                    <u>PERMISOS</u>
+                </h3>
+
+                {{--  acensos  --}}
+                <h3 class="text-left mt-3">
+                    <u>ACENSOS</u>
+                </h3>
+
+                {{-- desplazamientos --}}
+                <h3 class="text-left mt-3">
+                    <u>DESPLAZAMIENTOS</u>
+                </h3>
+
+                {{--  demeritos  --}}
+                <h3 class="text-left mt-3">
+                    <u>SANCIONES, AMONESTACIONES Y OTROS DEMERITOS</u>
+                </h3>
+
+                {{--  meritos  --}}
+                <h3 class="text-left mt-3">
+                    <u>FELICITACIONES</u>
+                </h3>
             </div>
         </div>
     </div>
-
 </body>
 </html>

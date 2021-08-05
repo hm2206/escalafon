@@ -61,8 +61,10 @@ class WorkController {
 
     async ficha ({ params, request, response }) {
         let authentication = request.api_authentication;
+        let filters = collect(request.collect(['filters'])).pluck('filters').toArray()
         const workEntity = new WorkEntity(authentication);
-        const ficha = await workEntity.ficha(params.id);
+        const ficha = await workEntity.ficha(params.id, filters);
+        console.log(filters)
         response.header('Content-Type', 'application/pdf');
         return response.send(ficha);
     }

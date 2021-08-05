@@ -32,11 +32,16 @@ body {
     position: fixed;
     z-index: -1;
     padding: 5.5em;
+    opacity: 0.4;
+    text-align: center;
 }
 
 .mark-water img {
     object-fit: contain;
     object-position: center;
+    width: 450px;
+    margin-top: auto;
+    margin-left: auto;
 }
 
 .pagebreak {

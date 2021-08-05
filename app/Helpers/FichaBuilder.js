@@ -23,12 +23,14 @@ class FichaBuilder {
     work = {};
     infos = [];
     infos_active = [];
+    filters = [];
     options = {
         format: 'A4',
     }
 
-    constructor(work) {
+    constructor(work, filters) {
         this.work = work;
+        this.filters = filters;
     }
 
     async getInfos () {
@@ -36,6 +38,7 @@ class FichaBuilder {
             .join('type_categorias as cat', 'cat.id', 'infos.type_categoria_id')
             .join('planillas as pla', 'pla.id', 'infos.planilla_id')
             .where("work_id", this.work.id)
+            .where('pla.principal', 1)
             .select('infos.*', 'pla.principal', DB.raw(`cat.descripcion as type_categoria, cat.information`))
             .fetch();
         this.infos = await infos.toJSON();
