@@ -92,7 +92,7 @@ class CalcDiscountProcedure extends BaseProcedure {
         return `
             UPDATE discounts as dis 
             INNER JOIN (
-                SELECT d.id, d.info_id, d.year, d.month, d.days, d.hours, d.base, (ROUND(((d.base / d.days) / d.hours) / 60, 2)) as min, IFNULL(SUM(s.discount), 0) as delay
+                SELECT d.id, d.info_id, d.year, d.month, d.days, d.hours, d.base, (ROUND(((((d.base * d.days) / 30) / 30) / d.hours) / 60, 2)) as min, IFNULL(SUM(s.discount), 0) as delay
                 FROM discounts as d
                 INNER JOIN infos as i ON i.id = d.info_id 
                 LEFT JOIN schedules as s ON s.info_id = i.id 

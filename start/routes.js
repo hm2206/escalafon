@@ -109,6 +109,7 @@ Route('put', 'DegreeController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'DegreeController.delete').middleware(['jwt', 'entityId']);
 
 // Discount
+Route('put', 'DiscountController.update').middleware(['jwt', 'entityId']);
 Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
 Route('get', 'DiscountController.preViewDetails').middleware(['jwt', 'entityId']);
 Route('post', 'DiscountController.process').middleware(['jwt', 'entityId']);

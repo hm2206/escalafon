@@ -419,6 +419,12 @@
         "description": "Eliminar Formación académica del Personal",
         "action_type": "DELETE"
     },
+    "DiscountController.update": {
+        "name": "DiscountController.update",
+        "url": "api/discounts/:id",
+        "description": "Actualizar descuento",
+        "action_type": "UPDATE"
+    },
     "DiscountController.preView": {
         "name": "DiscountController.preView",
         "url": "api/discounts/:year/:month/pre_view",
