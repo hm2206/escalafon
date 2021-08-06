@@ -9,31 +9,6 @@ const CalcDiscountProcedure = require('../../Procedures/CalcDiscountProcedure')
 
 class DiscountController {
 
-    async update({ params, request }) {
-        let entity = request.$entity;
-        let datos = request.all();
-        let discount = await Discount.find(params.id)
-        if (!discount) throw new NotFoundModelException("El descuento")
-        try {
-            // realizar cambios
-            discount.merge({ days: datos.days })
-            await discount.save()
-            // calcular discounts
-            await CalcDiscountProcedure.call({ entity_id: entity.id, year: discount.year, month: discount.month });
-            // obtener ultima actualización
-            await discount.reload();
-            // response
-            return {
-                success: true,
-                status: 201,
-                message: "Los cambios se guardaron correctamente",
-                discount
-            }
-        } catch (error) {
-            throw new CustomException("No se pudó guardar los cambios")
-        }
-    }
-
     async preView({ params, request }) {
         let year = params.year;
         let month = params.month;

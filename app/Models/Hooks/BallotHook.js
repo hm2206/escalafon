@@ -13,6 +13,8 @@ BallotHook.generateTotal = async (ballot) => {
 
     let duration = 0;
 
+    if (!ballot.is_applied) return ballot.total = 0;
+
     if (ballot.modo == 'ENTRY') {
         ballot.time_return = null;
         let schedule = await Schedule.find(ballot.schedule_id);

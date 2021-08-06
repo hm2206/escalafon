@@ -191,6 +191,12 @@
         "description": "Replicar horario del contrato",
         "action_type": "CREATE"
     },
+    "ScheduleController.isEdit": {
+        "name": "ScheduleController.isEdit",
+        "url": "api/schedules/:id/is_edit",
+        "description": "Actualizar horario referente manual",
+        "action_type": "UPDATE"
+    },
     "AssistanceController.index": {
         "name": "AssistanceController.index",
         "url": "api/assistances",

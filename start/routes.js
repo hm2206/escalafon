@@ -45,6 +45,7 @@ Route('post', 'ScheduleController.store').middleware(['jwt', 'entityId']);
 Route('put', 'ScheduleController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'ScheduleController.delete').middleware(['jwt', 'entityId']);
 Route('post', 'ScheduleController.replicar').middleware(['jwt', 'entityId']);
+Route('put', 'ScheduleController.isEdit').middleware(['jwt', 'entityId']);
 
 // Assistance
 Route('get', 'AssistanceController.index').middleware(['jwt', 'entityId']);
