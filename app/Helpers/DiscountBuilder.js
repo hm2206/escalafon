@@ -22,7 +22,8 @@ class DiscountBuilder {
     dataPage = {
         page: 10,
         perPage: 20,
-        query_search: ""
+        query_search: "",
+        type_categoria_id: "",
     }
 
     constructor(authentication, entity_id, year, month, tmpDatos = this.dataPage) {
@@ -62,7 +63,7 @@ class DiscountBuilder {
     }
 
     async getInfos() {
-        let infos = await Info.query() 
+        let infos = Info.query() 
             .with('work', build => build.select('works.id', 'works.person_id'))
             .with('type_categoria', build => build.select('type_categorias.id', 'type_categorias.descripcion'))
             .join('works as w', 'w.id', 'infos.work_id')
@@ -75,7 +76,11 @@ class DiscountBuilder {
                 'd.base', 'd.discount_min', 'd.discount', 'd.days'
             )
             .orderBy('w.orden', 'ASC')
-            .paginate(this.dataPage.page, this.dataPage.perPage);
+
+        // filtrar
+        if (this.dataPage.type_categoria_id) infos.where('infos.type_categoria_id', this.dataPage.type_categoria_id)
+        // paginar
+        infos = await infos.paginate(this.dataPage.page, this.dataPage.perPage);
         this.infos = await infos.toJSON();
     }
 

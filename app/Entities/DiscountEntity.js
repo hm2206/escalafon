@@ -18,13 +18,13 @@ class DiscountEntity {
         }
     }
 
-    async preView(entity_id, year, month, datos = { page: 1, query_search: "" }) {
+    async preView(entity_id, year, month, datos = { page: 1, query_search: "", type_categoria_id: "" }) {
         const discountBuilder = new DiscountBuilder(this.authentication, entity_id, year, month, datos);
         return await discountBuilder.handle();
     }
 
-    async preViewDetails(entity_id, year, month) {
-        const discountDetailBuilder = new DiscountDetailBuilder(entity_id, year, month);
+    async preViewDetails(entity_id, year, month, type_categoria_id) {
+        const discountDetailBuilder = new DiscountDetailBuilder(entity_id, year, month, type_categoria_id);
         return await discountDetailBuilder.handle();
     }
 
