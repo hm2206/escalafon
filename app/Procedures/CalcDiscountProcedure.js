@@ -40,23 +40,11 @@ class CalcDiscountProcedure extends BaseProcedure {
                 WHERE i.entity_id = ${this.params.entity_id.name}
                 AND YEAR(s.date) = ${this.params.year.name}
                 AND MONTH(s.date) = ${this.params.month.name}
+                AND s.is_edited = 0
                 GROUP BY s.id
             ) as up ON up.id = sch.id
             SET sch.discount = IF((up.discount - up.nodiscount) <= 0, 0, (up.discount - up.nodiscount)),
             sch.status = 'A';
-        `
-    }
-
-    static queryUpdatePermissions() {
-        return `
-            UPDATE schedules as s
-            INNER JOIN infos as i ON i.id = s.info_id
-            INNER JOIN permissions as p ON p.info_id = i.id
-            SET s.discount = 0, s.status = 'D'
-            WHERE i.entity_id = ${this.params.entity_id.name}
-            AND YEAR(s.date) = ${this.params.year.name}
-            AND MONTH(s.date) = ${this.params.month.name}
-            AND (p.date_start <= s.date AND p.date_over >= s.date);
         `
     }
 
@@ -111,7 +99,6 @@ class CalcDiscountProcedure extends BaseProcedure {
     static get query () {
         return [ 
             this.queryUpdateBallots(),
-            this.queryUpdatePermissions(),
             this.queryUpdateLicenses(),
             this.queryUpdateVacations(),
             this.queryCalcDiscount(),

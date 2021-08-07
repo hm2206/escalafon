@@ -52,7 +52,8 @@ class PrepareDiscountProcedure extends BaseProcedure {
             SET s.status = 'A', s.discount = 0
             WHERE i.entity_id = ${this.params.entity_id.name}
             AND YEAR(s.date) = ${this.params.year.name}
-            AND MONTH(s.date) = ${this.params.month.name};
+            AND MONTH(s.date) = ${this.params.month.name}
+            AND s.is_edited = 0;
         `
     }
 

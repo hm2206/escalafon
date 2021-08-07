@@ -4,6 +4,9 @@ const ScheduleEntity = require('../../Entities/ScheduleEntity');
 const CustomException = require('../../Exceptions/CustomException');
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
 const Schedule = use('App/Models/Schedule')
+const Discount = use('App/Models/Discount')
+const moment = require('moment')
+const CalcDiscountProcedure = require('../../Procedures/CalcDiscountProcedure')
 
 class ScheduleController {
 
@@ -58,6 +61,7 @@ class ScheduleController {
     }
 
     async isEdit ({ params, request }) {
+        let entity = request.$entity;
         let datos = request.all();
         let schedule = await Schedule.query()
             .where('id', params.id) 
@@ -70,24 +74,37 @@ class ScheduleController {
         try {
             let calc = (info.hours * 60);
             let limitDiscount = datos.discount > calc ? calc : datos.discount
-            let discount = datos.status == 'F' ? calc : limitDiscount;
+            let calcDiscount = datos.status == 'F' ? calc : limitDiscount;
             // preparar cambios
             schedule.merge({
                 status: datos.status != 'D' ? datos.status : 'D',
-                discount,
+                discount: calcDiscount,
                 observation: datos.observation,
                 is_edited: 1
             })
             // guardar cambios
             await schedule.save()
+            let scheduleDate = moment(schedule.date);
+            // recalcular
+            let year = scheduleDate.year();
+            let month = scheduleDate.month() + 1;
+            await CalcDiscountProcedure.call({ entity_id: entity.id, year, month })
+            // obtener discount
+            let discount = Discount.query()
+                .where('info_id', info.id) 
+                .where('year', year)
+                .where('month', month)
+                .first();
             // response
             return {
                 success: true,
                 status: 201,
                 message: "El horario se actualizó correctamente!",
                 schedule,
+                discount
             };
         } catch (error) {
+            console.log(error)
             throw new CustomException("No se puó guardar los datos")
         }
     }
