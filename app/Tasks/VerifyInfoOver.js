@@ -7,36 +7,26 @@ const DB = use('Database');
 
 class VerifyInfoOver extends Task {
   static get schedule () {
-    return '0 0 23 * * *'
+    return '0 0 0 * * *'
   }
 
-  async getIds () {
+  async disabledInfos () {
+    // generar dates
     let old_date = moment().subtract(1, 'month');
     let old_month = old_date.format('M');
     let old_year = old_date.format('Y');
     // obtener contratos
     return await Info.query()
+      .where(DB.raw(`(fecha_de_cese is not null AND fecha_de_cese <> '')`))
       .where(DB.raw(`YEAR(fecha_de_cese) = ${old_year}`))
       .where(DB.raw(`MONTH(fecha_de_cese) = ${old_month}`))
       .where('estado', 1)
-      .limit('20')
-      .pluck('id');
-  }
-
-  async disabledInfos (ids = []) {
-    let count = await Info.query()
-      .whereIn('id', ids)
       .update({ estado: 0 });
-    console.log(`successfull verify-info-over: ${count}`);
   }
 
   async handle () {
-    let ids = await this.getIds();
     // validar bucle
-    if (ids.length) {
-      await this.disabledInfos(ids);
-      await this.handle();
-    }
+    await this.disabledInfos();
   }
   
 }
