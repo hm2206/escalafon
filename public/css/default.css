@@ -80,7 +80,7 @@ u {
 
 /* tables */
 .table {
-    width: 98vh;
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0px;
 }

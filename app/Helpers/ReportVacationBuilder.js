@@ -72,7 +72,7 @@ class ReportVacationBuilder {
                 ))
             .where('entity_id', this.entity.id)
             .orderBy('year', 'ASC')
-            .select('id', 'work_id', 'year', 'scheduled_days');
+            .select('id', 'work_id', 'year', 'scheduled_days', 'config_vacations.date_start', 'config_vacations.date_over');
         if (this.work_id) config_vacations.where('work_id', this.work_id)
         // obtener config_vacations
         config_vacations = await config_vacations.fetch();

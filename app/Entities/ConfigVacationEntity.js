@@ -54,6 +54,8 @@ class ConfigVacationEntity {
             entity_id: 'required',
             year: 'required|dateFormat:YYYY',
             scheduled_days: 'required|number',
+            date_start: 'required|dateFormat:YYYY-MM-DD',
+            date_over: 'required|dateFormat:YYYY-MM-DD',
         }); 
         // validar info
         let exists = await Work.find(work.id);
@@ -73,6 +75,8 @@ class ConfigVacationEntity {
                 work_id: work.id,
                 year: datos.year,
                 scheduled_days: datos.scheduled_days,
+                date_start: datos.date_start,
+                date_over: datos.date_over
             })
             // response
             return config_vacation;
@@ -83,7 +87,9 @@ class ConfigVacationEntity {
 
     async update(id, datos = this.attributes) {
         await validation(null, datos, {
-            scheduled_days: 'required|number'
+            scheduled_days: 'required|number',
+            date_start: 'required|dateFormat:YYYY-MM-DD',
+            date_over: 'required|dateFormat:YYYY-MM-DD',
         });
         // mayor a cero
         if (datos.scheduled_days <= 0) throw new ValidatorError([{ field: 'scheduled_days', message: `Los dias programados deben ser mayor a cero` }]);
@@ -104,7 +110,11 @@ class ConfigVacationEntity {
         }]);
         // processar
         try {
-            config_vacation.merge({ scheduled_days: datos.scheduled_days });
+            config_vacation.merge({ 
+                scheduled_days: datos.scheduled_days,
+                date_start: datos.date_start,
+                date_over: datos.date_over
+            });
             await config_vacation.save();
             return config_vacation;
         } catch (error) {   
