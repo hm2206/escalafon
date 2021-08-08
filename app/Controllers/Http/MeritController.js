@@ -11,6 +11,8 @@ class MeritController {
         let datos = request.all()
         await validation(null, datos, {
             info_id: 'required',
+            resolution: 'required|max:255',
+            date_resolution: 'required|dateFormat:YYYY-MM-DD',
             date: 'required|dateFormat:YYYY-MM-DD',
             title: 'required|max:100',
             modo: 'required',
@@ -20,6 +22,8 @@ class MeritController {
         try {
             let merit = await Merit.create({
                 info_id: datos.info_id,
+                resolution: datos.resolution,
+                date_resolution: datos.date_resolution,
                 date: datos.date,
                 title: datos.title,
                 modo: datos.modo,
@@ -45,6 +49,8 @@ class MeritController {
         await validation(null, datos, {
             title: 'required|max:100',
             date: 'required|dateFormat:YYYY-MM-DD',
+            resolution: 'required|max:255',
+            date_resolution: 'required|dateFormat:YYYY-MM-DD',
             modo: 'required',
             description: 'max:1000',
         })
@@ -52,6 +58,8 @@ class MeritController {
         try {
             merit.merge({
                 title: datos.title,
+                resolution: datos.resolution,
+                date_resolution: datos.date_resolution,
                 date: datos.date,
                 modo: datos.modo,
                 description: datos.description

@@ -10,6 +10,10 @@ class Merit extends Model {
         return value ? moment(value).format('YYYY-MM-DD') : null
     }
 
+    getDateResolution(value) {
+        return value ? moment(value).format('YYYY-MM-DD') : null
+    }
+
 }
 
 module.exports = Merit
