@@ -90,7 +90,7 @@ class ScheduleController {
             let month = scheduleDate.month() + 1;
             await CalcDiscountProcedure.call({ entity_id: entity.id, year, month })
             // obtener discount
-            let discount = Discount.query()
+            let discount = await Discount.query()
                 .where('info_id', info.id) 
                 .where('year', year)
                 .where('month', month)
