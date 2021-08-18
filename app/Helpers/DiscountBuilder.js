@@ -23,6 +23,7 @@ class DiscountBuilder {
         page: 10,
         perPage: 20,
         query_search: "",
+        cargo_id: "",
         type_categoria_id: "",
     }
 
@@ -79,6 +80,7 @@ class DiscountBuilder {
 
         // filtrar
         if (this.dataPage.type_categoria_id) infos.where('infos.type_categoria_id', this.dataPage.type_categoria_id)
+        if (this.dataPage.cargo_id) infos.where('infos.cargo_id', this.dataPage.cargo_id)
         // paginar
         infos = await infos.paginate(this.dataPage.page, this.dataPage.perPage);
         this.infos = await infos.toJSON();

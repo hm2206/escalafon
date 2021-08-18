@@ -7,11 +7,25 @@ const License = use('App/Models/License');
 
 class DiscountDetailBuilder {
 
-    constructor(entity_id, year, month, type_categoria_id) {
+    filtros = { 
+        cargo_id: "",
+        type_categoria_id: ""
+    }
+
+    constructor(entity_id, year, month, filtros = this.filtros) {
         this.entity_id = entity_id;
         this.year = year;
         this.month = month;
-        this.type_categoria_id = type_categoria_id;
+        this.filtros = filtros;
+    }
+
+    handleFiltros(model, prefix = "") {
+        for(let attr in this.filtros) {
+            let value = this.filtros[attr];
+            if (value) model.where(`${prefix ? `${prefix}.${attr}` : attr}`, value);
+        }
+
+        return model;
     }
 
     async getVacations() {
@@ -27,7 +41,7 @@ class DiscountDetailBuilder {
             .groupBy('d.id')
             .select('d.id')
         // filtrar
-        if (this.type_categoria_id) count_vacations.where('i.type_categoria_id', this.type_categoria_id)
+        count_vacations = this.handleFiltros(count_vacations, 'i');
         // obtener vacations
         count_vacations = await count_vacations.getCount('id');
         this.count_vacations = count_vacations;
@@ -45,7 +59,7 @@ class DiscountDetailBuilder {
             .groupBy('d.id')
             .select('d.id')
         // filters
-        if (this.type_categoria_id) count_lack.where('i.type_categoria_id', this.type_categoria_id)
+        count_lack = this.handleFiltros(count_lack, 'i');
         // obtener count
         count_lack = await count_lack.getCount('id');
         this.count_lack = count_lack;
@@ -63,7 +77,7 @@ class DiscountDetailBuilder {
             .where('schedules.discount', '>', 0)
             .groupBy('d.id')
             .select('d.id')
-        if (this.type_categoria_id) count_delay.where('i.type_categoria_id', this.type_categoria_id)
+        count_delay = this.handleFiltros(count_delay, 'i');
         // obtener datos
         count_delay = await count_delay.getCount('id');
         this.count_delay = count_delay;
@@ -84,7 +98,7 @@ class DiscountDetailBuilder {
             .groupBy('d.id')
             .select('d.id');
         // filrar
-        if (this.type_categoria_id) count_commission.where('i.type_categoria_id', this.type_categoria_id)
+        count_commission = this.handleFiltros(count_commission, 'i');
         // obtener
         count_commission = await count_commission.getCount('id');
         this.count_commission = count_commission;
@@ -103,7 +117,7 @@ class DiscountDetailBuilder {
             .groupBy('d.id')
             .select('d.id')
         // filters
-        if (this.type_categoria_id) count_license.where('i.type_categoria_id', this.type_categoria_id)
+        count_license = this.handleFiltros(count_license, 'i');
         // obteners
         count_license = await count_license.getCount('id');
 
