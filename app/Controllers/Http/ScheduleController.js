@@ -95,6 +95,13 @@ class ScheduleController {
                 .where('year', year)
                 .where('month', month)
                 .first();
+            // count schedules
+            let count = await Schedule.query()
+                .where('info_id', info.id)
+                .where('discount', '>', 0)
+                .getSum('discount');
+            // add count
+            discount.count = count;
             // response
             return {
                 success: true,
