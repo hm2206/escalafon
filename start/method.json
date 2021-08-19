@@ -83,12 +83,6 @@
         "description": "Reporte de vacaciones",
         "action_type": "VIEW"
     },
-    "WorkController.reportGeneral": {
-        "name": "WorkController.reportGeneral",
-        "url": "api/works/:id/report_general",
-        "description": "Reporte General de trabajadores",
-        "action_type": "VIEW"
-    },
     "InfoController.index": {
         "name": "InfoController.index",
         "url": "api/infos",
@@ -471,6 +465,12 @@
         "name": "FileController.binary",
         "url": "api/files/:token/binary",
         "description": "Obtener archivo en binario",
+        "action_type": "VIEW"
+    },
+    "ReportController.general": {
+        "name": "WorkController.general",
+        "url": "api/reports/general",
+        "description": "Reporte general de trabajadores activos",
         "action_type": "VIEW"
     }
 }

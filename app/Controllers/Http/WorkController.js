@@ -3,7 +3,6 @@
 const { default: collect } = require('collect.js');
 const WorkEntity = require('../../Entities/WorkEntity');
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
-const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
 const Degree = use('App/Models/Degree')
 const Work = use('App/Models/Work')
 
@@ -124,15 +123,6 @@ class WorkController {
         const report = await workEntity.reportVacations(params.id, entity);
         response.header('Content-Type', 'application/pdf');
         return response.send(report);
-    }
-
-    async reportGeneral({ request, response }) {
-        let filters = request.only(['cargo_id', 'type_categoria_id']);
-        let authentication = request.api_authentication;
-        const reportGeneralBuilder =  new ReportGeneralBuilder(authentication, filters);
-        const result = await reportGeneralBuilder.render();
-        response.header('Content-Type', 'application/pdf')
-        return response.send(result);
     }
 
 }

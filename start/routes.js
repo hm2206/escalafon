@@ -21,7 +21,6 @@ Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.degrees').middleware(['jwt']);
 Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
-Route('get', 'WorkController.reportGeneral').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);
@@ -120,3 +119,6 @@ Route('post', 'DiscountController.process').middleware(['jwt', 'entityId']);
 Route('post', 'FileController.store').middleware(['jwt'])
 Route('get', 'FileController.objectType').middleware(['jwt'])
 Route('get', 'FileController.binary').middleware(['jwt'])
+
+// Reports
+Route('get', 'ReportController.general').middleware(['jwt', 'entityId']);
