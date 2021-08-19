@@ -3,6 +3,7 @@
 const { default: collect } = require('collect.js');
 const WorkEntity = require('../../Entities/WorkEntity');
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
+const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
 const Degree = use('App/Models/Degree')
 const Work = use('App/Models/Work')
 
@@ -83,6 +84,24 @@ class WorkController {
         };
     }
 
+    async degrees ({ params, request }) {
+        let work = await Work.find(params.id)
+        if (!work) throw new NotFoundModelException("El trabajador")
+        let page = request.input('page', 1)
+        let perPage = request.input('perPage', 20)
+        let query_search = request.input('query_search', '') 
+        let degrees = Degree.query()
+            .with('type_degree')
+            .where('work_id', work.id)
+        if (query_search) degrees.where('document_number', 'like', `%${degrees}%`)
+        degrees = await degrees.paginate(page, perPage)
+        return {
+            success: true,
+            status: 200,
+            degrees
+        };
+    }
+
     async config_vacations ({ params, request }) {
         let authentication = request.api_authentication;
         let entity = request.$entity;
@@ -107,22 +126,13 @@ class WorkController {
         return response.send(report);
     }
 
-    async degrees ({ params, request }) {
-        let work = await Work.find(params.id)
-        if (!work) throw new NotFoundModelException("El trabajador")
-        let page = request.input('page', 1)
-        let perPage = request.input('perPage', 20)
-        let query_search = request.input('query_search', '') 
-        let degrees = Degree.query()
-            .with('type_degree')
-            .where('work_id', work.id)
-        if (query_search) degrees.where('document_number', 'like', `%${degrees}%`)
-        degrees = await degrees.paginate(page, perPage)
-        return {
-            success: true,
-            status: 200,
-            degrees
-        };
+    async reportGeneral({ request, response }) {
+        let filters = request.only(['cargo_id', 'type_categoria_id']);
+        let authentication = request.api_authentication;
+        const reportGeneralBuilder =  new ReportGeneralBuilder(authentication, filters);
+        const result = await reportGeneralBuilder.render();
+        response.header('Content-Type', 'application/pdf')
+        return response.send(result);
     }
 
 }

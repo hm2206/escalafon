@@ -19,8 +19,9 @@ Route('put', 'WorkController.update').middleware(['jwt']);
 Route('get', 'WorkController.ficha').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.infos').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.config_vacations').middleware(['jwt', 'entityId']);
-Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
 Route('get', 'WorkController.degrees').middleware(['jwt']);
+Route('get', 'WorkController.reportVacations').middleware(['jwt', 'entityId']);
+Route('get', 'WorkController.reportGeneral').middleware(['jwt', 'entityId']);
 
 // Infos
 Route('get', 'InfoController.index').middleware(['jwt', 'entityId']);

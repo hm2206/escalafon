@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{ style(link + "/css/default.css") }}
+    {{ style(link + "/css/report.css") }}
+    <title>Datos Generales</title>
+</head>
+<body>
+
+    <div class="float-header" style="position: relative;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%"><img class="logo long" src="{{ link + '/images/peru.png' }}"></th>
+                    <th>
+                        <div class="f-9">"Año de la Universalización de la salud"</div>
+                        <div class="uppercase f-14">{{ $entity.name }}</div>
+                    </th>
+                    <th width="10%"><img class="logo small" src="{{ $entity.logo }}"></th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><hr class="hr-dashed"/></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="mark-water">
+        <img src="{{ $entity.logo }}" alt="">
+        <h2 class="uppercase mt-2" style="opacity: 0.3;">{{ $entity.name }}</h2>
+    </div>
+
+    <div class="mt-3">
+
+        <h4>Resultados: {{ works.length || 0 }}</h4>
+
+        <br>
+
+        <table class="table bbt-1 text-center">
+            <thead>
+                <tr>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13" width="5%">N°</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13" width="40%">Apellidos y Nombres</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13" width="10%">Tipo</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13">Documento</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13">Sexo</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-13">Fecha de Nacimiento</th>
+                    <th class="bbb-1 bbl-1 bbt-1 bbr-1 f-13">Edad</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each((work, iter) in works)
+                    <tr style="page-break-inside: avoid;">
+                        <td class="bbb-1 bbl-1 f-13 text-text">{{ iter + 1 }}</td>
+                        <td class="bbb-1 bbl-1 f-13 text-left capitalize pl-1">{{ work.person.fullname || "" }}</td>
+                        <td class="bbb-1 bbl-1 f-13">{{ work.person.document_type.name || "" }}</td>
+                        <td class="bbb-1 bbl-1 f-13">{{ work.person.document_number }}</td>
+                        <td class="bbb-1 bbl-1 f-13">{{ work.person.gender }}</td>
+                        <td class="bbb-1 bbl-1 f-13">{{ work.person.date_of_birth }}</td>
+                        <td class="bbb-1 bbl-1 bbr-1 f-13">{{ work.person.edad }}</td>
+                    </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>

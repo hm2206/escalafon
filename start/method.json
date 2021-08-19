@@ -71,16 +71,22 @@
         "description": "Listar de licencias",
         "action_type": "VIEW"
     },
+    "WorkController.degrees": {
+        "name": "WorkController.degrees",
+        "url": "api/works/:id/degrees",
+        "description": "Listado de Formación académica del personal",
+        "action_type": "VIEW"
+    },
     "WorkController.reportVacations": {
         "name": "WorkController.reportVacations",
         "url": "api/works/:id/report_vacations",
         "description": "Reporte de vacaciones",
         "action_type": "VIEW"
     },
-    "WorkController.degrees": {
-        "name": "WorkController.degrees",
-        "url": "api/works/:id/degrees",
-        "description": "Listado de Formación académica del personal",
+    "WorkController.reportGeneral": {
+        "name": "WorkController.reportGeneral",
+        "url": "api/works/:id/report_general",
+        "description": "Reporte General de trabajadores",
         "action_type": "VIEW"
     },
     "InfoController.index": {
