@@ -11,9 +11,10 @@ class WorkController {
     async index ({ request }) {
         let { page, query_search } = request.all();
         let entity = request.$entity;
+        let cargo_id = request.input('cargo_id', '');
         let authentication = request.api_authentication;
         const workEntity = new WorkEntity(authentication);
-        const works = await workEntity.index(page || 1, query_search || "", {}, entity.id);
+        const works = await workEntity.index(page || 1, query_search || "", {}, entity.id, cargo_id);
         return {
             success: true,
             status: 201,
