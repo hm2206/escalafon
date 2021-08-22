@@ -27,12 +27,10 @@ class DiscountBuilder {
         type_categoria_id: "",
     }
 
-    constructor(authentication, entity_id, year, month, tmpDatos = this.dataPage) {
+    constructor(authentication, config_discount = {}, tmpDatos = this.dataPage) {
         this.dataPage = Object.assign(this.dataPage, tmpDatos);
         this.authentication = authentication;
-        this.entity_id = entity_id;
-        this.year = year;
-        this.month = month;
+        this.config_discount = config_discount;
     }
 
     async getDates() {
@@ -46,11 +44,11 @@ class DiscountBuilder {
             5: 'V',
             6: 'S'
         }
-        let dateFormat = `${this.year}-${this.month}-01`;
+        let dateFormat = `${this.config_discount.year}-${this.config_discount.month}-01`;
         let date_over = moment(dateFormat, 'YYYY-MM-DD').add(1, 'months').subtract(1, 'days');
         let lastDay = date_over.format('D');
         for (let day = 1; day <= lastDay; day++) {
-            let currentDateFormat = `${this.year}-${this.month}-${day}`;
+            let currentDateFormat = `${this.config_discount.year}-${this.config_discount.month}-${day}`;
             let currentDate = moment(currentDateFormat, 'YYYY-MM-DD');
             let currentIndex = currentDate.days();
             dates.push({
@@ -69,9 +67,8 @@ class DiscountBuilder {
             .with('type_categoria', build => build.select('type_categorias.id', 'type_categorias.descripcion'))
             .join('works as w', 'w.id', 'infos.work_id')
             .join('discounts as d', 'd.info_id', 'infos.id')
-            .where('infos.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month)
+            .join('config_discounts as c', 'c.id', 'c.entity_id')
+            .where('c.id', this.config_discount.id)
             .select(
                 'infos.id', DB.raw('d.id as discount_id'), 'infos.work_id', 'infos.type_categoria_id', 
                 'd.base', 'd.discount_min', 'd.discount', 'd.days'
@@ -98,10 +95,11 @@ class DiscountBuilder {
         let workIds = collect(this.infos.data).pluck('work_id').toArray();
         let vacations = await Vacation.query()
             .join('config_vacations as c', 'c.id', 'vacations.config_vacation_id')
-            .where('c.entity_id', this.entity_id)
+            .join('config_discounts as c_dis', 'c_dis.entity_id', 'c.entity_id')
+            .where('c_dis.id', this.config_discount.id)
             .whereIn('c.work_id', workIds)
-            .where(DB.raw(`( YEAR(vacations.date_start) <= ${this.year} AND YEAR(vacations.date_over) >= ${this.year} )`)) 
-            .where(DB.raw(`( MONTH(vacations.date_start) <= ${this.month} AND MONTH(vacations.date_over) >= ${this.month} )`)) 
+            .where(DB.raw(`( YEAR(vacations.date_start) <= c_dis.year AND YEAR(vacations.date_over) >= c_dis.year )`)) 
+            .where(DB.raw(`( MONTH(vacations.date_start) <= c_dis.month AND MONTH(vacations.date_over) >= c_dis.month )`)) 
             .select('vacations.*', 'c.work_id')
             .fetch();
         // response
@@ -111,10 +109,14 @@ class DiscountBuilder {
     async getLicenses() {
         let infoIds = collect(this.infos.data).pluck('id').toArray();
         let licenses = await License.query()
+            .join('infos as i', 'i.id', 'licenses.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
             .with('situacion_laboral')
+            .where('c.id', this.config_discount.id)
             .whereIn('info_id', infoIds)
-            .where(DB.raw(`( YEAR(licenses.date_start) <= ${this.year} AND YEAR(licenses.date_over) >= ${this.year} )`)) 
-            .where(DB.raw(`( MONTH(licenses.date_start) <= ${this.month} AND MONTH(licenses.date_over) >= ${this.month} )`)) 
+            .where(DB.raw(`( YEAR(licenses.date_start) <= c.year AND YEAR(licenses.date_over) >= c.year )`)) 
+            .where(DB.raw(`( MONTH(licenses.date_start) <= c.month AND MONTH(licenses.date_over) >= c.month )`)) 
+            .select('licenses.*')
             .fetch();
         // response
         this.licenses = collect(await licenses.toJSON());
@@ -123,10 +125,14 @@ class DiscountBuilder {
     async getPermissions() {
         let infoIds = collect(this.infos.data).pluck('id').toArray();
         let permissions = await Permission.query()
+            .join('infos as i', 'i.id', 'permissions.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
             .with('type_permission')
+            .where('c.id', this.config_discount.id)
             .whereIn('info_id', infoIds)
-            .where(DB.raw(`( YEAR(permissions.date_start) <= ${this.year} AND YEAR(permissions.date_over) >= ${this.year} )`)) 
-            .where(DB.raw(`( MONTH(permissions.date_start) <= ${this.month} AND MONTH(permissions.date_over) >= ${this.month} )`)) 
+            .where(DB.raw(`( YEAR(permissions.date_start) <= c.year AND YEAR(permissions.date_over) >= c.year )`)) 
+            .where(DB.raw(`( MONTH(permissions.date_start) <= c.month AND MONTH(permissions.date_over) >= c.month )`)) 
+            .select('permissions.*')
             .fetch();
         // response
         this.permissions = collect(await permissions.toJSON());
@@ -135,9 +141,13 @@ class DiscountBuilder {
     async getSchedules() {
         let infoIds = collect(this.infos.data).pluck('id').toArray();
         let schedules = await Schedule.query()
+            .join('infos as i', 'i.id', 'schedules.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .where('c.id', this.config_discount.id)
             .whereIn('info_id', infoIds)
-            .where(DB.raw('YEAR(date)'), this.year)
-            .where(DB.raw('MONTH(date)'), this.month)
+            .where(DB.raw('YEAR(date) = c.year'))
+            .where(DB.raw('MONTH(date) = c.month'))
+            .select('schedules.*')
             .fetch();
         this.schedules = collect(await schedules.toJSON());
     }
@@ -146,9 +156,13 @@ class DiscountBuilder {
         let infoIds = collect(this.infos.data).pluck('id').toArray();
         let assistances = await Assistance.query()
             .join('schedules as s', 's.id', 'assistances.schedule_id')
+            .join('infos as i', 'i.id', 's.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .where('c.id', this.config_discount.id)
             .whereIn('s.info_id', infoIds)
-            .where(DB.raw('YEAR(s.date)'), this.year)
-            .where(DB.raw('MONTH(s.date)'), this.month)
+            .where(DB.raw('YEAR(s.date) = c.year'))
+            .where(DB.raw('MONTH(s.date) = c.month'))
+            .select('assistances.*')
             .fetch();
         // response
         this.assistances = collect(await assistances.toJSON());
@@ -158,9 +172,12 @@ class DiscountBuilder {
         let infoIds = collect(this.infos.data).pluck('id').toArray();
         let ballots = await Ballot.query()
             .join('schedules as s', 's.id', 'ballots.schedule_id')
+            .join('infos as i', 'i.id', 's.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .where('c.id', this.config_discount.id)
             .whereIn('s.info_id', infoIds)
-            .where(DB.raw('YEAR(s.date)'), this.year)
-            .where(DB.raw('MONTH(s.date)'), this.month)
+            .where(DB.raw('YEAR(s.date) = c.year'))
+            .where(DB.raw('MONTH(s.date) = c.month'))
             .select('ballots.*')
             .fetch();
         this.ballots = collect(await ballots.toJSON());
@@ -187,7 +204,6 @@ class DiscountBuilder {
                 // obtener schedule
                 let current_schedule = await this.schedules.where('info_id', info.id).where('date', date.date).first();
                 if (current_schedule) {
-
                     // validar ballots
                     let ballots = await this.ballots.where('schedule_id', current_schedule.id).toArray();
                     for(let ballot of ballots) {

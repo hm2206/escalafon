@@ -12,10 +12,9 @@ class DiscountDetailBuilder {
         type_categoria_id: ""
     }
 
-    constructor(entity_id, year, month, filtros = this.filtros) {
+    constructor(entity_id, config_discount = {}, filtros = this.filtros) {
         this.entity_id = entity_id;
-        this.year = year;
-        this.month = month;
+        this.config_discount = config_discount;
         this.filtros = filtros;
     }
 
@@ -32,14 +31,13 @@ class DiscountDetailBuilder {
         let count_vacations = Vacation.query()
             .join('config_vacations as c', 'c.id', 'vacations.config_vacation_id')
             .join('infos as i', 'i.work_id', 'c.work_id')
-            .join('discounts as d', 'd.info_id', 'i.id')
-            .where('i.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month) 
-            .where(DB.raw('(YEAR(vacations.date_start) <= d.year AND MONTH(vacations.date_start) <= d.month)'))
-            .where(DB.raw('(YEAR(vacations.date_over) >= d.year AND MONTH(vacations.date_over) >= d.month)'))
-            .groupBy('d.id')
-            .select('d.id')
+            .join('config_discounts as c_dis', 'c_dis.entity_id', 'i.entity_id')
+            .join('discounts as d', 'd.config_discount_id', 'c_dis.id')
+            .where('c_dis.id', this.config_discount.id)
+            .where(DB.raw('(YEAR(vacations.date_start) <= c_dis.year AND MONTH(vacations.date_start) <= c_dis.month)'))
+            .where(DB.raw('(YEAR(vacations.date_over) >= c_dis.year AND MONTH(vacations.date_over) >= c_dis.month)'))
+            .groupBy('i.id')
+            .select('i.id')
         // filtrar
         count_vacations = this.handleFiltros(count_vacations, 'i');
         // obtener vacations
@@ -50,14 +48,13 @@ class DiscountDetailBuilder {
     async getLacks() {
         let count_lack = Schedule.query()
             .join('infos as i', 'i.id', 'schedules.info_id')
-            .join('discounts as d', 'd.info_id', 'i.id')
-            .where('i.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month)
-            .where(DB.raw('(YEAR(schedules.date) = d.year AND MONTH(schedules.date) = d.month)'))
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as d', 'd.config_discount_id', 'c.id')
+            .where('c.id', this.config_discount.id)
+            .where(DB.raw('(YEAR(schedules.date) = c.year AND MONTH(schedules.date) = c.month)'))
             .where('schedules.status', 'F')
-            .groupBy('d.id')
-            .select('d.id')
+            .groupBy('i.id')
+            .select('i.id')
         // filters
         count_lack = this.handleFiltros(count_lack, 'i');
         // obtener count
@@ -68,15 +65,14 @@ class DiscountDetailBuilder {
     async getDelays() {
         let count_delay = Schedule.query()
             .join('infos as i', 'i.id', 'schedules.info_id')
-            .join('discounts as d', 'd.info_id', 'i.id')
-            .where('i.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month)
-            .where(DB.raw('(YEAR(schedules.date) = d.year AND MONTH(schedules.date) = d.month)'))
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as d', 'd.config_discount_id', 'c.id')
+            .where('c.id', this.config_discount.id)
+            .where(DB.raw('(YEAR(schedules.date) = c.year AND MONTH(schedules.date) = c.month)'))
             .where('schedules.status', 'A')
             .where('schedules.discount', '>', 0)
-            .groupBy('d.id')
-            .select('d.id')
+            .groupBy('i.id')
+            .select('i.id')
         count_delay = this.handleFiltros(count_delay, 'i');
         // obtener datos
         count_delay = await count_delay.getCount('id');
@@ -86,17 +82,16 @@ class DiscountDetailBuilder {
     async getCommitions() {
         let count_commission = Schedule.query()
             .join('infos as i', 'i.id', 'schedules.info_id')
-            .join('discounts as d', 'd.info_id', 'i.id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as d', 'd.config_discount_id', 'c.id')
             .join('ballots as b', 'b.schedule_id', 'schedules.id')
-            .where('i.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month)
-            .where(DB.raw('(YEAR(schedules.date) = d.year AND MONTH(schedules.date) = d.month)'))
+            .where('c.id', this.config_discount.id)
+            .where(DB.raw('(YEAR(schedules.date) = c.year AND MONTH(schedules.date) = c.month)'))
             .where('schedules.status', 'A')
             .where('schedules.discount', '>', 0)
             .where('b.is_applied', 0)
-            .groupBy('d.id')
-            .select('d.id');
+            .groupBy('i.id')
+            .select('i.id');
         // filrar
         count_commission = this.handleFiltros(count_commission, 'i');
         // obtener
@@ -107,15 +102,14 @@ class DiscountDetailBuilder {
     async getLicenses(is_pay = 1) {
         let count_license = License.query()
             .join('infos as i', 'i.id', 'licenses.info_id')
+            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
             .join('discounts as d', 'd.info_id', 'i.id')
-            .where('i.entity_id', this.entity_id)
-            .where('d.year', this.year)
-            .where('d.month', this.month)
-            .where(DB.raw('(YEAR(licenses.date_start) <= d.year AND MONTH(licenses.date_start) <= d.month)'))
-            .where(DB.raw('(YEAR(licenses.date_over) >= d.year AND MONTH(licenses.date_over) >= d.month)'))
+            .where('c.entity_id', this.config_discount.id)
+            .where(DB.raw('(YEAR(licenses.date_start) <= c.year AND MONTH(licenses.date_start) <= c.month)'))
+            .where(DB.raw('(YEAR(licenses.date_over) >= c.year AND MONTH(licenses.date_over) >= c.month)'))
             .where('licenses.is_pay', is_pay)
-            .groupBy('d.id')
-            .select('d.id')
+            .groupBy('i.id')
+            .select('i.id')
         // filters
         count_license = this.handleFiltros(count_license, 'i');
         // obteners

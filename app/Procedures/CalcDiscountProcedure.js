@@ -6,17 +6,13 @@ class CalcDiscountProcedure extends BaseProcedure {
 
     static get params () {
         return {
-            entity_id: { type: 'int', name: 'p_entity_id', length: 20 },
-            year: { type: 'int', name: 'p_year', length: 4 },
-            month: { type: 'int', name: 'p_month', length: 2 }
+            config_discount_id: { type: 'int', name: 'p_config_discount_id', length: 20 },
         }
     }
 
     static get arguments () {
         return {
-            entity_id: '', 
-            year: '',
-            month: ''
+            config_discount_id: '',
         }
     }
 
@@ -36,10 +32,11 @@ class CalcDiscountProcedure extends BaseProcedure {
                 ) as nodiscount
                 FROM schedules as s
                 INNER JOIN infos as i ON i.id = s.info_id
+                INNER JOIN config_discounts as c ON c.entity_id = i.entity_id
                 INNER JOIN ballots as ba ON ba.schedule_id = s.id
-                WHERE i.entity_id = ${this.params.entity_id.name}
-                AND YEAR(s.date) = ${this.params.year.name}
-                AND MONTH(s.date) = ${this.params.month.name}
+                WHERE c.id = ${this.params.config_discount_id.name}
+                AND YEAR(s.date) = c.year
+                AND MONTH(s.date) = c.month
                 AND s.is_edited = 0
                 GROUP BY s.id
             ) as up ON up.id = sch.id
@@ -52,11 +49,12 @@ class CalcDiscountProcedure extends BaseProcedure {
         return `
             UPDATE schedules as s
             INNER JOIN infos as i ON i.id = s.info_id
+            INNER JOIN config_discounts as c ON c.entity_id = i.entity_id
             INNER JOIN licenses as l ON l.info_id = i.id
             SET s.discount = 0, s.status = 'D'
-            WHERE i.entity_id = ${this.params.entity_id.name}
-            AND YEAR(s.date) = ${this.params.year.name}
-            AND MONTH(s.date) = ${this.params.month.name}
+            WHERE c.id = ${this.params.config_discount_id.name}
+            AND YEAR(s.date) = c.year
+            AND MONTH(s.date) = c.month
             AND (l.date_start <= s.date AND l.date_over >= s.date);
         `
     }
@@ -65,14 +63,15 @@ class CalcDiscountProcedure extends BaseProcedure {
         return `
             UPDATE schedules as s 
             INNER JOIN infos as i ON i.id = s.info_id
+            INNER JOIN config_discounts as c_dis ON c_dis.entity_id = i.entity_id
             INNER JOIN config_vacations as c ON c.work_id = i.work_id
             INNER JOIN vacations as v ON v.config_vacation_id = c.id
             AND c.entity_id = i.entity_id
             AND (v.date_start <= s.date AND v.date_over >= s.date)
             SET s.discount = 0, s.status = 'D'
-            WHERE i.entity_id = ${this.params.entity_id.name}
-            AND YEAR(s.date) = ${this.params.year.name}
-            AND MONTH(s.date) = ${this.params.month.name};
+            WHERE c_dis.id = ${this.params.config_discount_id.name}
+            AND YEAR(s.date) = c_dis.year
+            AND MONTH(s.date) = c_dis.month;
         `;
     }
 
@@ -80,15 +79,14 @@ class CalcDiscountProcedure extends BaseProcedure {
         return `
             UPDATE discounts as dis 
             INNER JOIN (
-                SELECT d.id, d.info_id, d.year, d.month, d.days, d.hours, d.base, (ROUND(((((d.base * d.days) / 30) / 30) / d.hours) / 60, 2)) as min, IFNULL(SUM(s.discount), 0) as delay
+                SELECT d.id, d.info_id, d.days, d.hours, d.base, (ROUND(((((d.base * d.days) / 30) / 30) / d.hours) / 60, 2)) as min, IFNULL(SUM(s.discount), 0) as delay
                 FROM discounts as d
                 INNER JOIN infos as i ON i.id = d.info_id 
+                INNER JOIN config_discounts as c ON c.id = d.config_discount_id
                 LEFT JOIN schedules as s ON s.info_id = i.id 
-                AND YEAR(s.date) = d.year AND MONTH(s.date) = d.month
-                WHERE i.entity_id = ${this.params.entity_id.name}
-                AND d.year = ${this.params.year.name}
-                AND d.month = ${this.params.month.name}
-                GROUP BY d.info_id, d.year, d.month, d.days, d.hours, d.base
+                AND YEAR(s.date) = c.year AND MONTH(s.date) = c.month
+                WHERE c.id = ${this.params.config_discount_id.name}
+                GROUP BY d.id, d.info_id, d.days, d.hours, d.base
             ) as calc ON calc.id  = dis.id
             SET dis.discount = ROUND(calc.min * calc.delay, 2),
             dis.discount_min = calc.min

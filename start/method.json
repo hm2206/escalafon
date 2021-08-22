@@ -425,30 +425,6 @@
         "description": "Eliminar Formación académica del Personal",
         "action_type": "DELETE"
     },
-    "DiscountController.update": {
-        "name": "DiscountController.update",
-        "url": "api/discounts/:id",
-        "description": "Actualizar descuento",
-        "action_type": "UPDATE"
-    },
-    "DiscountController.preView": {
-        "name": "DiscountController.preView",
-        "url": "api/discounts/:year/:month/pre_view",
-        "description": "Lista de descuentos",
-        "action_type": "VIEW"
-    },
-    "DiscountController.preViewDetails": {
-        "name": "DiscountController.preViewDetails",
-        "url": "api/discounts/:year/:month/pre_view_details",
-        "description": "Lista de descuentos detallados",
-        "action_type": "VIEW"
-    },
-    "DiscountController.process": {
-        "name": "DiscountController.process",
-        "url": "api/discounts/:year/:month/process",
-        "description": "Procesar descuentos",
-        "action_type": "UPDATE"
-    },
     "FileController.store": {
         "name": "FileController.store",
         "url": "api/files",
@@ -465,6 +441,36 @@
         "name": "FileController.binary",
         "url": "api/files/:token/binary",
         "description": "Obtener archivo en binario",
+        "action_type": "VIEW"
+    },
+    "ConfigDiscountController.index": {
+        "name": "ConfigDiscountController.index",
+        "url": "api/config_discounts",
+        "description": "Listar configuración de descuentos",
+        "action_type": "VIEW"
+    },
+    "ConfigDiscountController.store": {
+        "name": "ConfigDiscountController.store",
+        "url": "api/config_discounts",
+        "description": "Crear configuración de descuentos",
+        "action_type": "CREATE"
+    },
+    "ConfigDiscountController.processDiscounts": {
+        "name": "ConfigDiscountController.processDiscounts",
+        "url": "api/config_discounts/:id/process_discounts",
+        "description": "Procesar descuentos de la configuración",
+        "action_type": "CREATE"
+    },
+    "ConfigDiscountController.discounts": {
+        "name": "ConfigDiscountController.discounts",
+        "url": "api/config_discounts/:id/discounts",
+        "description": "Listar descuentos de la configuración",
+        "action_type": "VIEW"
+    },
+    "ConfigDiscountController.headDiscounts": {
+        "name": "ConfigDiscountController.headDiscounts",
+        "url": "api/config_discounts/:id/head_discounts",
+        "description": "Listar Header descuentos de la configuración",
         "action_type": "VIEW"
     },
     "ReportController.general": {

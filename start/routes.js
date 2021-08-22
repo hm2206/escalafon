@@ -109,16 +109,17 @@ Route('post', 'DegreeController.store').middleware(['jwt', 'entityId']);
 Route('put', 'DegreeController.update').middleware(['jwt', 'entityId']);
 Route('delete', 'DegreeController.delete').middleware(['jwt', 'entityId']);
 
-// Discount
-Route('put', 'DiscountController.update').middleware(['jwt', 'entityId']);
-Route('get', 'DiscountController.preView').middleware(['jwt', 'entityId']);
-Route('get', 'DiscountController.preViewDetails').middleware(['jwt', 'entityId']);
-Route('post', 'DiscountController.process').middleware(['jwt', 'entityId']);
-
 // File
 Route('post', 'FileController.store').middleware(['jwt'])
 Route('get', 'FileController.objectType').middleware(['jwt'])
 Route('get', 'FileController.binary').middleware(['jwt'])
+
+// Configs Discounts
+Route('get', 'ConfigDiscountController.index').middleware(['jwt', 'entityId']);
+Route('post', 'ConfigDiscountController.store').middleware(['jwt', 'entityId']);
+Route('post', 'ConfigDiscountController.processDiscounts').middleware(['jwt', 'entityId']);
+Route('get', 'ConfigDiscountController.discounts').middleware(['jwt', 'entityId']);
+Route('get', 'ConfigDiscountController.headDiscounts').middleware(['jwt', 'entityId']);
 
 // Reports
 Route('get', 'ReportController.general').middleware(['jwt', 'entityId']);

@@ -63,6 +63,7 @@ class ScheduleController {
     async isEdit ({ params, request }) {
         let entity = request.$entity;
         let datos = request.all();
+        let discount_id = request.input('discount_id')
         let schedule = await Schedule.query()
             .where('id', params.id) 
             .where('is_blocked', 0)
@@ -70,6 +71,9 @@ class ScheduleController {
             .first()
         if (!schedule) throw new NotFoundModelException("El horario")
         let info = await schedule.info().fetch();
+        // obtener discount
+        let discount = await Discount.find(discount_id);
+        if (!discount) throw new NotFoundModelException("El descuento")
         // process
         try {
             let calc = (info.hours * 60);
@@ -88,13 +92,7 @@ class ScheduleController {
             // recalcular
             let year = scheduleDate.year();
             let month = scheduleDate.month() + 1;
-            await CalcDiscountProcedure.call({ entity_id: entity.id, year, month })
-            // obtener discount
-            let discount = await Discount.query()
-                .where('info_id', info.id) 
-                .where('year', year)
-                .where('month', month)
-                .first();
+            await CalcDiscountProcedure.call({ config_discount_id: discount.config_discount_id })
             // count schedules
             let count = await Schedule.query()
                 .where('info_id', info.id)
