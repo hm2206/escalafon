@@ -51,6 +51,10 @@ class ConfigDiscountController {
                 month: datos.month,
                 observation: datos.observation || null
             })
+            // procesar discounts
+            await PreparateDiscountProcedure.call({ config_discount_id: config_discount.id });
+            await CalcDiscountProcedure.call({ config_discount_id: config_discount.id });
+            // response
             return {
                 success: true,
                 status: 201,
