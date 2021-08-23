@@ -88,11 +88,10 @@ class ScheduleController {
             })
             // guardar cambios
             await schedule.save()
-            let scheduleDate = moment(schedule.date);
             // recalcular
-            let year = scheduleDate.year();
-            let month = scheduleDate.month() + 1;
             await CalcDiscountProcedure.call({ config_discount_id: discount.config_discount_id })
+            // reload
+            await discount.reload();
             // count schedules
             let count = await Schedule.query()
                 .where('info_id', info.id)
