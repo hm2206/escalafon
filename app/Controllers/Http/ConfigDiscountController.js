@@ -114,6 +114,32 @@ class ConfigDiscountController {
         }
     }
 
+    async verified({ params }) {
+        let config_discount = await ConfigDiscount.find(params.id);
+        if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
+        if (config_discount.status != 'START') throw new CustomException("No se puede verificar la configuración de descuentos")
+        config_discount.merge({ status: 'VERIFIED' });
+        await config_discount.save();
+        return {
+            success: true,
+            status: 201,
+            message: "La configuración de descuentos se verificarón correctamente!"
+        }
+    }
+
+    async accepted({ params }) {
+        let config_discount = await ConfigDiscount.find(params.id);
+        if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
+        if (config_discount.status != 'VERIFIED') throw new CustomException("No se puede aceptar la configuración de descuentos")
+        config_discount.merge({ status: 'ACCEPTED' });
+        await config_discount.save();
+        return {
+            success: true,
+            status: 201,
+            message: "La configuración de descuentos fué aceptada correctamente!"
+        }
+    }
+
 }
 
 module.exports = ConfigDiscountController

@@ -120,6 +120,8 @@ Route('post', 'ConfigDiscountController.store').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigDiscountController.processDiscounts').middleware(['jwt', 'entityId']);
 Route('get', 'ConfigDiscountController.discounts').middleware(['jwt', 'entityId']);
 Route('get', 'ConfigDiscountController.headDiscounts').middleware(['jwt', 'entityId']);
+Route('put', 'ConfigDiscountController.verified').middleware(['jwt', 'entityId']);
+Route('put', 'ConfigDiscountController.accepted').middleware(['jwt', 'entityId']);
 
 // Reports
 Route('get', 'ReportController.general').middleware(['jwt', 'entityId']);

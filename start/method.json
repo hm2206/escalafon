@@ -473,6 +473,18 @@
         "description": "Listar Header descuentos de la configuración",
         "action_type": "VIEW"
     },
+    "ConfigDiscountController.verified": {
+        "name": "ConfigDiscountController.verified",
+        "url": "api/config_discounts/:id/verified",
+        "description": "Verificar configuración de descuentos",
+        "action_type": "UPDATE"
+    },
+    "ConfigDiscountController.accepted": {
+        "name": "ConfigDiscountController.accepted",
+        "url": "api/config_discounts/:id/accepted",
+        "description": "Aceptar configuración de descuentos",
+        "action_type": "UPDATE"
+    },
     "ReportController.general": {
         "name": "WorkController.general",
         "url": "api/reports/general",
