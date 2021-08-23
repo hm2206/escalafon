@@ -74,6 +74,8 @@ class ScheduleController {
         // obtener discount
         let discount = await Discount.find(discount_id);
         if (!discount) throw new NotFoundModelException("El descuento")
+        let config_discount = await discount.config_discount().fetch();
+        if (config_discount.status != "START") throw new CustomException("La edición no está disponible!!!")
         // process
         try {
             let calc = (info.hours * 60);
