@@ -117,6 +117,7 @@ Route('get', 'FileController.binary').middleware(['jwt'])
 // Configs Discounts
 Route('get', 'ConfigDiscountController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigDiscountController.store').middleware(['jwt', 'entityId']);
+Route('get', 'ConfigDiscountController.show').middleware(['jwt', 'entityId']);
 Route('post', 'ConfigDiscountController.processDiscounts').middleware(['jwt', 'entityId']);
 Route('get', 'ConfigDiscountController.discounts').middleware(['jwt', 'entityId']);
 Route('get', 'ConfigDiscountController.headDiscounts').middleware(['jwt', 'entityId']);

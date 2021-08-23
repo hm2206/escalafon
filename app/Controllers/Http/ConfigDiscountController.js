@@ -62,6 +62,16 @@ class ConfigDiscountController {
         }
     }
 
+    async show({ params }) {
+        let config_discount = await ConfigDiscount.find(params.id);
+        if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
+        return { 
+            success: true,
+            status: 201,
+            config_discount
+        }
+    }
+
     async processDiscounts({ params }) {
         let config_discount = await ConfigDiscount.find(params.id);
         if (!config_discount) throw new NotFoundModelException("La configuración del descuento")

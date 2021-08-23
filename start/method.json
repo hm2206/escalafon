@@ -455,6 +455,12 @@
         "description": "Crear configuración de descuentos",
         "action_type": "CREATE"
     },
+    "ConfigDiscountController.show": {
+        "name": "ConfigDiscountController.show",
+        "url": "api/config_discounts/:id",
+        "description": "Obtener configuración de descuentos",
+        "action_type": "VIEW"
+    },
     "ConfigDiscountController.processDiscounts": {
         "name": "ConfigDiscountController.processDiscounts",
         "url": "api/config_discounts/:id/process_discounts",
