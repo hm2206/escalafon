@@ -56,7 +56,8 @@ class BaseProcedure {
         let newArgs = Object.assign(this.arguments, args);
         let query = [];
         for (let attr in this.params) {
-            query.push(typeof newArgs[attr] == 'undefined' ? 'null' : newArgs[attr]);
+            let newAttr = typeof newArgs[attr] == 'undefined' ? 'null' : newArgs[attr];
+            query.push(typeof newAttr == 'string' ? `'${newAttr}'` : newAttr);
         }
         // execute
         let preparate = `CALL ${this.procedure}(${query.join(', ')})`;
