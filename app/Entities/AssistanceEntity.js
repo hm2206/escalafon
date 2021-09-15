@@ -66,13 +66,15 @@ class AssistanceEntity {
     async store (datos = this.datosDefault) {
         await validation(validateAll, datos, {
             schedule_id: "required",
-            record_time: "required" 
+            record_time: "required",
+            description: "max:1000" 
         });
         // preparar datos
         let record_time = moment(datos.record_time, 'HH:mm').format('HH:mm:ss');
         let payload = {
             schedule_id: datos.schedule_id,
             record_time,
+            description: datos.description,
             status: this.datosDefault.status,
         };
         // obtener ultimo registro
