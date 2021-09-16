@@ -21,6 +21,7 @@ class ReportAssistanceBuild {
     authentication = {}
     year = ""
     month = ""
+    day = ""
     infos = []
     people = []
     limit = 53
@@ -30,10 +31,11 @@ class ReportAssistanceBuild {
         format: 'A4'
     }
 
-    constructor(authentication, year, month, filters = this.filters) {
+    constructor(authentication, year, month, day, filters = this.filters) {
         this.authentication = authentication;
         this.year = year;
         this.month = month;
+        this.day = day;
         this.filters = filters;
         this.people = collect([]);
     }
@@ -84,12 +86,15 @@ class ReportAssistanceBuild {
                 .select(...attrs)
                 .groupBy(...attrs)
                 .orderBy('schedules.date', 'ASC')
+                
+                if (this.day) build.where(DB.raw('DAY(schedules.date)'), this.day) 
             }) 
             .join('works as w', 'w.id', 'infos.work_id')
             .join('schedules as s', 's.info_id', 'infos.id')
             .join('assistances as a', 'a.schedule_id', 's.id')
             .where(DB.raw(`YEAR(s.date) = ${this.year}`))
             .where(DB.raw(`MONTH(s.date) = ${this.month}`))
+            if (this.day) tmpInfos.where(DB.raw('DAY(s.date)'), this.day);
         // filtros
         for (let attr in this.filters) {
             let value = this.filters[attr];

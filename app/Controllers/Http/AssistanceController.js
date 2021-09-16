@@ -8,8 +8,16 @@ class AssistanceController {
     async index ({ request }) {
         let entity = request.$entity;
         let { page, query_search } = request.all();
-        let date = request.input('date', moment().format('YYYY-MM-DD'));
-        let filtros = { entity_id: entity.id, "s.date": date };
+        let date = moment();
+        let year = request.input('year', date.year());
+        let month = request.input('month', date.month() + 1);
+        let day = request.input('day', null);
+        let filtros = { 
+            entity_id: entity.id, 
+            "YEAR(s.date)": year,
+            "MONTH(s.date)": month,
+            "DAY(s.date)": day
+        };
         let authentication = request.api_authentication;
         let assistanceEntity = new AssistanceEntity();
         let assistances = await assistanceEntity.getAssistances(authentication, page || 1, filtros, query_search || "");
@@ -61,12 +69,13 @@ class AssistanceController {
         let authentication = request.api_authentication;
         let entity = request.$entity;
         let date = moment();
-        let year = request.input('year', date.year())
-        let month = request.input('month', date.month() + 1)
+        let year = request.input('year', date.year());
+        let month = request.input('month', date.month() + 1);
+        let day = request.input('day', null);
         let filters = request.only(['planilla_id', 'cargo_id', 'type_categoria_id', 'query_search', 'id']);
         filters.entity_id = entity.id;
         let assistanceEntity = new AssistanceEntity(authentication);
-        let monthly = await assistanceEntity.reportMonthly(year, month, filters);
+        let monthly = await assistanceEntity.reportMonthly(year, month, day, filters);
         response.header('Content-Type', 'application/pdf');
         return response.send(monthly);
     }

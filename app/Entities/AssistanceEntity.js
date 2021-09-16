@@ -8,6 +8,7 @@ const { validation, ValidatorError } = require('validator-error-adonis');
 const { validateAll } = use('Validator');
 const collect = require('collect.js');
 const moment = require('moment');
+const DB = use('Database');
 
 class AssistanceEntity {
 
@@ -36,21 +37,22 @@ class AssistanceEntity {
             .select('assistances.*', 'w.person_id', 'w.orden')
             .where('assistances.state', 1)
             .orderBy('w.orden', 'ASC')
+            .orderBy('s.date', 'ASC')
             .orderBy('record_time', 'ASC');
         // filtros
         for (let attr in filtros) {
            let value = filtros[attr];
-           if (value) assistances.where(attr, value);
+           if (value) assistances.where(DB.raw(attr), value);
         }
         // query
         if (query_search) assistances.where('w.orden', 'like', `%${query_search}%`);
         // paginar
-        assistances = await assistances.paginate(page, 20);
+        assistances = await assistances.paginate(page, 100);
         assistances = await assistances.toJSON();
         // obtener person
         let pluckId = collect(assistances.data).pluck('person_id').toArray();
         let ids = `ids=${pluckId.join('&ids=')}`;
-        let { people } = await authentication.get(`person?page=1&${ids}`)
+        let { people } = await authentication.get(`person?page=1&${ids}&perPage=100`)
         .then(res => res.data)
         .catch(err => ({ success: false, people: [] }));
         people = collect(people.data || []);
@@ -99,7 +101,10 @@ class AssistanceEntity {
     async update (id, datos = this.datosDefault) {
         let assistance = await Assistance.find(id);
         if (!assistance) throw new NotFoundModelException('La asistencia');
-        assistance.merge({ status: datos.status });
+        assistance.merge({ 
+            status: datos.status,
+            description: datos.description || null
+        });
         await assistance.save();
         return assistance;
     }
@@ -112,9 +117,9 @@ class AssistanceEntity {
         return assistance;
     }
 
-    async reportMonthly(year, month, filters = {}) {
+    async reportMonthly(year, month, day = null, filters = {}) {
         let integerMonth = parseInt(month)
-        const reportAssistanceBuild = new ReportAssistanceBuild(this.authentication, year, integerMonth, filters);
+        const reportAssistanceBuild = new ReportAssistanceBuild(this.authentication, year, integerMonth, day, filters);
         return await reportAssistanceBuild.render();
     }
 
