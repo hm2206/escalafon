@@ -13,6 +13,7 @@ class DegreeController {
             work_id: 'required',
             type_degree_id: 'required',
             institution: 'required|max:200',
+            place: 'required|max:255',
             document_number: 'required|max:40',
             date: 'required|dateFormat:YYYY-MM-DD',
             description: 'max:1000'
@@ -23,6 +24,7 @@ class DegreeController {
                 work_id: datos.work_id,
                 type_degree_id: datos.type_degree_id,
                 institution: datos.institution,
+                place: datos.place,
                 document_number: datos.document_number,
                 date: datos.date,
                 description: datos.description,
@@ -45,6 +47,7 @@ class DegreeController {
         await validation(null, datos, {
             type_degree_id: 'required',
             institution: 'required|max:200',
+            place: 'required|max:255',
             document_number: 'required|max:40',
             date: 'required|dateFormat:YYYY-MM-DD',
             description: 'max:1000'
@@ -54,6 +57,7 @@ class DegreeController {
             degree.merge({
                 type_degree_id: datos.type_degree_id,
                 institution: datos.institution,
+                place: datos.place,
                 document_number: datos.document_number,
                 date: datos.date,
                 description: datos.description,

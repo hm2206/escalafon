@@ -14,6 +14,7 @@ class AscentController {
             info_id: 'required',
             resolution: 'required|max:255',
             date_resolution: 'required|dateFormat:YYYY-MM-DD',
+            ascent: 'required|max:255',
             type_categoria_id: 'required',
             date_start: 'required|dateFormat:YYYY-MM-DD',
             description: 'max:1000',
@@ -24,6 +25,7 @@ class AscentController {
                 info_id: datos.info_id,
                 resolution: datos.resolution,
                 date_resolution: datos.date_resolution,
+                ascent: datos.ascent,
                 date_start: datos.date_start,
                 type_categoria_id: datos.type_categoria_id,
                 description: datos.description,
@@ -49,6 +51,7 @@ class AscentController {
         await validation(null, datos, {
             resolution: 'required|max:255',
             date_resolution: 'required|dateFormat:YYYY-MM-DD',
+            ascent: 'required|max:255',
             type_categoria_id: 'required',
             date_start: 'required|dateFormat:YYYY-MM-DD',
             description: 'max:1000',
@@ -59,6 +62,7 @@ class AscentController {
             ascent.merge({ 
                 resolution: datos.resolution,
                 date_resolution: datos.date_resolution,
+                ascent: datos.ascent,
                 type_categoria_id: datos.type_categoria_id,
                 date_start: datos.date_start,
                 description: datos.description
