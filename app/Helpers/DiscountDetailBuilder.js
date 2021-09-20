@@ -92,7 +92,7 @@ class DiscountDetailBuilder {
             .groupBy('infos.id')
             .select(DB.raw('infos.id as id'));
         // filrar
-        count_commission = this.handleFiltros(count_commission, 'i');
+        count_commission = this.handleFiltros(count_commission, 'infos');
         // obtener
         count_commission = await count_commission.getCount('id');
         this.count_commission = count_commission;

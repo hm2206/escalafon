@@ -67,11 +67,11 @@ class DiscountBuilder {
             .with('type_categoria', build => build.select('type_categorias.id', 'type_categorias.descripcion'))
             .join('works as w', 'w.id', 'infos.work_id')
             .join('discounts as d', 'd.info_id', 'infos.id')
-            .join('config_discounts as c', 'c.id', 'c.entity_id')
+            .join('config_discounts as c', 'c.id', 'd.config_discount_id')
             .where('c.id', this.config_discount.id)
             .select(
                 'infos.id', DB.raw('d.id as discount_id'), 'infos.work_id', 'infos.type_categoria_id', 
-                'd.base', 'd.discount_min', 'd.discount', 'd.days'
+                'd.base', 'd.discount_min', 'd.discount', 'd.days', DB.raw('c.id as config_discount_id')
             )
             .orderBy('w.orden', 'ASC')
 
@@ -85,7 +85,7 @@ class DiscountBuilder {
 
     async getPeople() {
         let personIds = collect(this.infos.data).pluck('work.person_id').toArray();
-        let people = await this.authentication.get(`person?ids[]=${personIds.join('&ids[]=')}`)
+        let people = await this.authentication.get(`person?ids[]=${personIds.join('&ids[]=')}&perPage=${this.dataPage.perPage}`)
         .then(res => res.data.people.data || [])
         .catch(() => ([]));
         this.people = collect(people);

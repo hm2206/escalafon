@@ -104,7 +104,7 @@ class ConfigDiscountController {
         if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
         let datos = request.only(['cargo_id', 'type_categoria_id']);
         datos.page = request.input('page', 1);
-        datos.perPage = request.input('perPage', 20);
+        datos.perPage = request.input('perPage', 100);
         const discountBuilder = new DiscountBuilder(authentication, config_discount, datos);
         const discounts = await discountBuilder.handle();
         return {
