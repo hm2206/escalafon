@@ -28,6 +28,7 @@ class ReportGeneralBuilder {
     async getWorks() {
         let works = Work.query()
             .join('infos as i', 'i.work_id', 'works.id')
+            .orderBy('works.orden', 'ASC')
             .where('i.estado', 1)
         // filtros
         for(let attr in this.filters) {
