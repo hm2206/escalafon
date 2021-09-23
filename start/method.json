@@ -496,5 +496,11 @@
         "url": "api/reports/general",
         "description": "Reporte general de trabajadores activos",
         "action_type": "VIEW"
+    },
+    "ReportController.ballots": {
+        "name": "ReportController.ballots",
+        "url": "api/reports/ballots",
+        "description": "Reporte de papeletas",
+        "action_type": "VIEW"
     }
 }

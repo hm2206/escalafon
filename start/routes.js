@@ -126,3 +126,4 @@ Route('put', 'ConfigDiscountController.accepted').middleware(['jwt', 'entityId']
 
 // Reports
 Route('get', 'ReportController.general').middleware(['jwt', 'entityId']);
+Route('get', 'ReportController.ballots').middleware(['jwt', 'entityId']);
