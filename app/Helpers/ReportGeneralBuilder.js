@@ -31,7 +31,8 @@ class ReportGeneralBuilder {
     }
 
     options = {
-        format: 'A4'
+        format: 'A4',
+        landscape: true
     }
 
     works = []
