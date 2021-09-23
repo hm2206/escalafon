@@ -65,7 +65,7 @@ class ReportBallotBuilder {
         for (let attr in this.filters) {
             let value = this.filters[attr];
             if (value && attr == 'day') ballots.where(DB.raw(`DAY(date)`), value);
-            else if (value) ballots.where(attr, value);
+            else if (value) ballots.where(`i.${attr}`, value);
         } 
         // obtener
         ballots.select('ballots.*', 's.date', 'w.person_id', 'w.orden')
