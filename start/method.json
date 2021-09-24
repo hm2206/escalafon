@@ -502,5 +502,11 @@
         "url": "api/reports/ballots",
         "description": "Reporte de papeletas",
         "action_type": "VIEW"
+    },
+    "ReportController.licenses": {
+        "name": "ReportController.licenses",
+        "url": "api/reports/licenses",
+        "description": "Reporte de Licencias/Permisos",
+        "action_type": "VIEW"
     }
 }

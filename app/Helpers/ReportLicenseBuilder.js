@@ -4,16 +4,15 @@ const View = use('View');
 const { default: collect } = require('collect.js');
 const htmlToPdf = require('html-pdf-node');
 const moment = require('moment');
-const Ballot = use('App/Models/Ballot');
+const License = use('App/Models/License');
 const xlsx = require('node-xlsx');
 const DB = use('Database');
 
 const currentDate = moment();
 
-class ReportBallotBuilder {
+class ReportLicenseBuilder {
 
     filters = {
-        day: "",
         entity_id: "",
         cargo_id: "",
         type_categoria_id: "",
@@ -42,7 +41,7 @@ class ReportBallotBuilder {
         landscape: true
     }
 
-    ballots = []
+    licenses = []
 
     constructor(authentication = {}, year, month, filters = this.filters, type = 'pdf') {
         this.authentication = authentication;
@@ -53,24 +52,25 @@ class ReportBallotBuilder {
         this.month = month;
     }
 
-    async getBallots() {
-        let ballots = Ballot.query()
+    async getLicenses() {
+        let dateStart = moment(`${this.year}-${this.month}-31`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        let dateOver = moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        let licenses = License.query()
             .orderBy('w.orden', 'ASC')
-            .join('schedules as s', 's.id', 'ballots.schedule_id')
-            .join('infos as i', 'i.id', 's.info_id')
+            .join('situacion_laborals as s', 's.id', 'licenses.situacion_laboral_id')
+            .join('infos as i', 'i.id', 'licenses.info_id')
             .join('works as w', 'w.id', 'i.work_id')
-            .where(DB.raw('YEAR(s.`date`)'), this.year)
-            .where(DB.raw('MONTH(s.`date`)'), this.month)
+            .where(`licenses.date_start`, '<=', dateStart)
+            .where(`licenses.date_over`, '>=', dateOver)
         // filters
         for (let attr in this.filters) {
             let value = this.filters[attr];
-            if (value && attr == 'day') ballots.where(DB.raw(`DAY(s.date)`), value);
-            else if (value) ballots.where(`i.${attr}`, value);
+            if (value) licenses.where(`i.${attr}`, value);
         } 
         // obtener
-        ballots.select('ballots.*', 's.date', 'w.person_id', 'w.orden')
-        ballots = await ballots.fetch();
-        this.ballots = await ballots.toJSON();
+        licenses.select('licenses.*', 's.nombre as situacion_laboral', 'w.person_id', 'w.orden')
+        licenses = await licenses.fetch();
+        this.licenses = await licenses.toJSON();
     }
 
     async getPeople(page = 1, ids = []) {
@@ -89,32 +89,31 @@ class ReportBallotBuilder {
     }
 
     async stepPeople() {
-        let idPlucked = collect(this.ballots).pluck('person_id');
+        let idPlucked = collect(this.licenses).pluck('person_id');
         let idChunk = idPlucked.chunk(100);
         for (let ids of idChunk) {
             await this.getPeople(1, ids.toArray())
         }
     }
 
-    async settingBallots() {
-        this.ballots.map(b => {
-            let person = this.people.where('id', b.person_id).first() || {};
-            b.person = person;
-            b.date = moment(b.date, 'YYYY-MM-DD').format('YYYY/MM/DD');
-            b.time_start = b.time_start ? moment(b.time_start, 'HH:mm').format('HH:mm') : '--';
-            b.time_over = moment(b.time_over, 'HH:mm').format('HH:mm');
-            b.time_return = b.time_return ? moment(b.time_return, 'HH:mm').format('HH:mm') : '--';
+    async settingLicenses() {
+        this.licenses.map(l => {
+            let person = this.people.where('id', l.person_id).first() || {};
+            l.person = person;
+            l.date_resolution = moment(l.date_resolution, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            l.date_start = moment(l.date_start, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            l.date_over = moment(l.date_over, 'YYYY-MM-DD').format('DD/MM/YYYY');
         });
     }
 
     dataRender() {
         return {
-            ballots: this.ballots,
+            licenses: this.licenses,
         }
     }
 
     async formatPDF(that, datos = []) {
-        const html = View.render('report/ballots', datos);
+        const html = View.render('report/licenses', datos);
         const file = { content: html }
         return await htmlToPdf.generatePdf(file, that.options);
     }
@@ -122,46 +121,43 @@ class ReportBallotBuilder {
     async formatExcel(that, datos = {}) {
         let headers = [
             "N°", "Apellidos y Nombres", "Tipo", "Document",
-            "N° Papeleta", "Motivo", "Fecha", "Modo", "H. Entrada",
-            "H. Salida", "H. Retorno", "Total Min", "¿Aplica a descuento?",
-            "Justificación"
+            "L/P", "Resolución", "F.Resolución", "F.Inicio", "F.Termino",
+            "Días Usados", "¿Con goce?", "Descripción"
         ];
         let content = [];
-        let ballots = [...datos.ballots];
+        let licenses = [...datos.licenses];
         // mapping
-        ballots.map((b, index) => {
+        licenses.map((s, index) => {
             content.push([
                 index + 1,
-                `${b.person.fullname || ''}`.toUpperCase(),
-                `${b.person.document_type.name || ''}`.toUpperCase(),
-                `${b.person.document_number || ''}`,
-                `${b.ballot_number || ''}`,
-                `${b.motivo || ''}`,
-                `${b.date || ''}`,
-                `${b.modo == 'ENTRY' ? 'Entrada' : 'Salida'}`,
-                `${b.time_start || ''}`,
-                `${b.time_over || ''}`,
-                `${b.time_return || ''}`,
-                `${b.total || ''}`,
-                `${b.is_applied  ? 'Si' : 'No'}`,
-                `${b.justification || ''}`,
+                `${s.person.fullname || ''}`.toUpperCase(),
+                `${s.person.document_type.name || ''}`.toUpperCase(),
+                `${s.person.document_number || ''}`,
+                `${s.situacion_laboral || ''}`,
+                `${s.resolution || ''}`,
+                `${s.date_resolution || ''}`,
+                `${s.date_start || ''}`,
+                `${s.date_over || ''}`,
+                `${s.days_used || ''}`,
+                `${s.is_pay ? 'Si' : 'No'}`,
+                `${s.description || ''}`
             ]);
             // data
-            return b;
+            return s;
         });
         // response
         let data = [headers, ...content];
-        let result = await xlsx.build([{ name: 'reporte-general', data }])
+        let result = await xlsx.build([{ name: 'reporte-licencias-permisos', data }])
         return result;
     }
 
     async render() {
         // obtener ballots
-        await this.getBallots();
+        await this.getLicenses();
         // obtener people
         await this.stepPeople();
         // setting works
-        await this.settingBallots();
+        await this.settingLicenses();
         // render
         const datos = this.dataRender();
         // render type
@@ -175,8 +171,7 @@ class ReportBallotBuilder {
             header: handle.header
         };
     }   
-    
 
 }
 
-module.exports = ReportBallotBuilder;
+module.exports = ReportLicenseBuilder;
