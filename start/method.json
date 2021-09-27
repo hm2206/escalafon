@@ -508,5 +508,11 @@
         "url": "api/reports/licenses",
         "description": "Reporte de Licencias/Permisos",
         "action_type": "VIEW"
+    },
+    "ReportController.vacations": {
+        "name": "ReportController.vacations",
+        "url": "api/reports/vacations",
+        "description": "Reporte de vacaciones",
+        "action_type": "VIEW"
     }
 }

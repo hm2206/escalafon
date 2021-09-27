@@ -14,6 +14,12 @@ class ReportVacationBuilder {
     entity = null;
     work_id = "";
 
+    filters = {
+        work_id: "",
+        cargo_id: "",
+        type_categoria_id: ""
+    }
+
     people = [];
     works = [];
     config_vacations = [];
@@ -22,19 +28,29 @@ class ReportVacationBuilder {
         format: 'A4'
     }
 
-    constructor(authentication, entity, work_id = "") {
+    constructor(authentication, entity, filters = this.filters, type = 'pdf') {
         this.authentication = authentication;
         this.entity = entity;
-        this.work_id = work_id;
         this.people = collect([]);
+        this.filters = filters;
+        this.type = type;
     }
 
     async getWorks() {
         let works = Work.query()
-            .select('id', 'person_id')
-            .orderBy('orden', 'ASC')
-            .whereHas('infos', (builder) => builder.where('entity_id', this.entity.id))
-        if (this.work_id) works.where('id', this.work_id);
+            .join('infos as i', 'i.work_id', 'works.id')
+            .join('config_vacations as c', 'c.work_id', 'works.id')
+            .select('works.id', 'works.person_id')
+            .groupBy('works.id', 'works.person_id')
+            .where('i.entity_id', this.entity.id)
+            .where('c.entity_id', this.entity.id)
+            .orderBy('works.orden', 'ASC')
+        // filtros
+        for(let attr in this.filters) {
+            let value = this.filters[attr];
+            if (!value) continue;
+            works.where(`i.${attr}`, value);
+        }
         // obtener trabajadores
         works = await works.fetch();
         this.works = await works.toJSON();
@@ -65,15 +81,30 @@ class ReportVacationBuilder {
 
     async getConfigVacations() {
         let config_vacations = ConfigVacation.query()
+            .join('works as w', 'w.id', 'config_vacations.work_id')
+            .join('infos as i', 'i.work_id', 'w.id')
             .with('vacations', (build) => build.orderBy('date_start', 'ASC')
                 .select(
                     'id', 'config_vacation_id', 'resolucion', 
                     'date_start', 'date_over', 'days_used', 'observation'
                 ))
-            .where('entity_id', this.entity.id)
+            .where('config_vacations.entity_id', this.entity.id)
+            .where('i.entity_id', this.entity.id)
             .orderBy('year', 'ASC')
-            .select('id', 'work_id', 'year', 'scheduled_days', 'config_vacations.date_start', 'config_vacations.date_over');
-        if (this.work_id) config_vacations.where('work_id', this.work_id)
+            .groupBy(
+                'config_vacations.id', 'config_vacations.work_id', 'config_vacations.year', 'config_vacations.scheduled_days', 
+                'config_vacations.date_start', 'config_vacations.date_over'
+            )
+            .select(
+                'config_vacations.id', 'config_vacations.work_id', 'config_vacations.year', 'config_vacations.scheduled_days', 
+                'config_vacations.date_start', 'config_vacations.date_over'
+            );
+        // filtros
+        for(let attr in this.filters) {
+            let value = this.filters[attr];
+            if (!value) continue;
+            config_vacations.where(`i.${attr}`, value);
+        }
         // obtener config_vacations
         config_vacations = await config_vacations.fetch();
         this.config_vacations = await config_vacations.toJSON();

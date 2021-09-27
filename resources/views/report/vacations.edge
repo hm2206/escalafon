@@ -11,21 +11,25 @@
 
 <body class="a4">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th width="100px">
-                    <img src="{{ entity.logo_images.logo_200x200 }}"
-                        style="height: 100px; object-fit: contain;"
-                    >
-                </th>
-                <th class="text-center">
-                    <div class="uppercase f-15">{{ entity.name }}</div>
-                    <div class="f-11">{{ entity.ruc }}</div>
-                </th>
-            </tr>
-        </thead>
-    </table>
+    <div class="float-header" style="position: relative;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%"><img class="logo small" src="{{ link + '/images/peru.png' }}"></th>
+                    <th>
+                        <div class="f-9">"Año de la Universalización de la salud"</div>
+                        <div class="uppercase f-13">{{ $entity.name }}</div>
+                    </th>
+                    <th width="10%"><img class="logo mini" src="{{ $entity.logo }}"></th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><hr class="hr-dashed"/></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
 
     <h3 class="text-center mt-1 pt-1 uppercase f-15">REPORTE DE VACACIONES</h3>
     

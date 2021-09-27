@@ -2,7 +2,8 @@
 
 const ReportBallotBuilder = require('../../Helpers/ReportBallotBuilder');
 const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
-const ReportLicenseBuilder = require('../../Helpers/ReportLicenseBuilder')
+const ReportLicenseBuilder = require('../../Helpers/ReportLicenseBuilder');
+const ReportVacationBuilder = require('../../Helpers/ReportVacationBuilder');
 const moment = require('moment');
 
 let currentDate = moment()
@@ -48,6 +49,20 @@ class ReportController {
         const builder = await reportLicenseBuilder.render();
         response.type(builder.header);
         return response.send(builder.result);
+    }
+
+    async vacations({ request, response }) {
+        let type = request.input('type', 'pdf');
+        let entity = request.$entity;
+        let filters = request.only(['cargo_id', 'type_categoria_id'])
+        // let year = request.input('year', currentDate.year())
+        // let month = request.input('month', currentDate.month() + 1)
+        let authentication = request.api_authentication;
+        const reportLicenseBuilder = new ReportVacationBuilder(authentication, entity, filters, type);
+        const builder = await reportLicenseBuilder.render();
+        // response.type(builder.header);
+        response.type('application/pdf');
+        return response.send(builder);
     }
 
 }

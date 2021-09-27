@@ -243,7 +243,8 @@ class WorkEntity {
     }
 
     async reportVacations(id, entity) {
-        const reportVacationBuilder = new ReportVacationBuilder(this.authentication, entity, id);
+        let filters = { work_id: id };
+        const reportVacationBuilder = new ReportVacationBuilder(this.authentication, entity, filters);
         return await reportVacationBuilder.render();
     }
 
