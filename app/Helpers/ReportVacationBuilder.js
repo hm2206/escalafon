@@ -7,6 +7,7 @@ const View = use('View');
 const htmlToPdf = require('html-pdf-node');
 const { default: collect } = require('collect.js');
 const moment = require('moment');
+const xlsx = require('node-xlsx');
 
 const currentDate = moment();
 
@@ -219,6 +220,49 @@ class ReportVacationBuilder {
         const html = View.render('report/vacations', datos);
         const file = { content: html }
         return await htmlToPdf.generatePdf(file, that.options);
+    }
+
+    async formatExcel(that, datos = {}) {
+        let content = [];
+        let collection = [...datos.datos];
+        // mapping
+        collection.map((c) => {
+            // trabajadores
+            if (c.key == 'WORK') {
+                content.push([
+                    "Trabajador: ", `${c.current.fullname || ''}`.toUpperCase(),
+                    `${c.current.document_type}: `, c.current.document_number
+                ]);
+                content.push([])
+            }
+            // config_vacaciones
+            if (c.key == 'VACATION') {
+                content.push(["Año", "Inicio", "Termino", "Dias Programados", "Dias Ejecutados", "Saldo"]);
+                content.push([
+                    c.current.year,
+                    c.current.date_start,
+                    c.current.date_over,
+                    c.current.scheduled_days,
+                    c.current.executed_days,
+                    c.current.balance
+                ])
+                content.push(["", "Inicio", "Termino", "Dias ejecut.", "Resolución"])
+                // vacations
+                let vacations = c.current.vacations || [];
+                vacations.map(v => {
+                    content.push(["", v.date_start, v.date_over, v.days_used, v.resolucion])
+                })
+                // espacio
+                content.push([]);
+                content.push([]);
+            }
+            // data
+            return c;
+        });
+        // response
+        let data = [...content];
+        let result = await xlsx.build([{ name: 'reporte-vacaciones', data }])
+        return result;
     }
 
     async render() {
