@@ -54,15 +54,14 @@ class ReportController {
     async vacations({ request, response }) {
         let type = request.input('type', 'pdf');
         let entity = request.$entity;
+        let year = request.input('year', currentDate.year())
         let filters = request.only(['cargo_id', 'type_categoria_id'])
-        // let year = request.input('year', currentDate.year())
-        // let month = request.input('month', currentDate.month() + 1)
+        filters.year = year;
         let authentication = request.api_authentication;
-        const reportLicenseBuilder = new ReportVacationBuilder(authentication, entity, filters, type);
-        const builder = await reportLicenseBuilder.render();
-        // response.type(builder.header);
-        response.type('application/pdf');
-        return response.send(builder);
+        const reportVacationBuilder = new ReportVacationBuilder(authentication, entity, filters, type);
+        const builder = await reportVacationBuilder.render();
+        response.type(builder.header);
+        return response.send(builder.result);
     }
 
 }

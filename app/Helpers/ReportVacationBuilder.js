@@ -8,16 +8,33 @@ const htmlToPdf = require('html-pdf-node');
 const { default: collect } = require('collect.js');
 const moment = require('moment');
 
+const currentDate = moment();
+
 class ReportVacationBuilder {
 
     authentication = null;
     entity = null;
     work_id = "";
+    works = []
 
     filters = {
         work_id: "",
         cargo_id: "",
-        type_categoria_id: ""
+        type_categoria_id: "",
+        year: currentDate.year()
+    }
+
+    type = 'pdf' 
+
+    allowType = {
+        pdf: {
+            handle: this.formatPDF,
+            header: 'application/pdf'
+        },
+        excel: {
+            handle: this.formatExcel,
+            header: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        },
     }
 
     people = [];
@@ -49,7 +66,11 @@ class ReportVacationBuilder {
         for(let attr in this.filters) {
             let value = this.filters[attr];
             if (!value) continue;
-            works.where(`i.${attr}`, value);
+            if (attr == 'year') {
+                works.where(`c.${attr}`, value);
+            } else {
+                works.where(`i.${attr}`, value);
+            }
         }
         // obtener trabajadores
         works = await works.fetch();
@@ -103,7 +124,11 @@ class ReportVacationBuilder {
         for(let attr in this.filters) {
             let value = this.filters[attr];
             if (!value) continue;
-            config_vacations.where(`i.${attr}`, value);
+            if (attr == 'year') {
+                config_vacations.where(`config_vacations.${attr}`, value);
+            } else {
+                config_vacations.where(`i.${attr}`, value);
+            }
         }
         // obtener config_vacations
         config_vacations = await config_vacations.fetch();
@@ -190,17 +215,30 @@ class ReportVacationBuilder {
         }
     }
 
+    async formatPDF(that, datos = []) {
+        const html = View.render('report/vacations', datos);
+        const file = { content: html }
+        return await htmlToPdf.generatePdf(file, that.options);
+    }
+
     async render() {
         await this.getWorks();
         await this.stepPeople();
         await this.getConfigVacations();
         await this.settingWorks();
         // generar HTML
-        let datos = await this.dataRender();
-        let html = await View.render('report/vacations', datos);
-        // generar PDF
-        let file = { content: html };
-        return await htmlToPdf.generatePdf(file, this.options);
+        // render
+        const datos = await this.dataRender();
+        // render type
+        let handle = this.allowType[this.type];
+        let that = this;
+        if (typeof handle.handle != 'function') throw new Error("No se pudó generar el reporte");
+        let result = await handle.handle(that, datos);
+        // response
+        return {
+            result,
+            header: handle.header
+        };
     }
 
 }

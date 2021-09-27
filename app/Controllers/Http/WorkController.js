@@ -121,9 +121,9 @@ class WorkController {
         let entity = request.$entity;
         let authentication = request.api_authentication;
         const workEntity = new WorkEntity(authentication);
-        const report = await workEntity.reportVacations(params.id, entity);
-        response.header('Content-Type', 'application/pdf');
-        return response.send(report);
+        const builder = await workEntity.reportVacations(params.id, entity);
+        response.type(builder.header);
+        return response.send(builder.result);
     }
 
 }
