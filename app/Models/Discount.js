@@ -9,6 +9,11 @@ class Discount extends Model {
         return this.belongsTo('App/Models/ConfigDiscount')
     }
 
+    descuentos() {
+        return this.belongsToMany('App/Models/Descuento')
+            .pivotTable('discount_detalles')
+    }
+
 }
 
 module.exports = Discount

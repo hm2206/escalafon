@@ -514,5 +514,11 @@
         "url": "api/reports/vacations",
         "description": "Reporte de vacaciones",
         "action_type": "VIEW"
+    },
+    "ReportController.discounts": {
+        "name": "ReportController.discounts",
+        "url": "api/reports/discounts",
+        "description": "Reporte de Descuentos escalafonarios",
+        "action_type": "VIEW"
     }
 }

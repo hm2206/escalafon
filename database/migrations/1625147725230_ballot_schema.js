@@ -9,7 +9,7 @@ class BallotSchema extends Schema {
       table.increments()
       table.integer('schedule_id').notNullable()
       table.string('ballot_number').notNullable()
-      table.enum('motivo', ['FUERA_DE_HORA', 'MOTIVOS_PARTICULARES', 'SALUD', 'COMISION_DE_SERVICIO']).notNullable();
+      table.enum('motivo', ['FUERA_DE_HORA', 'MOTIVOS_PARTICULARES', 'SALUD', 'COMISION_DE_SERVICIO', 'OTROS']).notNullable();
       table.time('time_start');
       table.time('time_over');
       table.time('time_return');

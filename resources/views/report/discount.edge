@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{ style(link + "/css/default.css") }}
+    {{ style(link + "/css/report.css") }}
+    
+    <style>
+        body {
+            width: auto;
+            height: auto;
+        }
+    </style>
+
+    <title>Reporte de descuento por tardanza</title>
+</head>
+<body>
+
+    <div class="float-header" style="position: relative;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%"><img class="logo small" src="{{ link + '/images/peru.png' }}"></th>
+                    <th>
+                        <div class="f-9">"Año de la Universalización de la salud"</div>
+                        <div class="uppercase f-13">{{ $entity.name }}</div>
+                    </th>
+                    <th width="10%"><img class="logo mini" src="{{ $entity.logo }}"></th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><hr class="hr-dashed"/></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="mark-water" style="width: 100%;">
+        <img src="{{ $entity.logo }}" style="width: 200px;">
+        <h2 class="uppercase mt-2" style="opacity: 0.3;">{{ $entity.name }}</h2>
+    </div>
+
+    <div class="mt-3">
+
+        <h4>Resultados: {{ discounts.length || 0 }}</h4>
+
+        <br>
+
+        <table class="table bbt-1 text-center">
+            <thead>
+                <tr>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">N°</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="25%">Apellidos y Nombres</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Tipo</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Documento</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Cat.</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="10%">Base</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="10%">Min</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="10%">Descuento</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="10%">Aplicado</th>
+                    <th class="bbb-1 bbl-1 bbt-1 f-11 bbr-1" width="10%">Diferencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each((discount, iter) in discounts)
+                    <tr style="page-break-inside: avoid;">
+                        <td class="f-10 text-text bbl-1">{{ iter + 1 }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10 text-left capitalize pl-1">{{ discount.person.fullname || "" }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10">{{ discount.person.document_type.name || "" }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10">{{ discount.person.document_number }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10">{{ discount.categoriaDisplay }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10 text-right" style="padding-right: 0.5em;">{{ discount.base }}</td>
+                        <td class="{{ discount.descuentos.length ? 'bbb-1' : '' }} bbl-1 f-10">{{ discount.discount_min }}</td>
+                        <td class="bbl-1 f-10 text-right" style="padding-right: 0.5em;"></td>
+                        <td class="bbl-1 f-10 text-right" style="padding-right: 0.5em;"></td>
+                        <td class="bbl-1 f-10 bbr-1 text-right" style="padding-right: 0.5em;"></td>
+                    </tr>
+                    @each((descuento, iterD) in discount.descuentos)
+                        <tr>
+                            <td class="bbl-1"></td>
+                            <td colspan="2" class="bbl-1 text-left f-9" style="padding-left: 0.5em; padding-top: 0.1em;">
+                                Planilla {{ descuento.displayPlanilla }}
+                            </td>
+                            <td class="text-center f-9" style="padding-left: 0.5em; padding-top: 0.1em;">{{ descuento.year }}</td>
+                            <td class="text-center f-9" style="padding-left: 0.5em; padding-top: 0.1em;">{{ descuento.mes }}</td>
+                            <td colspan="2" class="text-left f-9" style="padding-left: 0.5em; padding-top: 0.1em;">
+                                {{ descuento.displayDescuento }}
+                            </td>
+                            <td class="text-right f-9 bbl-1"></td>
+                            <td class="text-right f-9 bbl-1" style="padding-right: 0.5em;">
+                                {{ descuento.monto }}
+                            </td>
+                            <td class="text-right f-9 bbl-1 bbr-1" style="padding-right: 0.5em;"></td>
+                        </tr>
+                    @endeach
+                    <tr>
+                        <th class="bbl-1"></th>
+                        <th class="bbb-1 bbl-1 f-10 text-right" style="padding-right: 0.5em;">
+                        <th class="bbb-1 {{ discount.descuentos.length ? '' : 'bbl-1' }} f-10 text-right" style="padding-right: 0.5em;"></th>
+                        <th class="bbb-1 {{ discount.descuentos.length ? '' : 'bbl-1' }} f-10 text-right" style="padding-right: 0.5em;"></th>
+                        <th class="bbb-1 {{ discount.descuentos.length ? '' : 'bbl-1' }} f-10 text-right" style="padding-right: 0.5em;"></th>
+                        <th class="bbb-1 {{ discount.descuentos.length ? '' : 'bbl-1' }} f-10 text-right" style="padding-right: 0.5em;"></th>
+                        <th class="bbb-1 {{ discount.descuentos.length ? '' : 'bbl-1' }} f-10 text-right" style="padding-right: 0.5em;"></th>
+                        <th class="bbb-1 bbl-1 f-10 text-right" style="padding-right: 0.5em;">
+                            {{ discount.discount }}
+                        </th>
+                        <th class="bbb-1 f-10 text-right bbl-1 {{ discount.descuentos.length ? 'bbt-1' : '' }}" style="padding-right: 0.5em;">
+                            {{ discount.discount_apply }}
+                        </th>
+                        <th class="bbb-1 bbl-1 f-10 bbr-1 text-right" style="padding-right: 0.5em;">
+                            {{ discount.discount_diference }}
+                        </th>
+                    </tr>
+                @endeach
+                <tr>
+                    <th colspan="8" class="bbb-1 bbl-1 f-11 text-right" style="padding-right: 0.5em;">
+                        {{ total_discount }}
+                    </th>
+                    <th class="bbb-1 bbl-1 f-11 text-right" style="padding-right: 0.5em;">
+                        {{ total_apply }}
+                    </th>
+                    <th  class="bbb-1 bbl-1 f-11 bbr-1 text-right" style="padding-right: 0.5em;">
+                        {{ total_diference }}
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>
