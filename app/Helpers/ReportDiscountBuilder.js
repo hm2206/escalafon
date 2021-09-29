@@ -191,7 +191,10 @@ class ReportDiscountBuilder {
             discounts: this.discounts,
             total_discount: this.total_discount,
             total_apply: this.total_apply,
-            total_diference: this.total_diference
+            total_diference: this.total_diference,
+            year: this.filters.year,
+            month: this.filters.month,
+            moment
         }
     }
 

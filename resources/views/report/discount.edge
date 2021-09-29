@@ -44,7 +44,8 @@
 
     <div class="mt-3">
 
-        <h4>Resultados: {{ discounts.length || 0 }}</h4>
+        <h5 class="text-right">{{ year }} de <span class="capitalize">{{ moment(month, 'MM').format('MMMM') }}</span></h5>
+        <h4>Resultados: {{ discounts.length || 0 }} del Año {{ year }} de    {{ moment(month, 'MM').format('MMMM') }}</h4>
 
         <br>
 
