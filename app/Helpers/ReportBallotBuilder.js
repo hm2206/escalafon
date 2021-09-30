@@ -100,10 +100,12 @@ class ReportBallotBuilder {
         this.ballots.map(b => {
             let person = this.people.where('id', b.person_id).first() || {};
             b.person = person;
-            b.date = moment(b.date, 'YYYY-MM-DD').format('YYYY/MM/DD');
+            b.motivo = `${b.motivo}`.replace(/[_]/g, ' ')
+            b.date = moment(b.date, 'YYYY-MM-DD').format('DD/MM/YYYY');
             b.time_start = b.time_start ? moment(b.time_start, 'HH:mm').format('HH:mm') : '--';
             b.time_over = moment(b.time_over, 'HH:mm').format('HH:mm');
             b.time_return = b.time_return ? moment(b.time_return, 'HH:mm').format('HH:mm') : '--';
+            return b;
         });
     }
 
