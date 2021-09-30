@@ -113,6 +113,7 @@ class BallotEntity {
 
     async update(id, datos = this.attributes, filtros = {}) {
         await validation(null, datos, {
+            schedule_id: 'required',
             ballot_number: "required",
             motivo: "required|max:255",
             time_over: "required",
@@ -151,6 +152,7 @@ class BallotEntity {
         try {
             // preparar cambios
             ballot.merge({
+                schedule_id: datos.schedule_id,
                 ballot_number: datos.ballot_number,
                 motivo: datos.motivo,
                 modo: datos.modo,
