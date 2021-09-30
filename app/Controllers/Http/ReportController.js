@@ -26,7 +26,7 @@ class ReportController {
     async ballots({ request, response }) {
         let type = request.input('type', 'pdf');
         let entity = request.$entity;
-        let filters = request.only(['cargo_id', 'type_categoria_id'])
+        let filters = request.only(['cargo_id', 'type_categoria_id', 'day'])
         filters.entity_id = entity.id;
         let currentDate = moment();
         let year = request.input('year', currentDate.year())
