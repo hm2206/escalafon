@@ -100,7 +100,7 @@ class VacationEntity {
             observation: 'max:1000'
         });
         // validar fechas
-        if (datos.date_over <= datos.date_start) throw new ValidatorError([{
+        if (datos.date_over < datos.date_start) throw new ValidatorError([{
             field: 'date_over', message: `La fecha de fin debe ser mayor a ${datos.date_start}`
         }])
         // obtener vacation
