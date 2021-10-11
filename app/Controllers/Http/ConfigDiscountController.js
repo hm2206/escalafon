@@ -13,17 +13,17 @@ const DiscountDetailBuilder = require('../../Helpers/DiscountDetailBuilder');
 class ConfigDiscountController {
 
     async index({ request }) {
-        let entity = request.$entity;
-        let page = request.input('page', 1);
-        let perPage = request.input('perPage', 20);
-        let query_search = request.input('query_search', '')
-        let config_discounts = ConfigDiscount.query().where('entity_id', entity.id);
-        if (query_search) config_discounts.where('year', query_search);
-        config_discounts = await config_discounts.paginate(page, perPage);
+        // let entity = request.$entity;
+        // let page = request.input('page', 1);
+        // let perPage = request.input('perPage', 20);
+        // let query_search = request.input('query_search', '')
+        // let config_discounts = ConfigDiscount.query().where('entity_id', entity.id);
+        // if (query_search) config_discounts.where('year', query_search);
+        // config_discounts = await config_discounts.paginate(page, perPage);
         return { 
             success: true,
             status: 200,
-            config_discounts
+            config_discounts: []
         }
     }
 
