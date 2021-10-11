@@ -7,7 +7,7 @@ const CustomException = require('../../Exceptions/CustomException')
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException')
 const PreparateDiscountProcedure = require('../../Procedures/PrepareDiscountProcedure');
 const CalcDiscountProcedure = require('../../Procedures/CalcDiscountProcedure');
-// const DiscountBuilder = require('../../Helpers/DiscountBuilder');
+const DiscountBuilder = require('../../Helpers/DiscountBuilder');
 const DiscountDetailBuilder = require('../../Helpers/DiscountDetailBuilder');
 
 class ConfigDiscountController {
