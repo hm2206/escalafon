@@ -276,11 +276,11 @@ class DiscountBuilder {
         const current_object = item.object || {};
 
         if (letterTypes.ballot == current_type) {
-            return current_object?.is_applied ? 'P' : 'CS'
+            return current_object.is_applied ? 'P' : 'CS'
         } else if (letterTypes.vacation == current_type) {
             return 'V';
         } else if (letterTypes.license == current_type) {
-            return current_object?.is_pay ? 'LCG' : 'LSG'
+            return current_object.is_pay ? 'LCG' : 'LSG'
         } else if (letterTypes.permission == current_type) {
             return 'P'
         } else return '';
