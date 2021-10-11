@@ -10,6 +10,7 @@ const Permission = use('App/Models/Permission');
 const Schedule = use('App/Models/Schedule');
 const Assistance = use('App/Models/Assistance');
 const Ballot = use('App/Models/Ballot');
+const xlsx = require('node-xlsx');
 
 class DiscountBuilder {
 
@@ -27,10 +28,11 @@ class DiscountBuilder {
         type_categoria_id: "",
     }
 
-    constructor(authentication, config_discount = {}, tmpDatos = this.dataPage) {
+    constructor(authentication, config_discount = {}, tmpDatos = this.dataPage, type = 'json') {
         this.dataPage = Object.assign(this.dataPage, tmpDatos);
         this.authentication = authentication;
         this.config_discount = config_discount;
+        this.type = type;
     }
 
     async getDates() {
@@ -53,6 +55,9 @@ class DiscountBuilder {
             let currentIndex = currentDate.days();
             dates.push({
                 date: currentDate.format('YYYY-MM-DD'),
+                year: currentDate.year(),
+                month: currentDate.month() + 1,
+                day: currentDate.format('DD'),
                 index: currentIndex,
                 text: texts[currentIndex]
             });
@@ -79,25 +84,28 @@ class DiscountBuilder {
         if (this.dataPage.type_categoria_id) infos.where('infos.type_categoria_id', this.dataPage.type_categoria_id)
         if (this.dataPage.cargo_id) infos.where('infos.cargo_id', this.dataPage.cargo_id)
         // paginar
-        infos = await infos.paginate(this.dataPage.page, this.dataPage.perPage);
+        infos = this.type == 'json' ? await infos.paginate(this.dataPage.page, this.dataPage.perPage) : await infos.fetch();
         this.infos = await infos.toJSON();
     }
 
     async getPeople() {
-        let personIds = collect(this.infos.data).pluck('work.person_id').toArray();
-        let people = await this.authentication.get(`person?ids[]=${personIds.join('&ids[]=')}&perPage=${this.dataPage.perPage}`)
-        .then(res => res.data.people.data || [])
-        .catch(() => ([]));
-        this.people = collect(people);
+        let personIds = collect(this.type == 'json' ? this.infos.data : this.infos).pluck('work.person_id').chunk(this.dataPage.perPage).toArray();
+        this.people = collect([]);
+        for(let ids of personIds) {
+            let people = await this.authentication.get(`person?ids[]=${ids.join('&ids[]=')}&perPage=${this.dataPage.perPage}`)
+            .then(res => res.data.people.data || [])
+            .catch(() => ([]));
+            this.people.push(...people);
+        }
     }
 
     async getVacationes() {
-        let workIds = collect(this.infos.data).pluck('work_id').toArray();
         let vacations = await Vacation.query()
             .join('config_vacations as c', 'c.id', 'vacations.config_vacation_id')
             .join('config_discounts as c_dis', 'c_dis.entity_id', 'c.entity_id')
+            .join('discounts as dis', 'dis.config_discount_id', 'c_dis.id')
+            .join('infos as inf', 'inf.id', 'dis.info_id')
             .where('c_dis.id', this.config_discount.id)
-            .whereIn('c.work_id', workIds)
             .where(DB.raw(`( YEAR(vacations.date_start) <= c_dis.year AND YEAR(vacations.date_over) >= c_dis.year )`)) 
             .where(DB.raw(`( MONTH(vacations.date_start) <= c_dis.month AND MONTH(vacations.date_over) >= c_dis.month )`)) 
             .select('vacations.*', 'c.work_id')
@@ -107,13 +115,12 @@ class DiscountBuilder {
     }
 
     async getLicenses() {
-        let infoIds = collect(this.infos.data).pluck('id').toArray();
         let licenses = await License.query()
             .join('infos as i', 'i.id', 'licenses.info_id')
-            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as dis', 'dis.info_id', 'i.id')
+            .join('config_discounts as c', 'c.id', 'dis.config_discount_id')
             .with('situacion_laboral')
             .where('c.id', this.config_discount.id)
-            .whereIn('info_id', infoIds)
             .where(DB.raw(`( YEAR(licenses.date_start) <= c.year AND YEAR(licenses.date_over) >= c.year )`)) 
             .where(DB.raw(`( MONTH(licenses.date_start) <= c.month AND MONTH(licenses.date_over) >= c.month )`)) 
             .select('licenses.*')
@@ -139,12 +146,11 @@ class DiscountBuilder {
     }
 
     async getSchedules() {
-        let infoIds = collect(this.infos.data).pluck('id').toArray();
         let schedules = await Schedule.query()
             .join('infos as i', 'i.id', 'schedules.info_id')
-            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as dis', 'dis.info_id', 'i.id')
+            .join('config_discounts as c', 'c.id', 'dis.config_discount_id')
             .where('c.id', this.config_discount.id)
-            .whereIn('info_id', infoIds)
             .where(DB.raw('YEAR(date) = c.year'))
             .where(DB.raw('MONTH(date) = c.month'))
             .select('schedules.*')
@@ -153,13 +159,12 @@ class DiscountBuilder {
     }
 
     async getAssistances() {
-        let infoIds = collect(this.infos.data).pluck('id').toArray();
         let assistances = await Assistance.query()
             .join('schedules as s', 's.id', 'assistances.schedule_id')
             .join('infos as i', 'i.id', 's.info_id')
-            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as dis', 'dis.info_id', 'i.id')
+            .join('config_discounts as c', 'c.id', 'dis.config_discount_id')
             .where('c.id', this.config_discount.id)
-            .whereIn('s.info_id', infoIds)
             .where(DB.raw('YEAR(s.date) = c.year'))
             .where(DB.raw('MONTH(s.date) = c.month'))
             .select('assistances.*')
@@ -169,13 +174,12 @@ class DiscountBuilder {
     }
 
     async getBallots() {
-        let infoIds = collect(this.infos.data).pluck('id').toArray();
         let ballots = await Ballot.query()
             .join('schedules as s', 's.id', 'ballots.schedule_id')
             .join('infos as i', 'i.id', 's.info_id')
-            .join('config_discounts as c', 'c.entity_id', 'i.entity_id')
+            .join('discounts as dis', 'dis.info_id', 'i.id') 
+            .join('config_discounts as c', 'c.id', 'dis.config_discount_id')
             .where('c.id', this.config_discount.id)
-            .whereIn('s.info_id', infoIds)
             .where(DB.raw('YEAR(s.date) = c.year'))
             .where(DB.raw('MONTH(s.date) = c.month'))
             .select('ballots.*')
@@ -184,7 +188,7 @@ class DiscountBuilder {
     }
 
     async settingBody() {
-        let newInfos = this.infos.data || [];
+        let newInfos = this.type == 'json' ? this.infos.data || [] : this.infos || [];
         for(let info of newInfos) {
 
             // obtener people
@@ -260,6 +264,90 @@ class DiscountBuilder {
         }   
     }
 
+    displayItemText(item = {}) {
+        const letterTypes = {
+            vacation: "App/Models/Vacation",
+            permission: "App/Models/Permission",
+            license: "App/Models/License",
+            ballot: "App/Models/Ballot"
+        } 
+
+        const current_type = item.type
+        const current_object = item.object || {};
+
+        if (letterTypes.ballot == current_type) {
+            return current_object?.is_applied ? 'P' : 'CS'
+        } else if (letterTypes.vacation == current_type) {
+            return 'V';
+        } else if (letterTypes.license == current_type) {
+            return current_object?.is_pay ? 'LCG' : 'LSG'
+        } else if (letterTypes.permission == current_type) {
+            return 'P'
+        } else return '';
+    }
+
+    displayText(date) {
+        const discounts =  date.discounts.toArray();
+        const isDiscounts = discounts.length ? true : false; 
+        const currentSchedule = date.schedule || {};
+        const currentStatus = currentSchedule.status || 'D';
+        const currentDiscount = currentSchedule.discount || 0;
+        // validaciones
+        const isSuccess = !isDiscounts && currentStatus == "A" && !currentDiscount;
+        const isDanger = currentStatus == "F";
+        const isWarning = currentStatus == "A" && !isSuccess
+        const isPrimary = currentStatus == 'D' && isDiscounts;
+        let response = [];
+        // viewer
+        if (isDanger) {
+            return 'F';
+        } else if(isPrimary) {
+            for(let dis of discounts) response.push(`${this.displayItemText(dis)}`);
+            return response.join(', ');
+        } else if (isSuccess) {
+            return '.'
+        } else if (isWarning) {
+            if (currentDiscount) return currentDiscount;
+            for(let dis of discounts) response.push(`${this.displayItemText(dis)}`);
+            return response.join(', ');
+        } else {
+            return '';
+        }
+    }
+
+    async formatExcel() {
+        let headers = ['N° TRAB', 'APELLIDOS Y NOMBRES', 'N° DOCUMENTO', 'CAT.NIV'];
+        await this.dates.forEach(d => headers.push(`${d.day}/${d.text}`));
+        headers.push('TOT MIN', 'TOTAL DCTO', 'DCTO X MIN', 'BASE DE CALCULO')
+        let types = {
+            "App/Models/License": "L",
+            "App/Models/Vacation": "V"
+        }
+        let body = [];
+        await this.infos.map((i, index) => {
+            const payload = [
+                index + 1,
+                `${i.work.person.fullname}`.toUpperCase(),
+                `${i.work.person.document_number}`.toUpperCase(),
+                `${i.type_categoria.descripcion}`
+            ]
+            // dates
+            for(let d of i.dates) {
+                // verificar si no tiene horario
+                let item = this.displayText(d);
+                payload.push(item);
+            }
+            // agregar totales
+            payload.push(i.count, i.discount, i.discount_min, i.base);
+            // add body
+            body.push(payload);
+        });
+        const data = [headers, ...body];
+        let result = await xlsx.build([{ name: `descuentos-${this.config_discount.year}-${this.config_discount.month}`, data }]);
+        let mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        return { mime, result }
+    }
+
     async handle() {
         // obtener dates
         await this.getDates();
@@ -281,6 +369,10 @@ class DiscountBuilder {
         await this.getBallots();
         // setting datos
         await this.settingBody();
+        // formato
+        if (this.type == 'excel') {
+            return await this.formatExcel();
+        }
         // response
         return this.infos;
     }

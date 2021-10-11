@@ -98,20 +98,24 @@ class ConfigDiscountController {
         }
     }
 
-    async discounts({ params, request }) {
+    async discounts({ params, request, response }) {
+        let type = request.input('type', 'json');
         let authentication = request.api_authentication;
         let config_discount = await ConfigDiscount.find(params.id);
         if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
         let datos = request.only(['cargo_id', 'type_categoria_id']);
         datos.page = request.input('page', 1);
         datos.perPage = request.input('perPage', 100);
-        const discountBuilder = new DiscountBuilder(authentication, config_discount, datos);
+        const discountBuilder = new DiscountBuilder(authentication, config_discount, datos, type);
         const discounts = await discountBuilder.handle();
-        return {
+        if (type == 'json') return {
             success: true,
             status: 201,
             discounts
         }
+        // blob
+        response.type(discounts.mime);
+        return response.send(discounts.result);
     }
 
     async headDiscounts({ params, request }) {
