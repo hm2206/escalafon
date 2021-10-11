@@ -7,23 +7,23 @@ const CustomException = require('../../Exceptions/CustomException')
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException')
 const PreparateDiscountProcedure = require('../../Procedures/PrepareDiscountProcedure');
 const CalcDiscountProcedure = require('../../Procedures/CalcDiscountProcedure');
-const DiscountBuilder = require('../../Helpers/DiscountBuilder');
+// const DiscountBuilder = require('../../Helpers/DiscountBuilder');
 const DiscountDetailBuilder = require('../../Helpers/DiscountDetailBuilder');
 
 class ConfigDiscountController {
 
     async index({ request }) {
-        // let entity = request.$entity;
-        // let page = request.input('page', 1);
-        // let perPage = request.input('perPage', 20);
-        // let query_search = request.input('query_search', '')
-        // let config_discounts = ConfigDiscount.query().where('entity_id', entity.id);
-        // if (query_search) config_discounts.where('year', query_search);
-        // config_discounts = await config_discounts.paginate(page, perPage);
+        let entity = request.$entity;
+        let page = request.input('page', 1);
+        let perPage = request.input('perPage', 20);
+        let query_search = request.input('query_search', '')
+        let config_discounts = ConfigDiscount.query().where('entity_id', entity.id);
+        if (query_search) config_discounts.where('year', query_search);
+        config_discounts = await config_discounts.paginate(page, perPage);
         return { 
             success: true,
             status: 200,
-            config_discounts: []
+            config_discounts
         }
     }
 
@@ -99,23 +99,23 @@ class ConfigDiscountController {
     }
 
     async discounts({ params, request, response }) {
-        let type = request.input('type', 'json');
-        let authentication = request.api_authentication;
-        let config_discount = await ConfigDiscount.find(params.id);
-        if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
-        let datos = request.only(['cargo_id', 'type_categoria_id']);
-        datos.page = request.input('page', 1);
-        datos.perPage = request.input('perPage', 100);
-        const discountBuilder = new DiscountBuilder(authentication, config_discount, datos, type);
-        const discounts = await discountBuilder.handle();
-        if (type == 'json') return {
-            success: true,
-            status: 201,
-            discounts
-        }
-        // blob
-        response.type(discounts.mime);
-        return response.send(discounts.result);
+        // let type = request.input('type', 'json');
+        // let authentication = request.api_authentication;
+        // let config_discount = await ConfigDiscount.find(params.id);
+        // if (!config_discount) throw new NotFoundModelException("La configuración de descuentos");
+        // let datos = request.only(['cargo_id', 'type_categoria_id']);
+        // datos.page = request.input('page', 1);
+        // datos.perPage = request.input('perPage', 100);
+        // const discountBuilder = new DiscountBuilder(authentication, config_discount, datos, type);
+        // const discounts = await discountBuilder.handle();
+        // if (type == 'json') return {
+        //     success: true,
+        //     status: 201,
+        //     discounts
+        // }
+        // // blob
+        // response.type(discounts.mime);
+        // return response.send(discounts.result);
     }
 
     async headDiscounts({ params, request }) {
