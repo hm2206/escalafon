@@ -319,10 +319,6 @@ class DiscountBuilder {
         let headers = ['N° TRAB', 'APELLIDOS Y NOMBRES', 'N° DOCUMENTO', 'CAT.NIV'];
         await this.dates.forEach(d => headers.push(`${d.day}/${d.text}`));
         headers.push('TOT MIN', 'TOTAL DCTO', 'DCTO X MIN', 'BASE DE CALCULO')
-        let types = {
-            "App/Models/License": "L",
-            "App/Models/Vacation": "V"
-        }
         let body = [];
         await this.infos.map((i, index) => {
             const payload = [
@@ -338,7 +334,10 @@ class DiscountBuilder {
                 payload.push(item);
             }
             // agregar totales
-            payload.push(i.count, i.discount, i.discount_min, i.base);
+            payload.push(i.count);
+            payload.push(i.discount);
+            payload.push(i.discount_min);
+            payload.push(i.base)
             // add body
             body.push(payload);
         });
