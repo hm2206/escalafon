@@ -520,5 +520,11 @@
         "url": "api/reports/discounts",
         "description": "Reporte de Descuentos escalafonarios",
         "action_type": "VIEW"
+    },
+    "ReportController.infos": {
+        "name": "ReportController.infos",
+        "url": "api/reports/infos",
+        "description": "Reporte de Contratos",
+        "action_type": "VIEW"
     }
 }

@@ -5,6 +5,7 @@ const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
 const ReportLicenseBuilder = require('../../Helpers/ReportLicenseBuilder');
 const ReportVacationBuilder = require('../../Helpers/ReportVacationBuilder');
 const ReportDiscountBuilder = require('../../Helpers/ReportDiscountBuilder');
+const ReportInfoBuilder = require('../../Helpers/ReportInfoBuilder');
 const moment = require('moment');
 
 let currentDate = moment()
@@ -77,6 +78,23 @@ class ReportController {
         let authentication = request.api_authentication;
         const reportDiscountBuilder = new ReportDiscountBuilder(authentication, filters, type);
         const builder = await reportDiscountBuilder.render();
+        response.type(builder.header);
+        return response.send(builder.result);
+    }
+
+    async infos({ request, response }) {
+        let type = request.input('type', 'pdf');
+        let entity = request.$entity;
+        let year = request.input('year', currentDate.year())
+        let month = request.input('month', currentDate.month() + 1)
+        let filters = request.only(['cargo_id', 'type_categoria_id'])
+        filters.entity_id = entity.id;
+        filters.estado = request.input('estado');
+        filters.year = year;
+        filters.month = month;
+        let authentication = request.api_authentication;
+        const reportInfoBuilder = new ReportInfoBuilder(authentication, filters, type);
+        const builder = await reportInfoBuilder.render();
         response.type(builder.header);
         return response.send(builder.result);
     }
