@@ -6,6 +6,11 @@ const moment = require('moment')
 
 class ConfigVacation extends Model {
 
+    static boot () {
+        super.boot();
+        this.addHook('beforeCreate', 'ConfigVacationHook.validate');
+    }
+
     getDateStart (value) {
         if (!value) return 
         return moment(value).format('YYYY-MM-DD');

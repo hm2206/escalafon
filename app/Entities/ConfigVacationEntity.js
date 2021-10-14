@@ -53,7 +53,6 @@ class ConfigVacationEntity {
         await validation(null, datos, {
             entity_id: 'required',
             year: 'required|dateFormat:YYYY',
-            scheduled_days: 'required|number',
             date_start: 'required|dateFormat:YYYY-MM-DD',
             date_over: 'required|dateFormat:YYYY-MM-DD',
         }); 
@@ -74,25 +73,29 @@ class ConfigVacationEntity {
                 entity_id: datos.entity_id,
                 work_id: work.id,
                 year: datos.year,
-                scheduled_days: datos.scheduled_days,
                 date_start: datos.date_start,
                 date_over: datos.date_over
             })
             // response
             return config_vacation;
         } catch (error) {
+            console.log(error)
             throw new CustomException("Ocurrio un error al guardar los datos");
         }
     }
 
     async update(id, datos = this.attributes) {
         await validation(null, datos, {
-            scheduled_days: 'required|number',
             date_start: 'required|dateFormat:YYYY-MM-DD',
             date_over: 'required|dateFormat:YYYY-MM-DD',
         });
+        // obtener schedule_days 
+        const start = moment(datos.date_start, 'YYYY-MM-DD');
+        const over = moment(datos.date_over, 'YYYY-MM-DD');
+        const diff = over.diff(start, 'days').valueOf();
+        datos.scheduled_days = diff + 1;
         // mayor a cero
-        if (datos.scheduled_days <= 0) throw new ValidatorError([{ field: 'scheduled_days', message: `Los dias programados deben ser mayor a cero` }]);
+        if (datos.scheduled_days < 0) throw new ValidatorError([{ field: 'scheduled_days', message: `Los dias programados deben ser mayor a cero` }]);
         // obtener config_vacation
         let config_vacation = await ConfigVacation.find(id);
         if (!config_vacation) throw new NotFoundModelException("Configucación de vacaciones");
