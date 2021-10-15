@@ -123,7 +123,7 @@ class ReportInfoBuilder {
     }
 
     async formatExcel(that, datos = {}) {
-        let headers = ["N°", "Apellidos y Nombres", "Tipo", "Document", "Sexo", "Fecha de Nacimiento", "Edad", "Correo", "Teléfono", "Dirección"];
+        let headers = ["N°", "Apellidos y Nombres", "Tipo", "Document", "E-mail", "Planilla", "Tip.Cat", "Fecha de cese", "Estado"];
         let content = [];
         let infos = [...datos.infos];
         // mapping
@@ -133,12 +133,11 @@ class ReportInfoBuilder {
                 `${i.person.fullname || ''}`.toUpperCase(),
                 `${i.person.document_type.name || ''}`.toUpperCase(),
                 `${i.person.document_number || ''}`,
-                `${i.person.gender || ''}`,
-                `${i.person.date_of_birth || ''}`,
-                `${i.person.edad || ''}`,
                 `${i.person.email_contact || ''}`,
-                `${i.person.phone || ''}`,
-                `${i.person.address || ''}`
+                `${i.displayPlanilla || ''}`,
+                `${i.displayCategoria || ''}`,
+                `${i.fecha_de_cese || ''}`,
+                `${i.estado ? 'Activo' : 'Deshabilitado'}`
             ]);
             // data
             return i;
