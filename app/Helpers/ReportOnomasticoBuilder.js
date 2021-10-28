@@ -93,7 +93,7 @@ class ReportOnomasticoBuilder {
     async settingWorks() {
         const currentDate = moment(`${this.year}-${this.month}`, 'YYYY-MM');
         this.displayMonth = currentDate.format('MMMM');
-        let newWorks = [];
+        let newWorks = collect([]);
         for(let work of this.works) {
             let person = await this.people.where('id', work.person_id).first() || {}
     
@@ -107,6 +107,7 @@ class ReportOnomasticoBuilder {
 
             // add display onomastico
             work.displayOnomastico = workDate.format('dddd DD');
+            work.orderDate = workDate.format('d');
 
             work.person = person;
 
@@ -116,7 +117,7 @@ class ReportOnomasticoBuilder {
         }
 
         // assignnew Works
-        this.works = newWorks;
+        this.works = newWorks.sortBy('orderDate').all();
     }
 
     dataRender() {
