@@ -7,6 +7,7 @@ const ReportVacationBuilder = require('../../Helpers/ReportVacationBuilder');
 const ReportDiscountBuilder = require('../../Helpers/ReportDiscountBuilder');
 const ReportInfoBuilder = require('../../Helpers/ReportInfoBuilder');
 const moment = require('moment');
+const ReportOnomasticoBuilder = require('../../Helpers/ReportOnomasticoBuilder');
 
 let currentDate = moment()
 
@@ -20,6 +21,18 @@ class ReportController {
         let authentication = request.api_authentication;
         const reportGeneralBuilder =  new ReportGeneralBuilder(authentication, filters, type);
         const builder = await reportGeneralBuilder.render();
+        response.type(builder.header);
+        return response.send(builder.result);
+    }
+
+    async onomastico({ request, response }) {
+        let type = request.input('type', 'pdf');
+        let entity = request.$entity;
+        let filters = request.only(['cargo_id', 'type_categoria_id'])
+        filters.entity_id = entity.id;
+        let authentication = request.api_authentication;
+        const reportOnomasticoBuiler =  new ReportOnomasticoBuilder(authentication, filters, type);
+        const builder = await reportOnomasticoBuiler.render();
         response.type(builder.header);
         return response.send(builder.result);
     }

@@ -7,7 +7,7 @@ const moment = require('moment');
 const Work = use('App/Models/Work');
 const xlsx = require('node-xlsx');
 
-class ReportGeneralBuilder {
+class ReportOnomasticoBuilder {
 
     filters = {
         entity_id: "",
@@ -31,12 +31,12 @@ class ReportGeneralBuilder {
     }
 
     options = {
-        format: 'A4',
-        landscape: true
+        format: 'A4'
     }
 
     works = []
 
+    month = "";
 
     constructor(authentication = {}, filters = this.filters, type = 'pdf') {
         this.authentication = authentication;
@@ -49,6 +49,7 @@ class ReportGeneralBuilder {
         let works = Work.query()
             .join('infos as i', 'i.work_id', 'works.id')
             .orderBy('works.orden', 'ASC')
+            .groupBy('works.id', 'works.person_id')
             .where('i.estado', 1)
         // filtros
         for(let attr in this.filters) {
@@ -57,7 +58,7 @@ class ReportGeneralBuilder {
             works.where(`i.${attr}`, value);
         }
         // obtener
-        works.select('works.*')
+        works.select('works.id', 'works.person_id')
         works = await works.fetch();
         this.works = works.toJSON();
     }
@@ -86,24 +87,43 @@ class ReportGeneralBuilder {
     }
 
     async settingWorks() {
+        const currentDate = moment();
+        this.month = currentDate.format('MMMM');
+        let newWorks = [];
         for(let work of this.works) {
             let person = await this.people.where('id', work.person_id).first() || {}
+    
             if (person.id) {
                 person.date_of_birth = moment(`${person.date_of_birth}`, 'YYYY-MM-DD').format('DD/MM/YYYY');
             }
 
+            // validar onomastico
+            const workDate = moment(person.date_of_birth, 'DD/MM/YYYY');
+            const isBirthMonth = workDate.month() === currentDate.month();
+
+            // add display onomastico
+            work.displayOnomastico = workDate.format('dddd DD');
+
             work.person = person;
+
+            if (isBirthMonth) {
+                newWorks.push(work);
+            } 
         }
+
+        // assignnew Works
+        this.works = newWorks;
     }
 
     dataRender() {
         return {
             works: this.works,
+            month: this.month
         }
     }
 
     async formatPDF(that, datos = []) {
-        const html = View.render('report/general', datos);
+        const html = View.render('report/onomastico', datos);
         const file = { content: html }
         return await htmlToPdf.generatePdf(file, that.options);
     }
@@ -131,7 +151,7 @@ class ReportGeneralBuilder {
         });
         // response
         let data = [headers, ...content];
-        let result = await xlsx.build([{ name: 'reporte-general', data }])
+        let result = await xlsx.build([{ name: 'reporte-onomastico', data }])
         return result;
     }
 
@@ -157,4 +177,4 @@ class ReportGeneralBuilder {
 
 }
 
-module.exports = ReportGeneralBuilder;
+module.exports = ReportOnomasticoBuilder;

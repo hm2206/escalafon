@@ -486,9 +486,15 @@
         "action_type": "UPDATE"
     },
     "ReportController.general": {
-        "name": "WorkController.general",
+        "name": "ReportController.general",
         "url": "api/reports/general",
         "description": "Reporte general de trabajadores activos",
+        "action_type": "VIEW"
+    },
+    "ReportController.onomastico": {
+        "name": "ReportController.honomastico",
+        "url": "api/reports/honomastico",
+        "description": "Reporte general de honomastico del mes actual",
         "action_type": "VIEW"
     },
     "ReportController.ballots": {
