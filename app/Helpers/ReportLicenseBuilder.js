@@ -56,7 +56,7 @@ class ReportLicenseBuilder {
         let dateStart = moment(`${this.year}-${this.month}-31`, 'YYYY-MM-DD').format('YYYY-MM-DD');
         let dateOver = moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
         let licenses = License.query()
-            .orderBy('w.orden', 'ASC')
+            .orderBy('licenses.date_over', 'DESC')
             .join('situacion_laborals as s', 's.id', 'licenses.situacion_laboral_id')
             .join('infos as i', 'i.id', 'licenses.info_id')
             .join('works as w', 'w.id', 'i.work_id')
