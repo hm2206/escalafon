@@ -23,6 +23,7 @@ class UpdateAssistanceStatusProcedure extends BaseProcedure {
             `SELECT *, IF(((@rownum:=@rownum+1) % 2) = 0, 'EXIT', 'ENTRY') as real_status`,
             `FROM assistances as a, (SELECT @rownum:=0) r`,
             `WHERE a.schedule_id = ${this.params.schedule_id.name}`,
+            `AND a.state = 1`,
             `ORDER BY a.record_time ASC`,
             `) as up ON up.id = asi.id`,
             `INNER JOIN schedules as s ON s.id = asi.schedule_id`,
