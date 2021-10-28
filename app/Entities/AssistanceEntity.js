@@ -9,6 +9,7 @@ const { validateAll } = use('Validator');
 const collect = require('collect.js');
 const moment = require('moment');
 const DB = use('Database');
+const UpdateAssistanceStatusProcedure = require('../Procedures/UpdateAssistanceStatusProcedure')
 
 class AssistanceEntity {
 
@@ -101,11 +102,12 @@ class AssistanceEntity {
     async update (id, datos = this.datosDefault) {
         let assistance = await Assistance.find(id);
         if (!assistance) throw new NotFoundModelException('La asistencia');
-        assistance.merge({ 
-            status: datos.status,
+        assistance.merge({
             description: datos.description || null
         });
         await assistance.save();
+        // actualizar schedule
+        await UpdateAssistanceStatusProcedure.call({ schedule_id: assistance.schedule_id });
         return assistance;
     }
 
