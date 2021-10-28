@@ -26,12 +26,14 @@ class ReportController {
     }
 
     async onomastico({ request, response }) {
+        let currentDate = moment();
+        let month = request.input('month', currentDate.month() + 1);
         let type = request.input('type', 'pdf');
         let entity = request.$entity;
         let filters = request.only(['cargo_id', 'type_categoria_id'])
         filters.entity_id = entity.id;
         let authentication = request.api_authentication;
-        const reportOnomasticoBuiler =  new ReportOnomasticoBuilder(authentication, filters, type);
+        const reportOnomasticoBuiler =  new ReportOnomasticoBuilder(authentication, filters, month, type);
         const builder = await reportOnomasticoBuiler.render();
         response.type(builder.header);
         return response.send(builder.result);

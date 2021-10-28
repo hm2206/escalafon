@@ -36,13 +36,15 @@ class ReportOnomasticoBuilder {
 
     works = []
 
-    month = "";
+    month = 0;
+    displayMonth = "";
 
-    constructor(authentication = {}, filters = this.filters, type = 'pdf') {
+    constructor(authentication = {}, filters = this.filters, month, type = 'pdf') {
         this.authentication = authentication;
         this.filters = Object.assign(this.filters, filters);
         this.people = collect([]);
         this.type = type;
+        this.month = month;
     }
 
     async getWorks() {
@@ -87,8 +89,8 @@ class ReportOnomasticoBuilder {
     }
 
     async settingWorks() {
-        const currentDate = moment().add(1, 'months');
-        this.month = currentDate.format('MMMM');
+        const currentDate = moment().month(this.month);
+        this.displayMonth = currentDate.format('MMMM');
         let newWorks = [];
         for(let work of this.works) {
             let person = await this.people.where('id', work.person_id).first() || {}
