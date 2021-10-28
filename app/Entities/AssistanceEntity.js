@@ -116,6 +116,8 @@ class AssistanceEntity {
         if (!assistance) throw new NotFoundModelException('La asistencia');
         assistance.merge({ state: 0 });
         await assistance.save();
+        // actualizar schedule
+        await UpdateAssistanceStatusProcedure.call({ schedule_id: assistance.schedule_id });
         return assistance;
     }
 
