@@ -493,7 +493,7 @@
     },
     "ReportController.onomastico": {
         "name": "ReportController.honomastico",
-        "url": "api/reports/honomastico",
+        "url": "api/reports/onomastico",
         "description": "Reporte general de honomastico del mes actual",
         "action_type": "VIEW"
     },
