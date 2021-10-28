@@ -87,7 +87,7 @@ class ReportOnomasticoBuilder {
     }
 
     async settingWorks() {
-        const currentDate = moment().add(1, 'days');
+        const currentDate = moment().add(1, 'months');
         this.month = currentDate.format('MMMM');
         let newWorks = [];
         for(let work of this.works) {
