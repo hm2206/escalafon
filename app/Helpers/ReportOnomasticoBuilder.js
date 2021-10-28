@@ -120,7 +120,7 @@ class ReportOnomasticoBuilder {
     dataRender() {
         return {
             works: this.works,
-            month: this.month
+            month: this.displayMonth,
         }
     }
 
