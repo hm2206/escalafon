@@ -25,7 +25,8 @@ class UpdateAssistanceStatusProcedure extends BaseProcedure {
             `WHERE a.schedule_id = ${this.params.schedule_id.name}`,
             `ORDER BY a.record_time ASC`,
             `) as up ON up.id = asi.id`,
-            `SET asi.status = up.real_status;`
+            `INNER JOIN schedules as s ON s.id = asi.schedule_id`,
+            `SET asi.status = IF(s.modo = 'EXIT', 'EXIT', IF(s.modo = 'ENTRY', 'ENTRY', up.real_status));`
         ];
     }
 

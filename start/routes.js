@@ -38,7 +38,6 @@ Route('get', 'InfoController.merits').middleware(['jwt', 'entityId']);
 // Clocks
 Route('get', 'ClockController.index').middleware(['jwt', 'entityId']);
 Route('post', 'ClockController.store').middleware(['jwt', 'entityId']);
-Route('post', 'ClockController.syncAssistances').middleware(['jwt', 'entityId']);
 
 // Schedules
 Route('post', 'ScheduleController.store').middleware(['jwt', 'entityId']);
