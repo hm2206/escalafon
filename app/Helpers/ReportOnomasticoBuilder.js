@@ -103,11 +103,12 @@ class ReportOnomasticoBuilder {
 
             // validar onomastico
             const workDate = moment(person.date_of_birth, 'DD/MM/YYYY');
+            const displayDate = moment(`${currentDate.year()}-${currentDate.month() + 1}-${workDate.format('DD')}`, 'YYYY-MM-DD');
             const isBirthMonth = workDate.month() === currentDate.month();
 
             // add display onomastico
-            work.displayOnomastico = workDate.format('dddd DD');
-            work.orderDate = workDate.format('DD');
+            work.displayOnomastico = displayDate.format('dddd DD');
+            work.orderDate = displayDate.format('DD');
 
             work.person = person;
 
