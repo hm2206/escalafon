@@ -107,7 +107,7 @@ class ReportOnomasticoBuilder {
 
             // add display onomastico
             work.displayOnomastico = workDate.format('dddd DD');
-            work.orderDate = workDate.format('d');
+            work.orderDate = workDate.format('DD');
 
             work.person = person;
 
