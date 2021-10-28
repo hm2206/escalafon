@@ -36,14 +36,16 @@ class ReportOnomasticoBuilder {
 
     works = []
 
+    year = 0;
     month = 0;
     displayMonth = "";
 
-    constructor(authentication = {}, filters = this.filters, month, type = 'pdf') {
+    constructor(authentication = {}, filters = this.filters, year, month, type = 'pdf') {
         this.authentication = authentication;
         this.filters = Object.assign(this.filters, filters);
         this.people = collect([]);
         this.type = type;
+        this.year = year;
         this.month = month;
     }
 
@@ -89,7 +91,7 @@ class ReportOnomasticoBuilder {
     }
 
     async settingWorks() {
-        const currentDate = moment().month(this.month - 1);
+        const currentDate = moment(`${this.year}-${this.month}`, 'YYYY-MM');
         this.displayMonth = currentDate.format('MMMM');
         let newWorks = [];
         for(let work of this.works) {
