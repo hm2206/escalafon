@@ -41,6 +41,7 @@ class LicenseEntity {
     async index(tmpDatos = this.schemaPaginate) {
         let datos = Object.assign(this.schemaPaginate, tmpDatos);
         let licenses = License.query()
+            .orderBy('date_over', 'DESC')
             .with('situacion_laboral')
         // query_search
         if (datos.query_search) licenses.where('resolution', 'like', `%${datos.query_search}%`) 
