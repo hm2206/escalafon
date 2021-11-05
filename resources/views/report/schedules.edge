@@ -91,7 +91,7 @@
                                 @if(activity.type == activityTypes.license) 
                                     <table class="table text-left bbb-1">
                                         <tr>
-                                            <th class="pl-1">N° Resolución: {{ activity.resolucion }}</th>
+                                            <th class="pl-1">N° Resolución: {{ activity.resolution }}</th>
                                         </tr>
                                         <tr>
                                             <th class="pl-1">F. Resolución: {{ activity.date_start }}</th>
@@ -113,14 +113,13 @@
                                         <tr>
                                             <th class="pl-1">Motivo: {{ activity.motivo }}</th>
                                         </tr>
-                                        <tr>
-                                            <th class="pl-1">Total: {{ activity.total }}</th>
-                                        </tr>
+                                        @if(activity.is_applied)
+                                            <tr>
+                                                <th class="pl-1">Descuento: {{ activity.total }}</th>
+                                            </tr>
+                                        @endif
                                         <tr>
                                             <th class="pl-1">Justificación: {{ activity.justification }}</th>
-                                        </tr>
-                                        <tr>
-                                            <th class="pl-1">Estado: {{ activity.is_applied ? 'A descontar' : 'Sin descuento' }}</th>
                                         </tr>
                                     </table>
                                 @endif

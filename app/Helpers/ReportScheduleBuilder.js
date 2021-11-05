@@ -264,10 +264,10 @@ class ReportScheduleBuilder {
         await this.settingSchedules();
         // render
         const datos = this.dataRender();
-        // return {
-        //   result: this.activities,
-        //   header: 'appdlication/json'
-        // }
+        return {
+          result: this.activities,
+          header: 'appdlication/json'
+        }
         // render type
         let handle = this.allowType[this.type];
         let that = this;
