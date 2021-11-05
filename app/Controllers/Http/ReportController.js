@@ -1,13 +1,14 @@
 'use strict'
 
+const moment = require('moment');
 const ReportBallotBuilder = require('../../Helpers/ReportBallotBuilder');
 const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
 const ReportLicenseBuilder = require('../../Helpers/ReportLicenseBuilder');
 const ReportVacationBuilder = require('../../Helpers/ReportVacationBuilder');
 const ReportDiscountBuilder = require('../../Helpers/ReportDiscountBuilder');
 const ReportInfoBuilder = require('../../Helpers/ReportInfoBuilder');
-const moment = require('moment');
 const ReportOnomasticoBuilder = require('../../Helpers/ReportOnomasticoBuilder');
+const ReportScheduleBuilder = require('../../Helpers/ReportScheduleBuilder');
 
 let currentDate = moment()
 
@@ -111,6 +112,21 @@ class ReportController {
         let authentication = request.api_authentication;
         const reportInfoBuilder = new ReportInfoBuilder(authentication, filters, type);
         const builder = await reportInfoBuilder.render();
+        response.type(builder.header);
+        return response.send(builder.result);
+    }
+
+    async schedules({ request, response }) {
+        let type = request.input('type', 'pdf');
+        let entity = request.$entity;
+        let filters = request.only(['cargo_id', 'type_categoria_id', 'day'])
+        filters.entity_id = entity.id;
+        let currentDate = moment();
+        let year = request.input('year', currentDate.year())
+        let month = request.input('month', currentDate.month() + 1)
+        let authentication = request.api_authentication;
+        const reportScheduleBuilder = new ReportScheduleBuilder(authentication, year, month, filters, type);
+        const builder = await reportScheduleBuilder.render();
         response.type(builder.header);
         return response.send(builder.result);
     }

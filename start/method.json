@@ -526,5 +526,11 @@
         "url": "api/reports/infos",
         "description": "Reporte de Contratos",
         "action_type": "VIEW"
+    },
+    "ReportController.schedules": {
+        "name": "ReportController.schedules",
+        "url": "api/reports/schedules",
+        "description": "Reporte de papeletas",
+        "action_type": "VIEW"
     }
 }

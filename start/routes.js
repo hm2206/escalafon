@@ -131,3 +131,4 @@ Route('get', 'ReportController.licenses').middleware(['jwt', 'entityId']);
 Route('get', 'ReportController.vacations').middleware(['jwt', 'entityId']);
 Route('get', 'ReportController.discounts').middleware(['jwt', 'entityId']);
 Route('get', 'ReportController.infos').middleware(['jwt', 'entityId']);
+Route('get', 'ReportController.schedules').middleware(['jwt', 'entityId']);

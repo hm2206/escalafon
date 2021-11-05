@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{ style(link + "/css/default.css") }}
+    {{ style(link + "/css/report.css") }}
+    
+    <style>
+        body {
+            width: auto;
+            height: auto;
+        }
+    </style>
+
+    <title>Reporte de Horario</title>
+</head>
+<body>
+
+    <div class="float-header" style="position: relative;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%"><img class="logo small" src="{{ link + '/images/peru.png' }}"></th>
+                    <th>
+                        <div class="f-9">"Año de la Universalización de la salud"</div>
+                        <div class="uppercase f-13">{{ $entity.name }}</div>
+                    </th>
+                    <th width="10%"><img class="logo mini" src="{{ $entity.logo }}"></th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><hr class="hr-dashed"/></td>
+                    <td></td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="mark-water" style="width: 100%;">
+        <img src="{{ $entity.logo }}" style="width: 200px;">
+        <h2 class="uppercase mt-2" style="opacity: 0.3;">{{ $entity.name }}</h2>
+    </div>
+
+    <div class="mt-3">
+
+        <h4>Resultados: {{ schedules.length || 0 }}</h4>
+
+        <br>
+
+        <table class="table bbt-1 text-center">
+            <thead>
+                <tr>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">N°</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="25%">Apellidos y Nombres</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">Tipo</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">Documento</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">Cat.</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">Fecha</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11" width="5%">Assistió</td>
+                    <td class="bbb-1 bbt-1 bbl-1 f-11 bbr-1" width="20%">Actividades</td>
+                </tr>
+            </thead>
+            <tbody>
+                @each((schedule, iter) in schedules)
+                    <tr style="page-break-inside: avoid;">
+                        <td class="bbb-1 bbl-1 f-10 text-text">{{ iter + 1 }}</td>
+                        <td class="bbb-1 bbl-1 f-10 text-left capitalize pl-1">{{ schedule.person.fullname || "" }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ schedule.person.document_type.name || "" }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ schedule.person.document_number }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ schedule.displayCategoria }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ schedule.displayDate }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ schedule.assisted ? 'Si' : 'No' }}</td>
+                        <td class="bbb-1 bbl-1 bbr-1 f-10 text-left">
+                            @each((activity, iterA) in schedule.activities)
+                                @if(activity.type == activityTypes.vacation) 
+                                    <table class="table text-left bbb-1">
+                                        <tr>
+                                            <th class="pl-1">N° Resolución: {{ activity.resolucion }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">F. Resolución: {{ activity.date_start }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Dias Usados: {{ activity.days_used }}</th>
+                                        </tr>
+                                    </table>
+                                @endif
+
+                                @if(activity.type == activityTypes.license) 
+                                    <table class="table text-left bbb-1">
+                                        <tr>
+                                            <th class="pl-1">N° Resolución: {{ activity.resolucion }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">F. Resolución: {{ activity.date_start }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Dias Usados: {{ activity.days_used }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Estado:  {{ activity.is_pay ? 'Con Gose' : 'Sin Gose' }}</th>
+                                        </tr>
+                                    </table>
+                                @endif
+
+                                @if(activity.type == activityTypes.ballot) 
+                                    <table class="table text-left bbb-1">
+                                        <tr>
+                                            <th class="pl-1">N° Papeleta: {{ activity.ballot_number }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Motivo: {{ activity.motivo }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Total: {{ activity.total }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Justificación: {{ activity.justification }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="pl-1">Estado: {{ activity.is_applied ? 'A descontar' : 'Sin descuento' }}</th>
+                                        </tr>
+                                    </table>
+                                @endif
+                            @endeach
+                        </td>
+                    </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>
