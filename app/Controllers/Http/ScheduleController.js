@@ -6,6 +6,7 @@ const NotFoundModelException = require('../../Exceptions/NotFoundModelException'
 const Schedule = use('App/Models/Schedule')
 const Discount = use('App/Models/Discount')
 const moment = require('moment')
+const DB = use('Database')
 const CalcDiscountProcedure = require('../../Procedures/CalcDiscountProcedure')
 
 class ScheduleController {
@@ -88,6 +89,8 @@ class ScheduleController {
                 observation: datos.observation,
                 is_edited: 1
             })
+            // fecha actual
+            const currentDate = moment(schedule.date);
             // guardar cambios
             await schedule.save()
             // recalcular
@@ -97,6 +100,8 @@ class ScheduleController {
             // count schedules
             let count = await Schedule.query()
                 .where('info_id', info.id)
+                .where(DB.raw(`YEAR(schedules.date) = ${currentDate.year()}`))
+                .where(DB.raw(`MONTH(schedules.date) = ${currentDate.month() + 1}`))
                 .where('discount', '>', 0)
                 .getSum('discount');
             // add count
