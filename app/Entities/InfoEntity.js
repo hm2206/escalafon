@@ -124,6 +124,7 @@ class InfoEntity {
                 work_id: datos.work_id,
                 entity_id: datos.entity_id,
                 planilla_id: datos.planilla_id,
+                code_airhsp: datos.code_airhsp,
                 cargo_id: datos.cargo_id,
                 type_categoria_id: datos.type_categoria_id,
                 meta_id: datos.meta_id,
