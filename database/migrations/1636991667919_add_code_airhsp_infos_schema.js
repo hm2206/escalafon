@@ -6,13 +6,13 @@ const Schema = use('Schema')
 class AddCodeAirhspInfosSchema extends Schema {
   up () {
     this.table('infos', (table) => {
-      table.string('code_airshp');
+      table.string('code_airhsp');
     })
   }
 
   down () {
     this.table('infos', (table) => {
-      table.dropColumn('code_airshp');
+      table.dropColumn('code_airhsp');
     })
   }
 }
