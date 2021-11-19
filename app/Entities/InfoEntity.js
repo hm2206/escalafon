@@ -140,7 +140,7 @@ class InfoEntity {
                 fecha_de_cese: datos.fecha_de_cese,
                 observacion: datos.observacion,
                 is_pay: 1,
-                estado: 1
+                estado: datos.estado ? 1 : 0
             });
             // verificar si tiene aportacion
             if (datos.type_aportacion_id) await info.type_aportacions().attach([datos.type_aportacion_id])
