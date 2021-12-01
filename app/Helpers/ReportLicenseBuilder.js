@@ -53,15 +53,13 @@ class ReportLicenseBuilder {
     }
 
     async getLicenses() {
-        let dateStart = moment(`${this.year}-${this.month}-31`, 'YYYY-MM-DD').format('YYYY-MM-DD');
-        let dateOver = moment(`${this.year}-${this.month}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
         let licenses = License.query()
             .orderBy('licenses.date_over', 'DESC')
             .join('situacion_laborals as s', 's.id', 'licenses.situacion_laboral_id')
             .join('infos as i', 'i.id', 'licenses.info_id')
             .join('works as w', 'w.id', 'i.work_id')
-            .where(`licenses.date_start`, '<=', dateStart)
-            .where(`licenses.date_over`, '>=', dateOver)
+            .where(DB.raw(`(YEAR(licenses.date_start) = ${this.year} AND MONTH(licenses.date_start) = ${this.month})`))
+            .where(DB.raw(`(YEAR(licenses.date_over) = ${this.year} AND MONTH(licenses.date_over) = ${this.month})`))
         // filters
         for (let attr in this.filters) {
             let value = this.filters[attr];
