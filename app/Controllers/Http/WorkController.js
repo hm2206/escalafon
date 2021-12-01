@@ -120,9 +120,9 @@ class WorkController {
     async reportVacations({ params, request, response }) {
         let entity = request.$entity;
         let type = request.input('type', 'pdf');
-        let year = request.input('year', null);
+        let years = collect(request.collect(['year'])).pluck('year').toArray();
         let authentication = request.api_authentication;
-        let filters = { year };
+        let filters = { year: years };
         const workEntity = new WorkEntity(authentication);
         const builder = await workEntity.reportVacations(params.id, entity, filters, type);
         response.type(builder.header);

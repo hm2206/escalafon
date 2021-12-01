@@ -68,7 +68,8 @@ class ReportVacationBuilder {
             let value = this.filters[attr];
             if (!value) continue;
             if (attr == 'year') {
-                works.where(`c.${attr}`, value);
+                if (Array.isArray(value)) works.whereIn(`c.${attr}`, value);
+                else works.where(`c.${attr}`, value);
             } else {
                 works.where(`i.${attr}`, value);
             }
@@ -126,7 +127,8 @@ class ReportVacationBuilder {
             let value = this.filters[attr];
             if (!value) continue;
             if (attr == 'year') {
-                config_vacations.where(`config_vacations.${attr}`, value);
+                if (Array.isArray(value)) config_vacations.whereIn(`config_vacations.${attr}`, value);
+                else config_vacations.where(`config_vacations.${attr}`, value);
             } else {
                 config_vacations.where(`i.${attr}`, value);
             }
