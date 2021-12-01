@@ -115,7 +115,7 @@ class ReportVacationBuilder {
                 ))
             .where('config_vacations.entity_id', this.entity.id)
             .where(DB.raw(`i.entity_id = config_vacations.entity_id`))
-            .orderBy('year', 'DESC')
+            .orderBy('year', 'ASC')
             .groupBy(
                 'config_vacations.id', 'config_vacations.work_id', 'config_vacations.year', 'config_vacations.scheduled_days', 
                 'config_vacations.date_start', 'config_vacations.date_over'
