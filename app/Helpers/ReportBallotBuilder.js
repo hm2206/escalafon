@@ -13,6 +13,7 @@ const currentDate = moment();
 class ReportBallotBuilder {
 
     filters = {
+        month: "",
         day: "",
         entity_id: "",
         cargo_id: "",
@@ -24,7 +25,6 @@ class ReportBallotBuilder {
     type = "pdf"
 
     year = currentDate.year();
-    month = currentDate.month() + 1;
 
     allowType = {
         pdf: {
@@ -44,13 +44,12 @@ class ReportBallotBuilder {
 
     ballots = []
 
-    constructor(authentication = {}, year, month, filters = this.filters, type = 'pdf') {
+    constructor(authentication = {}, year, filters = this.filters, type = 'pdf') {
         this.authentication = authentication;
         this.filters = Object.assign(this.filters, filters);
         this.people = collect([]);
         this.type = type;
         this.year = year;
-        this.month = month;
     }
 
     async getBallots() {
@@ -60,11 +59,11 @@ class ReportBallotBuilder {
             .join('infos as i', 'i.id', 's.info_id')
             .join('works as w', 'w.id', 'i.work_id')
             .where(DB.raw('YEAR(s.`date`)'), this.year)
-            .where(DB.raw('MONTH(s.`date`)'), this.month)
         // filters
         for (let attr in this.filters) {
             let value = this.filters[attr];
             if (value && attr == 'day') ballots.where(DB.raw(`DAY(s.date)`), value);
+            else if (value && attr == 'month') ballots.where(DB.raw('MONTH(s.`date`)'), value);
             else if (value) ballots.where(`i.${attr}`, value);
         } 
         // obtener
@@ -177,7 +176,6 @@ class ReportBallotBuilder {
             header: handle.header
         };
     }   
-    
 
 }
 

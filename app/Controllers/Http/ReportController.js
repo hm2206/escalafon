@@ -44,13 +44,12 @@ class ReportController {
     async ballots({ request, response }) {
         let type = request.input('type', 'pdf');
         let entity = request.$entity;
-        let filters = request.only(['cargo_id', 'type_categoria_id', 'day'])
+        let filters = request.only(['cargo_id', 'type_categoria_id', 'month', 'day'])
         filters.entity_id = entity.id;
         let currentDate = moment();
         let year = request.input('year', currentDate.year())
-        let month = request.input('month', currentDate.month() + 1)
         let authentication = request.api_authentication;
-        const reportBallotBuilder = new ReportBallotBuilder(authentication, year, month, filters, type);
+        const reportBallotBuilder = new ReportBallotBuilder(authentication, year, filters, type);
         const builder = await reportBallotBuilder.render();
         response.type(builder.header);
         return response.send(builder.result);
