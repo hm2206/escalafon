@@ -94,6 +94,9 @@ class ReportGeneralBuilder {
                 person.date_of_birth = moment(`${person.date_of_birth}`, 'YYYY-MM-DD').format('DD/MM/YYYY');
             }
 
+            if (work.fecha_de_ingreso) work.fecha_de_ingreso = moment(work.fecha_de_ingreso).format('DD/MM/YYYY');
+            if (work.fecha_de_cese) work.fecha_de_cese = moment(work.fecha_de_cese).format('DD/MM/YYYY');
+
             work.person = person;
         }
     }
