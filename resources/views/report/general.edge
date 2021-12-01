@@ -72,9 +72,9 @@
                         <td class="bbb-1 bbl-1 f-10">{{ work.person.document_number }}</td>
                         <td class="bbb-1 bbl-1 f-10">{{ work.displayCategoria }}</td>
                         <td class="bbb-1 bbl-1 f-10">{{ work.fecha_de_ingreso }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.fecha_de_cese }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.person.phone }}</td>
-                        <td class="bbb-1 bbl-1 bbr-1 f-10">{{ work.person.address }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ work.fecha_de_cese || '---' }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ work.person.phone || '---' }}</td>
+                        <td class="bbb-1 bbl-1 bbr-1 f-10">{{ work.person.address || '---' }}</td>
                     </tr>
                 @endeach
             </tbody>

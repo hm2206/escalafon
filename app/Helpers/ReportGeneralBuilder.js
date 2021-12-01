@@ -114,7 +114,7 @@ class ReportGeneralBuilder {
     }
 
     async formatExcel(that, datos = {}) {
-        let headers = ["N°", "Apellidos y Nombres", "Tipo", "Document", "Sexo", "Fecha de Nacimiento", "Edad", "Correo", "Teléfono", "Dirección"];
+        let headers = ["N°", "Apellidos y Nombres", "Tipo", "Document", "Cat.", "F.Ingreso", "F.Cese", "Teléfono", "Dirección"];
         let content = [];
         let works = [...datos.works];
         // mapping
@@ -124,9 +124,9 @@ class ReportGeneralBuilder {
                 `${w.person.fullname || ''}`.toUpperCase(),
                 `${w.person.document_type.name || ''}`.toUpperCase(),
                 `${w.person.document_number || ''}`,
-                `${w.person.gender || ''}`,
-                `${w.person.date_of_birth || ''}`,
-                `${w.person.edad || ''}`,
+                `${w.displayCategoria || ''}`,
+                `${w.fecha_de_ingreso || ''}`,
+                `${w.person.fecha_de_cese || ''}`,
                 `${w.person.email_contact || ''}`,
                 `${w.person.phone || ''}`,
                 `${w.person.address || ''}`
