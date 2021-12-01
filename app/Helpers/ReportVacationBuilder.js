@@ -8,6 +8,7 @@ const htmlToPdf = require('html-pdf-node');
 const { default: collect } = require('collect.js');
 const moment = require('moment');
 const xlsx = require('node-xlsx');
+const DB = use('Database');
 
 const currentDate = moment();
 
@@ -67,6 +68,7 @@ class ReportVacationBuilder {
         for(let attr in this.filters) {
             let value = this.filters[attr];
             if (!value) continue;
+            if (Array.isArray(value) && !value.length) continue;
             if (attr == 'year') {
                 if (Array.isArray(value)) works.whereIn(`c.${attr}`, value);
                 else works.where(`c.${attr}`, value);
@@ -112,8 +114,8 @@ class ReportVacationBuilder {
                     'date_start', 'date_over', 'days_used', 'observation'
                 ))
             .where('config_vacations.entity_id', this.entity.id)
-            .where('i.entity_id', this.entity.id)
-            .orderBy('year', 'ASC')
+            .where(DB.raw(`i.entity_id = config_vacations.entity_id`))
+            .orderBy('year', 'DESC')
             .groupBy(
                 'config_vacations.id', 'config_vacations.work_id', 'config_vacations.year', 'config_vacations.scheduled_days', 
                 'config_vacations.date_start', 'config_vacations.date_over'
@@ -126,6 +128,7 @@ class ReportVacationBuilder {
         for(let attr in this.filters) {
             let value = this.filters[attr];
             if (!value) continue;
+            if (Array.isArray(value) && !value.length) continue;
             if (attr == 'year') {
                 if (Array.isArray(value)) config_vacations.whereIn(`config_vacations.${attr}`, value);
                 else config_vacations.where(`config_vacations.${attr}`, value);
@@ -141,8 +144,9 @@ class ReportVacationBuilder {
     async settingWorks() {
         let config_vacations = collect(this.config_vacations);
         await this.works.map(work => {
+            const currentVacations = config_vacations.where('work_id', work.id).toArray();
             work.person = this.people.where('id', work.person_id).first() || {};
-            work.config_vacations = config_vacations.where('work_id', work.id).toArray() || [];
+            work.config_vacations = currentVacations;
             return work;
         });
     }
