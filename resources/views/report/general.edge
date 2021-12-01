@@ -49,19 +49,18 @@
 
         <br>
 
-        <table class="table bbt-1 text-center">
+        <table class="table text-center">
             <thead>
                 <tr>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">N°</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="25%">Apellidos y Nombres</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Tipo</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Documento</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Sexo</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Fecha de Nacimiento</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Edad</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Teléfono</th>
-                    <th class="bbb-1 bbl-1 bbt-1 f-11" width="10%">E-mail</th>
-                    <th class="bbb-1 bbl-1 bbt-1 bbr-1 f-11" width="15%">Dirección</th>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="5%">N°</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="25%">Apellidos y Nombres</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Tipo</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Documento</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="10%">Cat.</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="7%">F.Ingreso</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="7%">F.Cese</td>
+                    <td class="bbb-1 bbl-1 bbt-1 f-11" width="5%">Teléfono</td>
+                    <td class="bbb-1 bbl-1 bbt-1 bbr-1 f-11" width="10%">Dirección</td>
                 </tr>
             </thead>
             <tbody>
@@ -71,11 +70,10 @@
                         <td class="bbb-1 bbl-1 f-10 text-left capitalize pl-1">{{ work.person.fullname || "" }}</td>
                         <td class="bbb-1 bbl-1 f-10">{{ work.person.document_type.name || "" }}</td>
                         <td class="bbb-1 bbl-1 f-10">{{ work.person.document_number }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.person.gender }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.person.date_of_birth }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.person.edad }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ work.displayCategoria }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ work.fecha_de_ingreso }}</td>
+                        <td class="bbb-1 bbl-1 f-10">{{ work.fecha_de_cese }}</td>
                         <td class="bbb-1 bbl-1 f-10">{{ work.person.phone }}</td>
-                        <td class="bbb-1 bbl-1 f-10">{{ work.person.email_contact }}</td>
                         <td class="bbb-1 bbl-1 bbr-1 f-10">{{ work.person.address }}</td>
                     </tr>
                 @endeach

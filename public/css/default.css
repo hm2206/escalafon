@@ -173,17 +173,17 @@ u {
 */
 
 .bbt-1 {
-    border-top: 1.5px solid #000;
+    border-top: 1px solid #000;
 }
 
 .bbb-1 {
-    border-bottom: 1.5px solid #000;
+    border-bottom: 1px solid #000;
 }
 
 .bbl-1 {
-    border-left: 1.5px solid #000;
+    border-left: 1px solid #000;
 }
 
 .bbr-1 {
-    border-right: 1.5px solid #000;
+    border-right: 1px solid #000;
 }

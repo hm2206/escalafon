@@ -6,6 +6,7 @@ const htmlToPdf = require('html-pdf-node');
 const moment = require('moment');
 const Work = use('App/Models/Work');
 const xlsx = require('node-xlsx');
+const DB = use('Database');
 
 class ReportGeneralBuilder {
 
@@ -48,6 +49,7 @@ class ReportGeneralBuilder {
     async getWorks() {
         let works = Work.query()
             .join('infos as i', 'i.work_id', 'works.id')
+            .join('type_categorias as type', 'type.id', 'i.type_categoria_id')
             .orderBy('works.orden', 'ASC')
             .where('i.estado', 1)
         // filtros
@@ -57,7 +59,7 @@ class ReportGeneralBuilder {
             works.where(`i.${attr}`, value);
         }
         // obtener
-        works.select('works.*')
+        works.select('works.*', 'i.fecha_de_ingreso', 'i.fecha_de_cese', DB.raw(`type.descripcion as displayCategoria`))
         works = await works.fetch();
         this.works = works.toJSON();
     }
