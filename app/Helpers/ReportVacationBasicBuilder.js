@@ -90,7 +90,7 @@ class ReportVacationBasicBuilder {
             works.where(`i.${attr}`, value);
         }
         // obtener trabajadores
-        works = await works.debug(['enabled']).fetch();
+        works = await works.fetch();
         this.works = await works.toJSON();
     }
 
@@ -146,43 +146,24 @@ class ReportVacationBasicBuilder {
     async formatExcel(that, datos = {}) {
         let content = [];
         let collection = [...datos.datos];
+        // header
+        content.push(["N°", "Apellidos y Nombres", "Tip. Categoría", "Situación", "Año", "Dias Prog.", "Dias Ejecutados.", "Saldo"]);
         // mapping
-        collection.map((c) => {
-            // trabajadores
-            if (c.key == 'WORK') {
-                content.push([
-                    "Trabajador: ", `${c.current.fullname || ''}`.toUpperCase(),
-                    `${c.current.document_type}: `, c.current.document_number
-                ]);
-                content.push([])
-            }
-            // config_vacaciones
-            if (c.key == 'VACATION') {
-                content.push(["Año", "Inicio", "Termino", "Dias Programados", "Dias Ejecutados", "Saldo"]);
-                content.push([
-                    c.current.year,
-                    c.current.date_start,
-                    c.current.date_over,
-                    c.current.scheduled_days,
-                    c.current.executed_days,
-                    c.current.balance
-                ])
-                content.push(["", "Inicio", "Termino", "Dias ejecut.", "Resolución"])
-                // vacations
-                let vacations = c.current.vacations || [];
-                vacations.map(v => {
-                    content.push(["", v.date_start, v.date_over, v.days_used, v.resolucion])
-                })
-                // espacio
-                content.push([]);
-                content.push([]);
-            }
-            // data
-            return c;
+        collection.forEach((c) => {
+            content.push([
+                c.count,
+                `${c.person.fullname}`.toUpperCase(),
+                c.displayCategoria,
+                c.pap,
+                c.year,
+                c.scheduled_days,
+                c.days_used,
+                c.days_diff
+            ])
         });
         // response
         let data = [...content];
-        let result = await xlsx.build([{ name: 'reporte-vacaciones', data }])
+        let result = await xlsx.build([{ name: 'reporte-vacacion-basics', data }])
         return result;
     }
 
