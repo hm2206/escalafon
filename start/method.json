@@ -515,6 +515,12 @@
         "description": "Reporte de vacaciones",
         "action_type": "VIEW"
     },
+    "ReportController.vacationBasics": {
+        "name": "ReportController.vacationBasics",
+        "url": "api/reports/vacation_basics",
+        "description": "Reporte basico de vacaciones",
+        "action_type": "VIEW"
+    },
     "ReportController.discounts": {
         "name": "ReportController.discounts",
         "url": "api/reports/discounts",

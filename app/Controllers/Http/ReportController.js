@@ -5,6 +5,7 @@ const ReportBallotBuilder = require('../../Helpers/ReportBallotBuilder');
 const ReportGeneralBuilder = require('../../Helpers/ReportGeneralBuilder');
 const ReportLicenseBuilder = require('../../Helpers/ReportLicenseBuilder');
 const ReportVacationBuilder = require('../../Helpers/ReportVacationBuilder');
+const ReportVacationBasicBuilder = require('../../Helpers/ReportVacationBasicBuilder');
 const ReportDiscountBuilder = require('../../Helpers/ReportDiscountBuilder');
 const ReportInfoBuilder = require('../../Helpers/ReportInfoBuilder');
 const ReportOnomasticoBuilder = require('../../Helpers/ReportOnomasticoBuilder');
@@ -78,6 +79,17 @@ class ReportController {
         let authentication = request.api_authentication;
         const reportVacationBuilder = new ReportVacationBuilder(authentication, entity, filters, type);
         const builder = await reportVacationBuilder.render();
+        response.type(builder.header);
+        return response.send(builder.result);
+    }
+
+    async vacationBasics({ request, response }) {
+        let type = request.input('type', 'pdf');
+        let entity = request.$entity;
+        let filters = request.only(['cargo_id', 'type_categoria_id'])
+        let authentication = request.api_authentication;
+        const reportVacationBasicBuilder = new ReportVacationBasicBuilder(authentication, entity, filters, type);
+        const builder = await reportVacationBasicBuilder.render();
         response.type(builder.header);
         return response.send(builder.result);
     }
