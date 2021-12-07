@@ -10,9 +10,9 @@ const moment = require('moment');
 const xlsx = require('node-xlsx');
 const DB = use('Database');
 
-const currentDate = moment();
+const currentDate = moment().format('YYYY-MM-DD');
 
-class ReportVacationBuilder {
+class ReportVacationCurrentBuilder {
 
     authentication = null;
     entity = null;
@@ -22,8 +22,7 @@ class ReportVacationBuilder {
     filters = {
         work_id: "",
         cargo_id: "",
-        type_categoria_id: "",
-        year: currentDate.year()
+        type_categoria_id: ""
     }
 
     type = 'pdf' 
@@ -59,22 +58,20 @@ class ReportVacationBuilder {
         let works = Work.query()
             .join('infos as i', 'i.work_id', 'works.id')
             .join('config_vacations as c', 'c.work_id', 'works.id')
-            .select('works.id', 'works.person_id')
+            .join('vacations as vac', 'vac.config_vacation_id', 'c.id')
+            .select('works.id', 'works.person_id', 'works.orden')
             .groupBy('works.id', 'works.person_id')
             .where('i.entity_id', this.entity.id)
             .where('c.entity_id', this.entity.id)
+            .where(DB.raw(`vac.date_start <= '${currentDate}'`))
+            .where(DB.raw(`vac.date_over >= '${currentDate}'`))
             .orderBy('works.orden', 'ASC')
         // filtros
         for(let attr in this.filters) {
             let value = this.filters[attr];
             if (!value) continue;
             if (Array.isArray(value) && !value.length) continue;
-            if (attr == 'year') {
-                if (Array.isArray(value)) works.whereIn(`c.${attr}`, value);
-                else works.where(`c.${attr}`, value);
-            } else {
-                works.where(`i.${attr}`, value);
-            }
+            works.where(`i.${attr}`, value);
         }
         // obtener trabajadores
         works = await works.fetch();
@@ -108,13 +105,18 @@ class ReportVacationBuilder {
         let config_vacations = ConfigVacation.query()
             .join('works as w', 'w.id', 'config_vacations.work_id')
             .join('infos as i', 'i.work_id', 'w.id')
+            .join('vacations as vac', 'vac.config_vacation_id', 'config_vacations.id')
             .with('vacations', (build) => build.orderBy('date_start', 'ASC')
+                .where(DB.raw(`date_start <= '${currentDate}'`))
+                .where(DB.raw(`date_over >= '${currentDate}'`))
                 .select(
                     'id', 'config_vacation_id', 'resolucion', 
                     'date_start', 'date_over', 'days_used', 'observation'
                 ))
             .where('config_vacations.entity_id', this.entity.id)
             .where(DB.raw(`i.entity_id = config_vacations.entity_id`))
+            .where(DB.raw(`vac.date_start <= '${currentDate}'`))
+            .where(DB.raw(`vac.date_over >= '${currentDate}'`))
             .orderBy('year', 'ASC')
             .groupBy(
                 'config_vacations.id', 'config_vacations.work_id', 'config_vacations.year', 'config_vacations.scheduled_days', 
@@ -129,12 +131,7 @@ class ReportVacationBuilder {
             let value = this.filters[attr];
             if (!value) continue;
             if (Array.isArray(value) && !value.length) continue;
-            if (attr == 'year') {
-                if (Array.isArray(value)) config_vacations.whereIn(`config_vacations.${attr}`, value);
-                else config_vacations.where(`config_vacations.${attr}`, value);
-            } else {
-                config_vacations.where(`i.${attr}`, value);
-            }
+            config_vacations.where(`i.${attr}`, value);
         }
         // obtener config_vacations
         config_vacations = await config_vacations.fetch();
@@ -181,7 +178,7 @@ class ReportVacationBuilder {
         for (let vacation of vacations) {
             newVacations.push(this.displayVacation(vacation));
         }
-        
+
         // formatear fecha
         config_vacation.date_start = moment(config_vacation.date_start).format('DD/MM/YYYY');
         config_vacation.date_over = moment(config_vacation.date_over).format('DD/MM/YYYY');
@@ -297,4 +294,4 @@ class ReportVacationBuilder {
 
 }
 
-module.exports = ReportVacationBuilder;
+module.exports = ReportVacationCurrentBuilder;
