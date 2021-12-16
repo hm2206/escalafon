@@ -30,9 +30,9 @@ class Work extends Model {
 
     infoCurrent() {
         return this.hasOne('App/Models/Info')
-            .join('planillas as p', 'p.id', 'infos.planilla_id')
-            .where('p.principal', 1)
-            .where('infos.estado', 1);
+            // .join('planillas as p', 'p.id', 'infos.planilla_id')
+            // .where('p.principal', 1)
+            // .where('infos.estado', 1);
     }
 
 }
