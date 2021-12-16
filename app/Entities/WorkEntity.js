@@ -9,8 +9,6 @@ const { collect } = require('collect.js');
 const Work = use('App/Models/Work');
 const FichaBuilder = require('../Helpers/FichaBuilder');
 const ConfigVacationEntity = require('./ConfigVacationEntity');
-const PermissionEntity = require('./PermissionEntity');
-const LicenseEntity = require('./LicenseEntity');
 const ReportVacationBuilder = require('../Helpers/ReportVacationBuilder');
 const DB = use('Database');
 
@@ -83,16 +81,16 @@ class WorkEntity {
         // obtener trabajadores
         works = await works.paginate(page, perPage);
         works = await works.toJSON();
-        let plucked = collect(works.data).pluck('person_id').toArray();
-        let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
-        .then(res => res.data)
-        .catch(err => ({ success: false, people: {} }));
-        people = collect(people.data || []);
-        // setting data
-        works.data.map(w => {
-            w.person = people.where('id', w.person_id).first() || {};
-            return w;
-        });
+        // let plucked = collect(works.data).pluck('person_id').toArray();
+        // let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
+        // .then(res => res.data)
+        // .catch(() => ({ success: false, people: {} }));
+        // people = collect(people.data || []);
+        // // setting data
+        // works.data.map(w => {
+        //     w.person = people.where('id', w.person_id).first() || {};
+        //     return w;
+        // });
         // response
         return works;
     }
