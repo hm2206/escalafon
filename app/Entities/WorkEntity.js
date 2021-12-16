@@ -140,7 +140,6 @@ class WorkEntity {
 
     async show (id) {
         let work = await Work.query()
-            .with('infoCurrent')
             .with('afp')
             .with('banco')
             .where('works.id', id || '__error')
