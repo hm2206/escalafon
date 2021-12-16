@@ -14,86 +14,86 @@
 
 class WorkEntity {
 
-    // authentication = {};
+    authentication = {};
 
-    // attributes = {
-    //     person_id: "",
-    //     banco_id: "",
-    //     fecha_de_ingreso: "",
-    //     numero_de_cuenta: "",
-    //     afp_id: "",
-    //     numero_de_cussp: "",
-    //     fecha_de_afiliacion: "",
-    //     numero_de_essalud: "",
-    //     prima_seguro: "",
-    //     code: "",
-    //     orden: "",
-    //     estado: 1 
-    // }
+    attributes = {
+        person_id: "",
+        banco_id: "",
+        fecha_de_ingreso: "",
+        numero_de_cuenta: "",
+        afp_id: "",
+        numero_de_cussp: "",
+        fecha_de_afiliacion: "",
+        numero_de_essalud: "",
+        prima_seguro: "",
+        code: "",
+        orden: "",
+        estado: 1 
+    }
 
-    // schemaPaginate = {
-    //     page: 1,
-    //     perPage: 20,
-    //     query_search: "",
-    //     custom: {}
-    // }
+    schemaPaginate = {
+        page: 1,
+        perPage: 20,
+        query_search: "",
+        custom: {}
+    }
 
-    // constructor(authentication) {
-    //     this.authentication = authentication;
-    // }
+    constructor(authentication) {
+        this.authentication = authentication;
+    }
 
-    // handleFilters(obj, filtros = {}) {
-    //     for(let attr in filtros) {
-    //         let value = filtros[attr];
-    //         if (Array.isArray(value)) {
-    //             if (!value.length) continue;
-    //             obj.whereIn(attr, value);
-    //             continue;
-    //         }
+    handleFilters(obj, filtros = {}) {
+        for(let attr in filtros) {
+            let value = filtros[attr];
+            if (Array.isArray(value)) {
+                if (!value.length) continue;
+                obj.whereIn(attr, value);
+                continue;
+            }
 
-    //         if (typeof value != 'undefined' && value !== '' && value !== null) {
-    //             obj.where(DB.raw(attr), value);
-    //             continue;
-    //         }
-    //     }
-    //     return obj;
-    // }
+            if (typeof value != 'undefined' && value !== '' && value !== null) {
+                obj.where(DB.raw(attr), value);
+                continue;
+            }
+        }
+        return obj;
+    }
 
-    // async index (page = 1, query_search = "", filtros = {}, entity_id = "", cargo_id = "", perPage = 20) {
-    //     let works = Work.query()
-    //         .orderBy('orden', 'ASC');
-    //     if (query_search) works.where('orden', 'like', `%${query_search}%`);
-    //     // filtros
-    //     for(let attr in filtros) {
-    //         let value = filtros[value];
-    //         if (value) works.where(attr, value); 
-    //     }
-    //     // obtener contador de contratos
-    //     works.withCount('infos', (builder) => {
-    //         builder.where('estado', 1)
-    //         if (entity_id) builder.where('entity_id', entity_id)
-    //     });
-    //     // filtro por cargo_id
-    //     if (cargo_id) works.whereHas('infos', (builder) => {
-    //         builder.where('cargo_id', cargo_id)
-    //         builder.where('estado', 1)
-    //     })
-    //     // obtener trabajadores
-    //     works = await works.paginate(page, perPage);
-    //     works = await works.toJSON();
-    //     let plucked = collect(works.data).pluck('person_id').toArray();
-    //     let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
-    //     .then(res => res.data)
-    //     .catch(() => ({ success: false, people: {} }));
-    //     people = collect(people.data || []);
-    //     // setting data
-    //     works.data.map(w => {
-    //         w.person = people.where('id', w.person_id).first() || {};
-    //         return w;
-    //     });
-    //     // response
-    //     return works;
-    // }
+    async index (page = 1, query_search = "", filtros = {}, entity_id = "", cargo_id = "", perPage = 20) {
+        let works = Work.query()
+            .orderBy('orden', 'ASC');
+        if (query_search) works.where('orden', 'like', `%${query_search}%`);
+        // filtros
+        for(let attr in filtros) {
+            let value = filtros[value];
+            if (value) works.where(attr, value); 
+        }
+        // obtener contador de contratos
+        works.withCount('infos', (builder) => {
+            builder.where('estado', 1)
+            if (entity_id) builder.where('entity_id', entity_id)
+        });
+        // filtro por cargo_id
+        if (cargo_id) works.whereHas('infos', (builder) => {
+            builder.where('cargo_id', cargo_id)
+            builder.where('estado', 1)
+        })
+        // obtener trabajadores
+        works = await works.paginate(page, perPage);
+        works = await works.toJSON();
+        let plucked = collect(works.data).pluck('person_id').toArray();
+        let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
+        .then(res => res.data)
+        .catch(() => ({ success: false, people: {} }));
+        people = collect(people.data || []);
+        // setting data
+        works.data.map(w => {
+            w.person = people.where('id', w.person_id).first() || {};
+            return w;
+        });
+        // response
+        return works;
+    }
 
     // async store (datos = this.attributes) {
     //     await validation(null, datos, {
