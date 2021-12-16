@@ -59,41 +59,41 @@ class WorkEntity {
         return obj;
     }
 
-    async index (page = 1, query_search = "", filtros = {}, entity_id = "", cargo_id = "", perPage = 20) {
-        let works = Work.query()
-            .orderBy('orden', 'ASC');
-        if (query_search) works.where('orden', 'like', `%${query_search}%`);
-        // filtros
-        for(let attr in filtros) {
-            let value = filtros[value];
-            if (value) works.where(attr, value); 
-        }
-        // obtener contador de contratos
-        works.withCount('infos', (builder) => {
-            builder.where('estado', 1)
-            if (entity_id) builder.where('entity_id', entity_id)
-        });
-        // filtro por cargo_id
-        if (cargo_id) works.whereHas('infos', (builder) => {
-            builder.where('cargo_id', cargo_id)
-            builder.where('estado', 1)
-        })
-        // obtener trabajadores
-        works = await works.paginate(page, perPage);
-        works = await works.toJSON();
-        let plucked = collect(works.data).pluck('person_id').toArray();
-        let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
-        .then(res => res.data)
-        .catch(() => ({ success: false, people: {} }));
-        people = collect(people.data || []);
-        // setting data
-        works.data.map(w => {
-            w.person = people.where('id', w.person_id).first() || {};
-            return w;
-        });
-        // response
-        return works;
-    }
+    // async index (page = 1, query_search = "", filtros = {}, entity_id = "", cargo_id = "", perPage = 20) {
+    //     let works = Work.query()
+    //         .orderBy('orden', 'ASC');
+    //     if (query_search) works.where('orden', 'like', `%${query_search}%`);
+    //     // filtros
+    //     for(let attr in filtros) {
+    //         let value = filtros[value];
+    //         if (value) works.where(attr, value); 
+    //     }
+    //     // obtener contador de contratos
+    //     works.withCount('infos', (builder) => {
+    //         builder.where('estado', 1)
+    //         if (entity_id) builder.where('entity_id', entity_id)
+    //     });
+    //     // filtro por cargo_id
+    //     if (cargo_id) works.whereHas('infos', (builder) => {
+    //         builder.where('cargo_id', cargo_id)
+    //         builder.where('estado', 1)
+    //     })
+    //     // obtener trabajadores
+    //     works = await works.paginate(page, perPage);
+    //     works = await works.toJSON();
+    //     let plucked = collect(works.data).pluck('person_id').toArray();
+    //     let { people } = await this.authentication.get(`person?page=1&ids=${plucked.join('&ids=')}`)
+    //     .then(res => res.data)
+    //     .catch(() => ({ success: false, people: {} }));
+    //     people = collect(people.data || []);
+    //     // setting data
+    //     works.data.map(w => {
+    //         w.person = people.where('id', w.person_id).first() || {};
+    //         return w;
+    //     });
+    //     // response
+    //     return works;
+    // }
 
     async store (datos = this.attributes) {
         await validation(null, datos, {

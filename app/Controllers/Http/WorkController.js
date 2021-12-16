@@ -1,7 +1,7 @@
 'use strict';
 
 const collect = require('collect.js');
-// const WorkEntity = require('../../Entities/WorkEntity');
+const WorkEntity = require('../../Entities/WorkEntity');
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
 const Degree = use('App/Models/Degree')
 const Work = use('App/Models/Work')
