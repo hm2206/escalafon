@@ -55,7 +55,6 @@ class WorkEntity {
 
             if (typeof value != 'undefined' && value !== '' && value !== null) {
                 obj.where(DB.raw(attr), value);
-                console.log(attr)
                 continue;
             }
         }
@@ -143,15 +142,26 @@ class WorkEntity {
 
     async show (id) {
         let work = await Work.query()
+            .leftJoin('infos as i', 'i.work_id', 'works.id')
+            .leftJoin('planillas as pla', 'pla.id', 'i.planilla_id')
             .with('afp')
             .with('banco')
-            .where('id', id || '__error')
+            .where('works.id', id || '__error')
+            .where('i.estado', 1)
+            .where('pla.principal', 1)
+            .select(`works.*`, 'i.perfil_laboral_id')
+            .orderBy('i.fecha_de_ingreso', 'DESC')
             .first();
         if (!work) throw new NotFoundModelException("El trabajador");
         let { person } = await this.authentication.get(`person/${work.person_id}`)
         .then(res => res.data)
-        .catch(err => ({ success: true, person: {} }));
+        .catch(() => ({ success: true, person: {} }));
         work.person = person;
+        // perfil laboral
+        let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${work.perfil_laboral_id || '_error'}`)
+        .then(res => res.data)
+        .catch(() => ({ perfil_laboral: {} }));
+        work.perfil_laboral = perfil_laboral;
         return work;
     }
 
