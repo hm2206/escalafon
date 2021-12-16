@@ -7,10 +7,10 @@ const CustomException = require('../Exceptions/CustomException');
 const Info = use('App/Models/Info');
 const collect = require('collect.js');
 const Work = use('App/Models/Work');
-// const FichaBuilder = require('../Helpers/FichaBuilder');
-// const ConfigVacationEntity = require('./ConfigVacationEntity');
-// const ReportVacationBuilder = require('../Helpers/ReportVacationBuilder');
-// const DB = use('Database');
+const FichaBuilder = require('../Helpers/FichaBuilder');
+const ConfigVacationEntity = require('./ConfigVacationEntity');
+const ReportVacationBuilder = require('../Helpers/ReportVacationBuilder');
+const DB = use('Database');
 
 class WorkEntity {
 
