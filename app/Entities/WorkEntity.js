@@ -1,9 +1,9 @@
 'use strict';
 
-// const { validation } = require('validator-error-adonis');
-// const DBException = require('../Exceptions/DBException');
-// const NotFoundModelException = require('../Exceptions/NotFoundModelException');
-// const CustomException = require('../Exceptions/CustomException');
+const { validation } = require('validator-error-adonis');
+const DBException = require('../Exceptions/DBException');
+const NotFoundModelException = require('../Exceptions/NotFoundModelException');
+const CustomException = require('../Exceptions/CustomException');
 // const Info = use('App/Models/Info');
 // const collect = require('collect.js');
 // const Work = use('App/Models/Work');
