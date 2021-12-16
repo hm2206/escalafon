@@ -1,6 +1,4 @@
-'use strict';
-
-const { default: collect } = require('collect.js');
+const collect = require('collect.js');
 const WorkEntity = require('../../Entities/WorkEntity');
 const NotFoundModelException = require('../../Exceptions/NotFoundModelException');
 const Degree = use('App/Models/Degree')
