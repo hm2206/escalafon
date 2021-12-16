@@ -138,29 +138,30 @@ class WorkEntity {
         }
     }
 
-    // async show (id) {
-    //     let work = await Work.query()
-    //         .with('afp')
-    //         .with('banco')
-    //         .where('works.id', id || '__error')
-    //         .first();
-    //     if (!work) throw new NotFoundModelException("El trabajador");
-    //     let { person } = await this.authentication.get(`person/${work.person_id}`)
-    //     .then(res => res.data)
-    //     .catch(() => ({ success: true, person: {} }));
-    //     work.person = person;
-    //     const currentInfo = await work.infoCurrent().fetch();
-    //     // perfil laboral
-    //     if (currentInfo) {
-    //         let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${currentInfo?.perfil_laboral_id || '_error'}`)
-    //         .then(res => res.data)
-    //         .catch(() => ({ perfil_laboral: {} }));
-    //         currentInfo.perfil_laboral = perfil_laboral;
-    //     }
-    //     // result
-    //     work.currentInfo = currentInfo;
-    //     return work;
-    // }
+    async show (id) {
+        let work = await Work.query()
+            .with('infoCurrent')
+            .with('afp')
+            .with('banco')
+            .where('works.id', id || '__error')
+            .first();
+        if (!work) throw new NotFoundModelException("El trabajador");
+        let { person } = await this.authentication.get(`person/${work.person_id}`)
+        .then(res => res.data)
+        .catch(() => ({ success: true, person: {} }));
+        work.person = person;
+        const infoCurrent = await work.infoCurrent().fetch();
+        // perfil laboral
+        if (infoCurrent) {
+            let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${infoCurrent?.perfil_laboral_id || '_error'}`)
+            .then(res => res.data)
+            .catch(() => ({ perfil_laboral: {} }));
+            infoCurrent.perfil_laboral = perfil_laboral;
+        }
+        // result
+        work.infoCurrent = infoCurrent;
+        return work;
+    }
 
     async update (id, datos = this.attributes) {
         let work = await this.show(id);
