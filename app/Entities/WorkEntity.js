@@ -95,48 +95,48 @@ class WorkEntity {
         return works;
     }
 
-    // async store (datos = this.attributes) {
-    //     await validation(null, datos, {
-    //         person_id: "required",
-    //         fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
-    //         banco_id: "required",
-    //         afp_id: "required",
-    //         prima_seguro: "number",
-    //         fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
-    //     });
-    //     // validar person_id
-    //     let { success, person } = await this.authentication.get(`person/${datos.person_id}`)
-    //         .then(res => res.data)
-    //         .catch(err => ({ success: false, person: {} }));
-    //     if (!success) throw new NotFoundModelException("La Persona");
-    //     // validar work
-    //     let is_work = await Work.query()
-    //         .where('person_id', person.id)
-    //         .getCount('id');
-    //     if (is_work) throw new CustomException("El trabajador ya exíste!");
-    //     // guardar
-    //     try {
-    //         const work = await Work.create({
-    //             person_id: datos.person_id,
-    //             fecha_de_ingreso: datos.fecha_de_ingreso,
-    //             banco_id: datos.banco_id,
-    //             numero_de_cuenta: datos.numero_de_cuenta,
-    //             afp_id: datos.afp_id,
-    //             numero_de_cussp: datos.numero_de_cussp,
-    //             fecha_de_afiliacion: datos.fecha_de_afiliacion,
-    //             numero_de_essalud: datos.numero_de_essalud,
-    //             prima_seguro: datos.prima_seguro ? 1 : 0,
-    //             code: datos.code,
-    //             orden: datos.orden,
-    //             estado: 0
-    //         });
-    //         // response
-    //         work.person = person;
-    //         return work;
-    //     } catch (error) {
-    //         throw new DBException(error, "regístro");
-    //     }
-    // }
+    async store (datos = this.attributes) {
+        await validation(null, datos, {
+            person_id: "required",
+            fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
+            banco_id: "required",
+            afp_id: "required",
+            prima_seguro: "number",
+            fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
+        });
+        // validar person_id
+        let { success, person } = await this.authentication.get(`person/${datos.person_id}`)
+            .then(res => res.data)
+            .catch(err => ({ success: false, person: {} }));
+        if (!success) throw new NotFoundModelException("La Persona");
+        // validar work
+        let is_work = await Work.query()
+            .where('person_id', person.id)
+            .getCount('id');
+        if (is_work) throw new CustomException("El trabajador ya exíste!");
+        // guardar
+        try {
+            const work = await Work.create({
+                person_id: datos.person_id,
+                fecha_de_ingreso: datos.fecha_de_ingreso,
+                banco_id: datos.banco_id,
+                numero_de_cuenta: datos.numero_de_cuenta,
+                afp_id: datos.afp_id,
+                numero_de_cussp: datos.numero_de_cussp,
+                fecha_de_afiliacion: datos.fecha_de_afiliacion,
+                numero_de_essalud: datos.numero_de_essalud,
+                prima_seguro: datos.prima_seguro ? 1 : 0,
+                code: datos.code,
+                orden: datos.orden,
+                estado: 0
+            });
+            // response
+            work.person = person;
+            return work;
+        } catch (error) {
+            throw new DBException(error, "regístro");
+        }
+    }
 
     // async show (id) {
     //     let work = await Work.query()
@@ -162,114 +162,114 @@ class WorkEntity {
     //     return work;
     // }
 
-    // async update (id, datos = this.attributes) {
-    //     let work = await this.show(id);
-    //     await validation(null, datos, {
-    //         fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
-    //         banco_id: "required",
-    //         afp_id: "required",
-    //         fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
-    //     });
-    //     // procesar
-    //     try {
-    //         // preparar datos
-    //         let payload = {
-    //             fecha_de_ingreso:  datos.fecha_de_ingreso,
-    //             banco_id: datos.banco_id,
-    //             numero_de_cuenta: datos.numero_de_cuenta,
-    //             afp_id: datos.afp_id,
-    //             numero_de_cussp: datos.numero_de_cussp,
-    //             fecha_de_afiliacion: datos.fecha_de_afiliacion,
-    //             numero_de_essalud: datos.numero_de_essalud,
-    //             prima_seguro: datos.prima_seguro ? 1 : 0
-    //         };
-    //         // guardar datos
-    //         await Work.query()
-    //             .where('id', work.id)
-    //             .update(payload);
-    //         work = work.toJSON();
-    //         work = { ...work, ...payload };
-    //         // response
-    //         return work
-    //     } catch (error) {
-    //         throw new DBException("regístro");
-    //     }
-    // }
+    async update (id, datos = this.attributes) {
+        let work = await this.show(id);
+        await validation(null, datos, {
+            fecha_de_ingreso: "required|dateFormat:YYYY-MM-DD",
+            banco_id: "required",
+            afp_id: "required",
+            fecha_de_afiliacion: "dateFormat:YYYY-MM-DD"
+        });
+        // procesar
+        try {
+            // preparar datos
+            let payload = {
+                fecha_de_ingreso:  datos.fecha_de_ingreso,
+                banco_id: datos.banco_id,
+                numero_de_cuenta: datos.numero_de_cuenta,
+                afp_id: datos.afp_id,
+                numero_de_cussp: datos.numero_de_cussp,
+                fecha_de_afiliacion: datos.fecha_de_afiliacion,
+                numero_de_essalud: datos.numero_de_essalud,
+                prima_seguro: datos.prima_seguro ? 1 : 0
+            };
+            // guardar datos
+            await Work.query()
+                .where('id', work.id)
+                .update(payload);
+            work = work.toJSON();
+            work = { ...work, ...payload };
+            // response
+            return work
+        } catch (error) {
+            throw new DBException("regístro");
+        }
+    }
 
-    // async ficha (id, filters = {}) {
-    //     let work = await this.show(id);
-    //     work = await work.toJSON();
-    //     const fichaBuilder = new FichaBuilder(work, filters);
-    //     return await fichaBuilder.execute();
-    // }
+    async ficha (id, filters = {}) {
+        let work = await this.show(id);
+        work = await work.toJSON();
+        const fichaBuilder = new FichaBuilder(work, filters);
+        return await fichaBuilder.execute();
+    }
 
-    // async infos (id, tmpDatos = this.schemaPaginate) {
-    //     let datos = Object.assign(this.schemaPaginate, tmpDatos);
-    //     let work = await this.show(id);
-    //     let infos = Info.query()
-    //         .orderBy('estado', 'DESC')
-    //         .orderBy('fecha_de_ingreso', 'DESC')
-    //         .with('planilla')
-    //         .with('cargo')
-    //         .with('type_categoria')
-    //         .with('meta')
-    //         .where('work_id', work.id);
-    //     // validar dependencia
-    //     if (datos.principal != null ) infos.whereHas('planilla', (builder) => builder.where('principal', datos.principal));
-    //     // custom
-    //     infos = this.handleFilters(infos, datos.custom);
-    //     // obtener
-    //     infos = datos.perPage ? await infos.paginate(datos.page, datos.perPage) : await infos.fetch();
-    //     infos = await infos.toJSON();
-    //     const infoCollect = collect(infos.data);
-    //     // obtener dependencias
-    //     const dependenciaPluck = infoCollect.pluck('dependencia_id').toArray();
-    //     let dependencias = await this.authentication.get(`dependencia?ids=${dependenciaPluck.join('&ids=')}`)
-    //     .then(({ data }) => data.dependencia.data || [])
-    //     .catch(() => ([]))
-    //     dependencias = collect(dependencias);
-    //     // obtener perfil laboral
-    //     const perfilPluck = infoCollect.pluck('perfil_laboral_id').toArray();
-    //     let perfil_laborals = await this.authentication.get(`perfil_laboral?ids=${perfilPluck.join('&ids=')}`)
-    //     .then(({ data }) => data.perfil_laboral.data || [])
-    //     .catch(() => ([]))
-    //     perfil_laborals = collect(perfil_laborals);
-    //     // setting datos
-    //     await infos.data.map(i => {
-    //         i.work = work;
-    //         i.dependencia = dependencias.where('id', i.dependencia_id).first() || {};
-    //         i.perfil_laboral = perfil_laborals.where('id',i.perfil_laboral_id).first() || {};
-    //         return i;
-    //     });
-    //     // response
-    //     return { work, infos } ;
-    // }
+    async infos (id, tmpDatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpDatos);
+        let work = await this.show(id);
+        let infos = Info.query()
+            .orderBy('estado', 'DESC')
+            .orderBy('fecha_de_ingreso', 'DESC')
+            .with('planilla')
+            .with('cargo')
+            .with('type_categoria')
+            .with('meta')
+            .where('work_id', work.id);
+        // validar dependencia
+        if (datos.principal != null ) infos.whereHas('planilla', (builder) => builder.where('principal', datos.principal));
+        // custom
+        infos = this.handleFilters(infos, datos.custom);
+        // obtener
+        infos = datos.perPage ? await infos.paginate(datos.page, datos.perPage) : await infos.fetch();
+        infos = await infos.toJSON();
+        const infoCollect = collect(infos.data);
+        // obtener dependencias
+        const dependenciaPluck = infoCollect.pluck('dependencia_id').toArray();
+        let dependencias = await this.authentication.get(`dependencia?ids=${dependenciaPluck.join('&ids=')}`)
+        .then(({ data }) => data.dependencia.data || [])
+        .catch(() => ([]))
+        dependencias = collect(dependencias);
+        // obtener perfil laboral
+        const perfilPluck = infoCollect.pluck('perfil_laboral_id').toArray();
+        let perfil_laborals = await this.authentication.get(`perfil_laboral?ids=${perfilPluck.join('&ids=')}`)
+        .then(({ data }) => data.perfil_laboral.data || [])
+        .catch(() => ([]))
+        perfil_laborals = collect(perfil_laborals);
+        // setting datos
+        await infos.data.map(i => {
+            i.work = work;
+            i.dependencia = dependencias.where('id', i.dependencia_id).first() || {};
+            i.perfil_laboral = perfil_laborals.where('id',i.perfil_laboral_id).first() || {};
+            return i;
+        });
+        // response
+        return { work, infos } ;
+    }
 
-    // async config_vacations(id, filtros = {}, tmpdatos = this.schemaPaginate) {
-    //     let datos = Object.assign(this.schemaPaginate, tmpdatos);
-    //     let work = Work.query()
-    //         .where('id', id);
-    //     // filtros
-    //     for (let attr in filtros) {
-    //         let value = filtros[attr];
-    //         if(Array.isArray(value)) work.whereIn(DB.raw(attr), value);
-    //         else if(typeof value != 'undefined' && value != '' && value != null) work.where(DB.raw(attr), value);
-    //     }
-    //     // obtener info
-    //     work = await work.first();
-    //     // validar info
-    //     if (!work) throw new NotFoundModelException("El contrato");
-    //     datos.custom.work_id = work.id;
-    //     const configVacationEntity = new ConfigVacationEntity();
-    //     const config_vacations = await configVacationEntity.index(datos);
-    //     return { work, config_vacations };
-    // }
+    async config_vacations(id, filtros = {}, tmpdatos = this.schemaPaginate) {
+        let datos = Object.assign(this.schemaPaginate, tmpdatos);
+        let work = Work.query()
+            .where('id', id);
+        // filtros
+        for (let attr in filtros) {
+            let value = filtros[attr];
+            if(Array.isArray(value)) work.whereIn(DB.raw(attr), value);
+            else if(typeof value != 'undefined' && value != '' && value != null) work.where(DB.raw(attr), value);
+        }
+        // obtener info
+        work = await work.first();
+        // validar info
+        if (!work) throw new NotFoundModelException("El contrato");
+        datos.custom.work_id = work.id;
+        const configVacationEntity = new ConfigVacationEntity();
+        const config_vacations = await configVacationEntity.index(datos);
+        return { work, config_vacations };
+    }
 
-    // async reportVacations(id, entity, filters = {}, type = 'pdf') {
-    //     let tmpFilters = { ...filters, work_id: id };
-    //     const reportVacationBuilder = new ReportVacationBuilder(this.authentication, entity, tmpFilters, type);
-    //     return await reportVacationBuilder.render();
-    // }
+    async reportVacations(id, entity, filters = {}, type = 'pdf') {
+        let tmpFilters = { ...filters, work_id: id };
+        const reportVacationBuilder = new ReportVacationBuilder(this.authentication, entity, tmpFilters, type);
+        return await reportVacationBuilder.render();
+    }
 
 }
 
