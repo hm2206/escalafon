@@ -147,7 +147,6 @@ class WorkEntity {
             .with('afp')
             .with('banco')
             .where('works.id', id || '__error')
-            .where('i.estado', 1)
             .where('pla.principal', 1)
             .select(`works.*`, 'i.perfil_laboral_id')
             .orderBy('i.fecha_de_ingreso', 'DESC')
@@ -224,8 +223,24 @@ class WorkEntity {
         // obtener
         infos = datos.perPage ? await infos.paginate(datos.page, datos.perPage) : await infos.fetch();
         infos = await infos.toJSON();
+        const infoCollect = collect(infos.data);
+        // obtener dependencias
+        const dependenciaPluck = infoCollect.pluck('dependencia_id').toArray();
+        let dependencias = await this.authentication.get(`dependencia?ids=${dependenciaPluck.join('&ids=')}`)
+        .then(({ data }) => data.dependencia.data || [])
+        .catch(() => ([]))
+        dependencias = collect(dependencias);
+        // obtener perfil laboral
+        const perfilPluck = infoCollect.pluck('perfil_laboral_id').toArray();
+        let perfil_laborals = await this.authentication.get(`perfil_laboral?ids=${perfilPluck.join('&ids=')}`)
+        .then(({ data }) => data.perfil_laboral.data || [])
+        .catch(() => ([]))
+        perfil_laborals = collect(perfil_laborals);
+        // setting datos
         await infos.data.map(i => {
             i.work = work;
+            i.dependencia = dependencias.where('id', i.dependencia_id).first() || {};
+            i.perfil_laboral = perfil_laborals.where('id',i.perfil_laboral_id).first() || {};
             return i;
         });
         // response
