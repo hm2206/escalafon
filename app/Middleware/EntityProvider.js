@@ -36,6 +36,7 @@ class EntityProvider {
       // call next to advance the request
       await next()
     } catch (error) {
+      console.error(error);
       return getResponseError(response, error, 'ERR_ENTITY_ID');
     }
   }
