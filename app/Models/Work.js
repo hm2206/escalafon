@@ -28,6 +28,13 @@ class Work extends Model {
         return this.hasMany('App/Models/Info');
     }
 
+    infoCurrent() {
+        return this.hasOne('App/Models/Info')
+            .join('planillas as p', 'p.id', 'infos.planilla_id')
+            .where('p.principal', 1)
+            .where('infos.estado', 1);
+    }
+
 }
 
 module.exports = Work

@@ -142,25 +142,25 @@ class WorkEntity {
 
     async show (id) {
         let work = await Work.query()
-            .leftJoin('infos as i', 'i.work_id', 'works.id')
-            .leftJoin('planillas as pla', 'pla.id', 'i.planilla_id')
             .with('afp')
             .with('banco')
             .where('works.id', id || '__error')
-            .where('pla.principal', 1)
-            .select(`works.*`, 'i.perfil_laboral_id')
-            .orderBy('i.fecha_de_ingreso', 'DESC')
             .first();
         if (!work) throw new NotFoundModelException("El trabajador");
         let { person } = await this.authentication.get(`person/${work.person_id}`)
         .then(res => res.data)
         .catch(() => ({ success: true, person: {} }));
         work.person = person;
+        const currentInfo = await work.infoCurrent().fetch();
         // perfil laboral
-        let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${work.perfil_laboral_id || '_error'}`)
-        .then(res => res.data)
-        .catch(() => ({ perfil_laboral: {} }));
-        work.perfil_laboral = perfil_laboral;
+        if (currentInfo) {
+            let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${currentInfo?.perfil_laboral_id || '_error'}`)
+            .then(res => res.data)
+            .catch(() => ({ perfil_laboral: {} }));
+            currentInfo.perfil_laboral = perfil_laboral;
+        }
+        // result
+        work.currentInfo = currentInfo;
         return work;
     }
 
