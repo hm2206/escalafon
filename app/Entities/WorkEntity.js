@@ -153,7 +153,7 @@ class WorkEntity {
         const infoCurrent = await work.infoCurrent().fetch();
         // perfil laboral
         if (infoCurrent) {
-            let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${infoCurrent?.perfil_laboral_id || '_error'}`)
+            let { perfil_laboral } = await this.authentication.get(`perfil_laboral/${infoCurrent.perfil_laboral_id || '_error'}`)
             .then(res => res.data)
             .catch(() => ({ perfil_laboral: {} }));
             infoCurrent.perfil_laboral = perfil_laboral;
