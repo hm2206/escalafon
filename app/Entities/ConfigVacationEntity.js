@@ -17,6 +17,9 @@ class ConfigVacationEntity {
         work_id: "",
         year: "",
         scheduled_days: "",
+        date_start: "",
+        date_over: "",
+        observation: "",
         state: 1
     }
 
@@ -74,7 +77,8 @@ class ConfigVacationEntity {
                 work_id: work.id,
                 year: datos.year,
                 date_start: datos.date_start,
-                date_over: datos.date_over
+                date_over: datos.date_over,
+                observation: datos.observation
             })
             // response
             return config_vacation;
@@ -116,7 +120,8 @@ class ConfigVacationEntity {
             config_vacation.merge({ 
                 scheduled_days: datos.scheduled_days,
                 date_start: datos.date_start,
-                date_over: datos.date_over
+                date_over: datos.date_over,
+                observation: datos.observation
             });
             await config_vacation.save();
             return config_vacation;
