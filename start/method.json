@@ -485,6 +485,12 @@
         "description": "Aceptar configuración de descuentos",
         "action_type": "UPDATE"
     },
+    "HourhandController.index": {
+        "name": "HourhandController.index",
+        "url": "api/hourhands",
+        "description": "Horarios",
+        "action_type": "VIEW"
+    },
     "ReportController.general": {
         "name": "ReportController.general",
         "url": "api/reports/general",

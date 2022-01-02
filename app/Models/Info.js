@@ -61,6 +61,10 @@ class Info extends Model {
         return this.belongsTo('App/Models/TypeCargo');
     }
 
+    hourhand() {
+        return this.belongsTo('App/Models/Hourhand');
+    }
+
 }
 
 module.exports = Info

@@ -123,6 +123,9 @@ Route('get', 'ConfigDiscountController.headDiscounts').middleware(['jwt', 'entit
 Route('put', 'ConfigDiscountController.verified').middleware(['jwt', 'entityId']);
 Route('put', 'ConfigDiscountController.accepted').middleware(['jwt', 'entityId']);
 
+// Hourhand
+Route('get', 'HourhandController.index').middleware(['jwt']);
+
 // Reports
 Route('get', 'ReportController.general').middleware(['jwt', 'entityId']);
 Route('get', 'ReportController.onomastico').middleware(['jwt', 'entityId']);

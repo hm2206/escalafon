@@ -128,6 +128,7 @@ class InfoEntity {
                 entity_id: datos.entity_id,
                 planilla_id: datos.planilla_id,
                 type_cargo_id: datos.type_cargo_id,
+                hourhand_id: datos.hourhand_id,
                 code: datos.code,
                 code_airhsp: datos.code_airhsp,
                 cargo_id: datos.cargo_id,
@@ -169,6 +170,7 @@ class InfoEntity {
             .with('type_categoria')
             .with('meta')
             .with('situacion_laboral')
+            .with('hourhand')
             .where('infos.id', id);
         // filtros
         for (let attr in filtros) {
