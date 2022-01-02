@@ -57,6 +57,10 @@ class Info extends Model {
             .pivotTable('info_type_aportacion')
     }
 
+    type_cargo() {
+        return this.belongsTo('App/Models/TypeCargo');
+    }
+
 }
 
 module.exports = Info

@@ -22,7 +22,9 @@ class InfoEntity {
         work_id: "",
         entity_id: "",
         planilla_id: "",
+        type_cargo_id: "",
         cargo_id: "",
+        code: "",
         type_categoria_id: "",
         meta_id: "",
         plaza: "",
@@ -104,6 +106,7 @@ class InfoEntity {
             work_id: "required",
             entity_id: "required",
             planilla_id: "required",
+            type_cargo_id: "required",
             cargo_id: "required",
             type_categoria_id: "required",
             meta_id: "required",
@@ -124,6 +127,8 @@ class InfoEntity {
                 work_id: datos.work_id,
                 entity_id: datos.entity_id,
                 planilla_id: datos.planilla_id,
+                type_cargo_id: datos.type_cargo_id,
+                code: datos.code,
                 code_airhsp: datos.code_airhsp,
                 cargo_id: datos.cargo_id,
                 type_categoria_id: datos.type_categoria_id,
@@ -159,6 +164,7 @@ class InfoEntity {
                     .with('afp')
             })
             .with('planilla')
+            .with('type_cargo')
             .with('cargo')
             .with('type_categoria')
             .with('meta')

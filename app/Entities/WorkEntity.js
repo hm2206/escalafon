@@ -211,6 +211,7 @@ class WorkEntity {
             .orderBy('fecha_de_ingreso', 'DESC')
             .with('planilla')
             .with('cargo')
+            .with('type_cargo')
             .with('type_categoria')
             .with('meta')
             .where('work_id', work.id);
