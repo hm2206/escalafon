@@ -17,7 +17,7 @@ class VerifyInfoOver extends Task {
     let old_year = old_date.format('Y');
     // obtener contratos
     return await Info.query()
-      .where(DB.raw(`(fecha_de_cese is not null AND fecha_de_cese <> '')`))
+      .where(DB.raw(`(fecha_de_cese is not null)`))
       .where(DB.raw(`YEAR(fecha_de_cese) = ${old_year}`))
       .where(DB.raw(`MONTH(fecha_de_cese) = ${old_month}`))
       .where('estado', 1)
