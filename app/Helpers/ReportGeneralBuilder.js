@@ -32,7 +32,7 @@ class ReportGeneralBuilder {
     }
 
     options = {
-        format: 'A4',
+        format: 'A3',
         landscape: true
     }
 
@@ -43,6 +43,7 @@ class ReportGeneralBuilder {
         this.authentication = authentication;
         this.filters = Object.assign(this.filters, filters);
         this.people = collect([]);
+        this.dependencias = collect([]);
         this.type = type;
     }
 
@@ -50,6 +51,7 @@ class ReportGeneralBuilder {
         let works = Work.query()
             .join('infos as i', 'i.work_id', 'works.id')
             .join('type_categorias as type', 'type.id', 'i.type_categoria_id')
+            .join('type_cargos as car', 'car.id', 'i.type_cargo_id')
             .orderBy('works.orden', 'ASC')
             .where('i.estado', 1)
         // filtros
@@ -59,7 +61,12 @@ class ReportGeneralBuilder {
             works.where(`i.${attr}`, value);
         }
         // obtener
-        works.select('works.*', 'i.fecha_de_ingreso', 'i.fecha_de_cese', DB.raw(`type.descripcion as displayCategoria`))
+        works.select(
+            'works.*', 'i.fecha_de_ingreso', 'i.fecha_de_cese', 
+            'i.dependencia_id',
+            DB.raw(`type.descripcion as displayCategoria`),
+            DB.raw(`car.description as displayCargo`)
+        )
         works = await works.fetch();
         this.works = works.toJSON();
     }
@@ -73,10 +80,25 @@ class ReportGeneralBuilder {
         .catch(() => ({ success: false }))
         if (!datos.success) return;
         // guardar datos
-        await this.people.push(...datos.data);
+        this.people.push(...datos.data);
         // siguiente carga
         let nextPage = page + 1;
         if (datos.lastPage >= nextPage) await this.getPeople(nextPage);
+    }
+
+    async getDepedencias(page = 1, ids = []) {
+        let datos = await this.authentication.get(`dependencia?page=${page}&ids=${ids.join('&ids=')}&perPage=100`)
+        .then(res => {
+            let { dependencia } = res.data
+            return { ...dependencia, success: true }
+        })
+        .catch(() => ({ success: false }))
+        if (!datos.success) return;
+        // guardar datos
+        this.dependencias.push(...datos.data);
+        // siguiente carga
+        let nextPage = page + 1;
+        if (datos.lastPage >= nextPage) await this.getDepedencias(nextPage);
     }
 
     async stepPeople() {
@@ -87,9 +109,19 @@ class ReportGeneralBuilder {
         }
     }
 
+    async stepDependencias() {
+        let idPlucked = collect(this.works).pluck('dependencia_id');
+        let idChunk = idPlucked.chunk(100);
+        for (let ids of idChunk) {
+            await this.getDepedencias(1, ids.toArray())
+        }
+    }
+
     async settingWorks() {
         for(let work of this.works) {
-            let person = await this.people.where('id', work.person_id).first() || {}
+            let person = this.people.where('id', work.person_id).first() || {}
+            let dependencia = this.dependencias.where('id', work.dependencia_id).first() || {};
+
             if (person.id) {
                 person.date_of_birth = moment(`${person.date_of_birth}`, 'YYYY-MM-DD').format('DD/MM/YYYY');
             }
@@ -98,6 +130,7 @@ class ReportGeneralBuilder {
             if (work.fecha_de_cese) work.fecha_de_cese = moment(work.fecha_de_cese).format('DD/MM/YYYY');
 
             work.person = person;
+            work.dependencia = dependencia;
         }
     }
 
@@ -114,21 +147,34 @@ class ReportGeneralBuilder {
     }
 
     async formatExcel(that, datos = {}) {
-        let headers = ["N°", "Apellidos y Nombres", "Tipo", "Document", "Cat.", "F.Ingreso", "F.Cese", "Teléfono", "Dirección"];
+        let headers = [
+            "Doc.", "Numero", "Trabajador", "Sexo", "Estado Civil", "Fecha Nacimiento", 
+            "Fecha Inicio Laboral", "Area/Oficina", "Cat/Nivel Rem", "Reg. Labor", 
+            "Ubigeo", "Código Cuspp", "Código Es Salud", "Teléfono", "mail", "Dirección"
+        ];
         let content = [];
         let works = [...datos.works];
         // mapping
         works.map((w, index) => {
+            const departamento = w.person.badge.departamento || "";
+            const provincia = w.person.badge.provincia || "";
+            const distrito = w.person.badge.distrito || "";
             content.push([
-                index + 1,
-                `${w.person.fullname || ''}`.toUpperCase(),
                 `${w.person.document_type.name || ''}`.toUpperCase(),
                 `${w.person.document_number || ''}`,
-                `${w.displayCategoria || ''}`,
+                `${w.person.fullname || ''}`.toUpperCase(),
+                `${w.person.gender || ''}`.toUpperCase(),
+                `${w.person.marital_status || ''}`.toLowerCase(),
+                `${w.person.date_of_birth || ''}`,
                 `${w.fecha_de_ingreso || ''}`,
-                `${w.person.fecha_de_cese || ''}`,
-                `${w.person.email_contact || ''}`,
+                `${w.dependencia.nombre || '--'}`,
+                `${w.displayCategoria || ''}`,
+                `${w.displayCargo}`.toUpperCase(),
+                `${w.person.badge.cod_ubi} - ${departamento} - ${provincia} - ${distrito}`,
+                `${w.numero_de_cussp || ""}`,
+                `${w.numero_de_essalud || ""}`,
                 `${w.person.phone || ''}`,
+                `${w.person.email_contact || ''}`,
                 `${w.person.address || ''}`
             ]);
             // data
@@ -145,6 +191,8 @@ class ReportGeneralBuilder {
         await this.getWorks();
         // obtener people
         await this.stepPeople();
+        // obtener dependencias
+        await this.stepDependencias();
         // setting works
         await this.settingWorks();
         // render
